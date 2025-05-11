@@ -1,0 +1,111 @@
+import { ApplyJob } from 'src/apply-job/entities/apply-job.entity';
+import { Benefit } from 'src/benefit/entities/benefit.entity';
+import { Company } from 'src/company/entities/company.entity';
+import { Level } from 'src/level/entities/level.entity';
+import { Location } from 'src/location/entities/location.entity';
+import { Major } from 'src/major/entities/major.entity';
+import { SaveJob } from 'src/save-job/entities/save-job.entity';
+import { Skill } from 'src/skill/entities/skill.entity';
+import { TypeJob } from 'src/type-job/entities/type-job.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+@Entity({ name: 'cong_viec' })
+export class Job {
+  @PrimaryGeneratedColumn({ name: 'ma_cong_viec' })
+  id: number;
+
+  @Column({ name: 'ten_cong_viec', length: 255 })
+  name: string;
+
+  @Column({ name: 'mo_ta', length: 255 })
+  description: string;
+
+  @Column({ name: 'so_luong_tuyen', type: 'int' })
+  quantity: number;
+
+  @Column({ name: 'yeu_cau', length: 255 })
+  requirement: string;
+  @Column({ name: 'quyen_loi', length: 255 })
+  benefit: string;
+  @Column({ name: 'luong_min', type: 'float' })
+  minSalary: number;
+  @Column({ name: 'luong_max', type: 'float' })
+  maxSalary: number;
+  @Column({ name: 'thoi_gian_tao', type: 'timestamp' })
+  createdAt: Date;
+  @Column({ name: 'trang_thai', type: 'tinyint' })
+  status: number;
+  @Column({
+    name: 'thoi_gian_het_han',
+    type: 'timestamp',
+    default: () => 'DATE_ADD(NOW(), INTERVAL 30 DAY)',
+  })
+  expiredAt: Date;
+
+  @ManyToMany(() => Major, (major) => major.jobs)
+  @JoinTable({
+    name: 'nganh_nghe_cong_viec',
+    joinColumn: {
+      name: 'ma_cong_viec',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'ma_nganh_nghe',
+      referencedColumnName: 'id',
+    },
+  })
+  majors: Major[];
+  @ManyToOne(() => Company, (company) => company.jobs)
+  @JoinColumn({ name: 'ma_cong_ty' })
+  company: Company;
+  @ManyToMany(() => Location, (location) => location.jobs)
+  @JoinTable({
+    name: 'dia_diem_cong_viec',
+    joinColumn: {
+      name: 'ma_cong_viec',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'ma_dia_diem',
+      referencedColumnName: 'id',
+    },
+  })
+  locations: Location[];
+
+  @ManyToOne(() => TypeJob, (typeJob) => typeJob.jobs)
+  @JoinColumn({ name: 'ma_hinh_thuc_lam_viec' })
+  typeJob: TypeJob;
+
+  @ManyToOne(() => Level, (level) => level.jobs)
+  @JoinColumn({ name: 'ma_cap_bac' })
+  level: Level;
+
+  @ManyToMany(() => Benefit, (benefit) => benefit.jobs)
+  @JoinTable({
+    name: 'phuc_loi_cong_viec',
+    joinColumn: {
+      name: 'ma_cong_viec',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'ma_phuc_loi',
+      referencedColumnName: 'id',
+    },
+  })
+  benefits: Benefit[];
+
+  @OneToMany(() => SaveJob, (saveJob) => saveJob.job)
+  saveJobs: SaveJob[];
+
+  @OneToMany(() => ApplyJob, (applyJob) => applyJob.job)
+  applyJobs: ApplyJob[];
+}
