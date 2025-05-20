@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { SkillService } from './skill.service';
 import { SkillController } from './skill.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,4 +9,10 @@ import { Skill } from './entities/skill.entity';
   controllers: [SkillController],
   providers: [SkillService],
 })
-export class SkillModule {}
+export class SkillModule implements OnModuleInit {
+  constructor(private readonly skillService: SkillService) {}
+
+  onModuleInit() {
+    this.skillService.createDefaultSkill();
+  }
+}

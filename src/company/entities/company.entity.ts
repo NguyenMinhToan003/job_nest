@@ -18,9 +18,11 @@ import {
 export class Company {
   @PrimaryColumn({ name: 'tai_khoan_id' })
   id: number;
+  @Column({ name: 'ten_doanh_nghiep', length: 255, nullable: true })
+  name: string;
   @Column({ name: 'gioi_thieu', length: 255, nullable: true })
   introduction: string;
-  @Column({ name: 'logo', length: 255, nullable: true })
+  @Column({ name: 'logo', type: 'text', nullable: true })
   logo: string;
   @Column({ name: 'ma_so_thue', length: 255, nullable: true })
   taxCode: string;

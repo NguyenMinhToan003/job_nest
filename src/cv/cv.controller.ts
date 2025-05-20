@@ -6,7 +6,6 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { CvService } from './cv.service';
-import { UpdateCvDto } from './dto/update-cv.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CreateCvDto } from './dto/create-cv.dto';
 

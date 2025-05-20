@@ -1,42 +1,43 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, Patch, Param, Req } from '@nestjs/common';
 import { CompanyService } from './company.service';
-import { CreateCompanyDto } from './dto/create-company.dto';
+import { CreateCompanyDto, LoginCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { Public } from 'src/decorators/customize';
 
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
-  @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.create(createCompanyDto);
+  @Public()
+  @Post('register')
+  register(@Body() dto: CreateCompanyDto) {
+    return this.companyService.register(dto);
   }
-
+  @Public()
+  @Post('login')
+  login(@Body() dto: LoginCompanyDto) {
+    return this.companyService.login(dto);
+  }
+  @Public()
   @Get()
-  findAll() {
+  async getAllCompanies() {
     return this.companyService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.companyService.findOne(+id);
+  @Get('info')
+  async getCompanyInfo(@Req() req) {
+    const id = req.user.id;
+    return this.companyService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companyService.update(+id, updateCompanyDto);
+  async updateCompany(@Param('id') id, @Body() dto: UpdateCompanyDto) {
+    return this.companyService.updated(id, dto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.companyService.remove(+id);
+  @Public()
+  @Get('detail/:companyId')
+  async getCompanyDetail(@Param('companyId') companyId: number) {
+    return this.companyService.getCompanyDetail(companyId);
   }
 }

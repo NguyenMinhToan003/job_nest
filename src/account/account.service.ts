@@ -22,4 +22,19 @@ export class AccountService {
   findById(id: number) {
     return this.accountRepository.findOne({ where: { id } });
   }
+  findCompanyId(companyId: number) {
+    return this.accountRepository.findOne({
+      where: { id: companyId },
+      relations: { company: true },
+    });
+  }
+  update(id: number, dto: CreateAccountDto) {
+    const account = this.accountRepository.findOne({
+      where: { id },
+    });
+    if (!account) {
+      throw new Error('Account not found');
+    }
+    return this.accountRepository.update(id, dto);
+  }
 }

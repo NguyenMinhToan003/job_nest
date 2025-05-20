@@ -17,10 +17,7 @@ export class District {
   @Column({ name: 'ten_quan_huyen', length: 255 })
   name: string;
 
-  @ManyToOne(() => City, (city) => city.districts, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @ManyToOne(() => City, (city) => city.districts)
   @JoinColumn({ name: 'ma_thanh_pho' })
   city: City;
 

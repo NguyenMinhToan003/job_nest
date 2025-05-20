@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { CreateLocationDto } from './dto/create-location.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Location } from './entities/location.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class LocationService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    @InjectRepository(Location)
+    private readonly locationRepository: Repository<Location>,
+    private readonly configService: ConfigService,
+  ) {}
 
   async findByMap(search: string) {
     try {
@@ -39,5 +47,29 @@ export class LocationService {
       city: data.result.compound.province,
       district: data.result.compound.district,
     };
+  }
+
+  async createLocation(companyId: number, body: CreateLocationDto) {
+    return await this.locationRepository.save({
+      name: body.name,
+      plandId: body.plandId,
+      city: body.city,
+      district: body.district,
+      company: { id: companyId },
+    });
+  }
+  async findByCompany(companyId: number) {
+    return await this.locationRepository.find({
+      where: {
+        company: {
+          id: companyId,
+        },
+      },
+      relations: {
+        district: {
+          city: true,
+        },
+      },
+    });
   }
 }

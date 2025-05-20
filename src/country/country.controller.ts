@@ -10,6 +10,7 @@ import {
 import { CountryService } from './country.service';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
+import { Public } from 'src/decorators/customize';
 
 @Controller('country')
 export class CountryController {
@@ -20,6 +21,7 @@ export class CountryController {
     return this.countryService.create(createCountryDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.countryService.findAll();

@@ -6,8 +6,6 @@ import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 export class Account {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
-  @Column({ name: 'hinh_anh', length: 255, nullable: true })
-  avatar: string;
 
   @Column({ name: 'google_id', length: 255, nullable: true })
   googleId: string;

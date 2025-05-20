@@ -10,6 +10,7 @@ import {
 import { BenefitService } from './benefit.service';
 import { CreateBenefitDto } from './dto/create-benefit.dto';
 import { UpdateBenefitDto } from './dto/update-benefit.dto';
+import { Public } from 'src/decorators/customize';
 
 @Controller('benefit')
 export class BenefitController {
@@ -20,6 +21,7 @@ export class BenefitController {
     return this.benefitService.create(createBenefitDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.benefitService.findAll();

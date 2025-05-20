@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTypeJobDto } from './dto/create-type-job.dto';
-import { UpdateTypeJobDto } from './dto/update-type-job.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TypeJob } from './entities/type-job.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TypeJobService {
-  create(createTypeJobDto: CreateTypeJobDto) {
-    return 'This action adds a new typeJob';
+  constructor(
+    @InjectRepository(TypeJob)
+    private typeJobRepository: Repository<TypeJob>,
+  ) {}
+
+  async createDefaultTypeJob() {
+    const defaultTypeJobs = [
+      { name: 'Văn phòng', description: 'Văn phòng', status: 1, id: 1 },
+      {
+        name: 'Nhân viên chính thức',
+        description: 'Nhân viên chính thức',
+        status: 1,
+        id: 2,
+      },
+      { name: 'Thực tập', description: 'Thực tập', status: 1, id: 3 },
+      { name: 'Freelance', description: 'Freelance', status: 1, id: 4 },
+      { name: 'Thời vụ', description: 'Thời vụ', status: 1, id: 5 },
+    ];
+
+    await this.typeJobRepository.save(defaultTypeJobs);
   }
 
-  findAll() {
-    return `This action returns all typeJob`;
+  async create(dto: TypeJob) {
+    const typeJob = this.typeJobRepository.create(dto);
+    return this.typeJobRepository.save(typeJob);
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} typeJob`;
-  }
-
-  update(id: number, updateTypeJobDto: UpdateTypeJobDto) {
-    return `This action updates a #${id} typeJob`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} typeJob`;
+  async findAll() {
+    return this.typeJobRepository.find();
   }
 }

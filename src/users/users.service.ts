@@ -2,40 +2,55 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateAccountDto, LoginDto } from 'src/account/dto/create-account.dto';
 import { AccountService } from 'src/account/account.service';
+import { AuthService } from 'src/auth/auth.service';
+import { ROLE_LIST } from 'src/decorators/customize';
+import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly user: Repository<User>,
+    private readonly userRepo: Repository<User>,
     private accountService: AccountService,
+    private authService: AuthService,
   ) {}
-  async register(accountDto: CreateAccountDto) {
-    const exitsEmail = await this.accountService.findEmail(accountDto.email);
-    if (exitsEmail) {
-      throw new HttpException('Email already exists', HttpStatus.BAD_REQUEST);
-    }
-    const account = await this.accountService.create(accountDto);
-    return await this.user.save({ id: account.id });
+  async register(dto: CreateUserDto) {
+    const hashPassword = await this.authService.hashPassword(dto.password);
+    const account = await this.accountService.create({
+      email: dto.email,
+      password: hashPassword,
+      role: ROLE_LIST.USER,
+      googleId: dto.googleId,
+    });
+    const user = this.userRepo.save({
+      id: account.id,
+      name: dto.name,
+      avatar: dto.avatar,
+    });
+    return user;
   }
 
-  async login(accountDto: LoginDto) {
+  async login(accountDto: LoginUserDto) {
     const account = await this.accountService.findEmail(accountDto.email);
     if (!account) {
-      throw new HttpException('Email not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Account not found', HttpStatus.NOT_FOUND);
     }
-    if (account.password !== accountDto.password) {
-      throw new HttpException('Password is incorrect', HttpStatus.BAD_REQUEST);
+    const isMatch = await this.authService.validatePassword(
+      accountDto.password,
+      account.password,
+    );
+    if (!isMatch) {
+      throw new HttpException('Invalid password', HttpStatus.UNAUTHORIZED);
     }
-    const user = await this.user.findOne({ where: { id: account.id } });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
+    const token = await this.authService.signIn(account);
     return {
-      message: 'Login successful',
-      user,
+      token,
+      user: {
+        id: account.id,
+        email: account.email,
+        role: account.role,
+      },
     };
   }
 }
