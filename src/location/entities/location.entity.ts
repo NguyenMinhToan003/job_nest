@@ -2,28 +2,32 @@ import { Company } from 'src/company/entities/company.entity';
 import { District } from 'src/district/entities/district.entity';
 import { Job } from 'src/job/entities/job.entity';
 import {
+  Column,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity({ name: 'dia_diem' })
 export class Location {
-  @PrimaryColumn({ name: 'ma_dia_diem' })
-  id: string;
-  @PrimaryColumn({ name: 'ten_dia_diem', length: 255 })
+  @PrimaryGeneratedColumn({ name: 'ma_dia_diem' })
+  id: number;
+  @Column({ name: 'ten_dia_diem', length: 255 })
   name: string;
-  @PrimaryColumn({ name: 'ma_doanh_nghiep' })
-  companyId: number;
-
-  @ManyToOne(() => District, (district) => district.locations)
+  @Column({ name: 'plandId', length: 255 })
+  plandId: string;
+  @ManyToOne(() => District, (district) => district.locations, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'ma_quan_huyen', referencedColumnName: 'id' })
   district: District;
 
-  @ManyToOne(() => Company, (company) => company.locations)
+  @ManyToOne(() => Company, (company) => company.locations, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'ma_doanh_nghiep', referencedColumnName: 'id' })
   company: Company;
   @ManyToMany(() => Job, (job) => job.locations)

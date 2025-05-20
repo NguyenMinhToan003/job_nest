@@ -1,5 +1,5 @@
 import { Job } from 'src/job/entities/job.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'hinh_thuc_lam_viec' })
 export class TypeJob {
@@ -8,6 +8,6 @@ export class TypeJob {
   @Column({ name: 'ten_hinh_thuc_lam_viec', length: 255 })
   name: string;
 
-  @OneToMany(() => Job, (job) => job.typeJob)
+  @ManyToMany(() => Job, (job) => job.typeJobs)
   jobs: Job[];
 }

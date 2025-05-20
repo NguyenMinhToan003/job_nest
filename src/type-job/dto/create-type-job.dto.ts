@@ -1,1 +1,6 @@
-export class CreateTypeJobDto {}
+import { IsNotEmpty } from 'class-validator';
+
+export class CreateTypeJobDto {
+  @IsNotEmpty()
+  name: string;
+}

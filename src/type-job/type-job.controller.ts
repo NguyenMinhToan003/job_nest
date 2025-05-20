@@ -1,42 +1,25 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { TypeJobService } from './type-job.service';
+import { Controller, Get, Post } from '@nestjs/common';
 import { CreateTypeJobDto } from './dto/create-type-job.dto';
-import { UpdateTypeJobDto } from './dto/update-type-job.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TypeJob } from './entities/type-job.entity';
+import { Repository } from 'typeorm';
+import { Public } from 'src/decorators/customize';
 
 @Controller('type-job')
 export class TypeJobController {
-  constructor(private readonly typeJobService: TypeJobService) {}
+  constructor(
+    @InjectRepository(TypeJob)
+    private readonly typeJobRepository: Repository<TypeJob>,
+  ) {}
 
   @Post()
-  create(@Body() createTypeJobDto: CreateTypeJobDto) {
-    return this.typeJobService.create(createTypeJobDto);
+  async create(dto: CreateTypeJobDto) {
+    return this.typeJobRepository.create(dto);
   }
 
+  @Public()
   @Get()
-  findAll() {
-    return this.typeJobService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.typeJobService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTypeJobDto: UpdateTypeJobDto) {
-    return this.typeJobService.update(+id, updateTypeJobDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.typeJobService.remove(+id);
+  async getAll() {
+    return this.typeJobRepository.find();
   }
 }

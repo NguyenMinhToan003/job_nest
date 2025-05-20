@@ -1,6 +1,7 @@
 import { ApplyJob } from 'src/apply-job/entities/apply-job.entity';
 import { Benefit } from 'src/benefit/entities/benefit.entity';
 import { Company } from 'src/company/entities/company.entity';
+import { Experience } from 'src/experience/entities/experience.entity';
 import { Level } from 'src/level/entities/level.entity';
 import { Location } from 'src/location/entities/location.entity';
 import { Major } from 'src/major/entities/major.entity';
@@ -34,16 +35,19 @@ export class Job {
 
   @Column({ name: 'yeu_cau', length: 255 })
   requirement: string;
-  @Column({ name: 'quyen_loi', length: 255 })
-  benefit: string;
+
   @Column({ name: 'luong_min', type: 'float' })
   minSalary: number;
+
   @Column({ name: 'luong_max', type: 'float' })
   maxSalary: number;
+
   @Column({ name: 'thoi_gian_tao', type: 'timestamp' })
   createdAt: Date;
+
   @Column({ name: 'trang_thai', type: 'tinyint' })
   status: number;
+
   @Column({
     name: 'thoi_gian_het_han',
     type: 'timestamp',
@@ -64,7 +68,7 @@ export class Job {
     },
   })
   majors: Major[];
-  @ManyToOne(() => Company, (company) => company.jobs)
+  @ManyToOne(() => Company, (company) => company.jobs, { nullable: false })
   @JoinColumn({ name: 'ma_cong_ty' })
   company: Company;
   @ManyToMany(() => Location, (location) => location.jobs)
@@ -81,9 +85,19 @@ export class Job {
   })
   locations: Location[];
 
-  @ManyToOne(() => TypeJob, (typeJob) => typeJob.jobs)
-  @JoinColumn({ name: 'ma_hinh_thuc_lam_viec' })
-  typeJob: TypeJob;
+  @ManyToMany(() => TypeJob, (typeJob) => typeJob.jobs)
+  @JoinTable({
+    name: 'loai_hinh_lam_viec_cong_viec',
+    joinColumn: {
+      name: 'ma_cong_viec',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'ma_hinh_thuc_lam_viec',
+      referencedColumnName: 'id',
+    },
+  })
+  typeJobs: TypeJob[];
 
   @ManyToOne(() => Level, (level) => level.jobs)
   @JoinColumn({ name: 'ma_cap_bac' })
@@ -108,4 +122,22 @@ export class Job {
 
   @OneToMany(() => ApplyJob, (applyJob) => applyJob.job)
   applyJobs: ApplyJob[];
+
+  @ManyToOne(() => Experience, (experience) => experience.jobs)
+  @JoinColumn({ name: 'ma_khinh_nghiem' })
+  experience: Experience;
+
+  @ManyToMany(() => Skill, (skill) => skill.jobs)
+  @JoinTable({
+    name: 'cong_viec_ky_nang',
+    joinColumn: {
+      name: 'ma_cong_viec',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'ma_ky_nang',
+      referencedColumnName: 'id',
+    },
+  })
+  skills: Skill[];
 }

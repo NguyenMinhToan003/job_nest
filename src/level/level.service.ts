@@ -1,26 +1,39 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Level } from './entities/level.entity';
+import { Repository } from 'typeorm';
 import { CreateLevelDto } from './dto/create-level.dto';
-import { UpdateLevelDto } from './dto/update-level.dto';
 
 @Injectable()
 export class LevelService {
-  create(createLevelDto: CreateLevelDto) {
-    return 'This action adds a new level';
+  constructor(
+    @InjectRepository(Level)
+    private levelRepository: Repository<Level>,
+  ) {}
+
+  async createDefaultLevel() {
+    const defaultLevel = [
+      { id: '1', name: 'SinhVien', description: 'SinhVien' },
+      { id: '2', name: 'ThucTapSinh', description: 'ThucTapSinh' },
+      { id: '3', name: 'MoiTotNghiep', description: 'MoiTotNghiep' },
+      { id: '4', name: 'NhanVien', description: 'NhanVien' },
+      { id: '5', name: 'QuanLy', description: 'QuanLy' },
+      { id: '6', name: 'PhoGiamDoc', description: 'PhoGiamDoc' },
+      { id: '7', name: 'GiamDoc', description: 'GiamDoc' },
+      { id: '8', name: 'TongGiamDoc', description: 'TongGiamDoc' },
+      { id: '9', name: 'ChuTich', description: 'ChuTich' },
+      { id: '10', name: 'ChuTichHĐQT', description: 'ChuTichHĐQT' },
+    ];
+
+    await this.levelRepository.save(defaultLevel);
   }
 
-  findAll() {
-    return `This action returns all level`;
+  async create(dto: CreateLevelDto) {
+    const level = this.levelRepository.create(dto);
+    return this.levelRepository.save(level);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} level`;
-  }
-
-  update(id: number, updateLevelDto: UpdateLevelDto) {
-    return `This action updates a #${id} level`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} level`;
+  async findAll() {
+    return this.levelRepository.find();
   }
 }
