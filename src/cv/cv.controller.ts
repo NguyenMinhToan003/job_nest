@@ -1,33 +1,39 @@
 import {
   Controller,
   Post,
-  Body,
   UseInterceptors,
-  UploadedFiles,
+  UseGuards,
+  Req,
+  Get,
+  UploadedFile,
 } from '@nestjs/common';
 import { CvService } from './cv.service';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { CreateCvDto } from './dto/create-cv.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { RolesGuard } from 'src/auth/passport/role.guard';
+import { ROLE_LIST, Roles } from 'src/decorators/customize';
 
 @Controller('cv')
 export class CvController {
   constructor(private readonly cvService: CvService) {}
 
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.USER)
   @Post()
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'cv', maxCount: 1 },
-      { name: 'background', maxCount: 1 },
-    ]),
-  )
+  @UseInterceptors(FileInterceptor('cv'))
   create(
-    @UploadedFiles()
-    files: {
-      cv?: Express.Multer.File[];
-      background?: Express.Multer.File[];
-    },
-    @Body() createCvDto: CreateCvDto,
+    @UploadedFile()
+    cv: Express.Multer.File,
+    @Req() req,
   ) {
-    return this.cvService.create(files, createCvDto);
+    const userId = req.user.id;
+    return this.cvService.create(cv, userId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.USER)
+  @Get('me')
+  findAll(@Req() req) {
+    const userId = req.user.id;
+    return this.cvService.findAllByUserId(userId);
   }
 }

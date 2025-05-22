@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -11,6 +12,7 @@ import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { Public, ROLE_LIST, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
+import { UpdateLocationDto } from './dto/update-location.dto';
 
 @Controller('location')
 export class LocationController {
@@ -38,5 +40,26 @@ export class LocationController {
   findByCompany(@Req() req) {
     const companyId = req.user.id;
     return this.locationService.findByCompany(companyId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.COMPANY)
+  @Patch(':id')
+  updateLocation(
+    @Param('id') id: number,
+    @Body() body: UpdateLocationDto,
+    @Req() req,
+  ) {
+    const companyId = req.user.id;
+    return this.locationService.updateLocation(+companyId, +id, body);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.COMPANY)
+  @Patch('toggle-enable/:id')
+  toggleEnableLocation(@Param('id') id: number, @Req() req) {
+    const companyId = req.user.id;
+    console.log('companyId', companyId);
+    return this.locationService.toggleEnableLocation(+id, +companyId);
   }
 }

@@ -13,16 +13,14 @@ export class LevelService {
 
   async createDefaultLevel() {
     const defaultLevel = [
-      { id: '1', name: 'SinhVien', description: 'SinhVien' },
-      { id: '2', name: 'ThucTapSinh', description: 'ThucTapSinh' },
-      { id: '3', name: 'MoiTotNghiep', description: 'MoiTotNghiep' },
-      { id: '4', name: 'NhanVien', description: 'NhanVien' },
-      { id: '5', name: 'QuanLy', description: 'QuanLy' },
-      { id: '6', name: 'PhoGiamDoc', description: 'PhoGiamDoc' },
-      { id: '7', name: 'GiamDoc', description: 'GiamDoc' },
-      { id: '8', name: 'TongGiamDoc', description: 'TongGiamDoc' },
-      { id: '9', name: 'ChuTich', description: 'ChuTich' },
-      { id: '10', name: 'ChuTichHĐQT', description: 'ChuTichHĐQT' },
+      { name: 'Internship', description: 'Internship', id: 'internship' },
+      { name: 'Fresher', description: 'Fresher', id: 'fresher' },
+      { name: 'Junior', description: 'Junior', id: 'junior' },
+      { name: 'Mid', description: 'Mid', id: 'mid' },
+      { name: 'Senior', description: 'Senior', id: 'senior' },
+      { name: 'Lead', description: 'Lead', id: 'lead' },
+      { name: 'Manager', description: 'Manager', id: 'manager' },
+      { name: 'Director', description: 'Director', id: 'director' },
     ];
 
     await this.levelRepository.save(defaultLevel);

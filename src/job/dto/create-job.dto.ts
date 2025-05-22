@@ -33,7 +33,7 @@ export class CreateJobDto {
   experience: Experience;
 
   @IsNotEmpty()
-  level: Level;
+  levels: Level[];
 
   @IsNotEmpty()
   types: TypeJob[];
@@ -53,19 +53,21 @@ export class CreateJobDto {
 
 export class JobFilterDto {
   @IsOptional()
+  @IsInt()
+  id?: number;
+
+  @IsOptional()
   search?: string;
 
   @IsOptional()
-  @IsInt()
-  level?: number;
+  levels?: Level[];
+
+  @IsOptional()
+  experience?: string;
 
   @IsOptional()
   @IsInt()
-  experience?: number;
-
-  @IsOptional()
-  @IsInt()
-  typeJob?: number;
+  typeJobs?: number;
 
   @IsOptional()
   @IsNumber()
@@ -77,5 +79,11 @@ export class JobFilterDto {
 
   @IsOptional()
   @IsString()
-  city?: string;
+  citys?: string;
+
+  @IsOptional()
+  benefits?: string;
+
+  @IsOptional()
+  skills?: string;
 }

@@ -42,6 +42,9 @@ export class Job {
   @Column({ name: 'luong_max', type: 'float' })
   maxSalary: number;
 
+  @Column({ name: 'hien_thi_cong_viec', type: 'tinyint', default: 1 })
+  isShow: number;
+
   @Column({ name: 'thoi_gian_tao', type: 'timestamp' })
   createdAt: Date;
 
@@ -51,7 +54,7 @@ export class Job {
   @Column({
     name: 'thoi_gian_het_han',
     type: 'timestamp',
-    default: () => 'DATE_ADD(NOW(), INTERVAL 30 DAY)',
+    default: () => 'DATE_ADD(NOW(), INTERVAL 28 DAY)',
   })
   expiredAt: Date;
 
@@ -85,6 +88,12 @@ export class Job {
   })
   locations: Location[];
 
+  @Column({ name: 'cau_hoi_thu_viec', length: 255 })
+  interviewQuestion: string;
+
+  @Column({ name: 'co_bat_buoc_tra_loi', type: 'tinyint', default: 0 })
+  isRequiredQuestion: number;
+
   @ManyToMany(() => TypeJob, (typeJob) => typeJob.jobs)
   @JoinTable({
     name: 'loai_hinh_lam_viec_cong_viec',
@@ -99,9 +108,19 @@ export class Job {
   })
   typeJobs: TypeJob[];
 
-  @ManyToOne(() => Level, (level) => level.jobs)
-  @JoinColumn({ name: 'ma_cap_bac' })
-  level: Level;
+  @ManyToMany(() => Level, (level) => level.jobs)
+  @JoinTable({
+    name: 'cap_bac_cong_viec',
+    joinColumn: {
+      name: 'ma_cong_viec',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'ma_cap_bac',
+      referencedColumnName: 'id',
+    },
+  })
+  levels: Level[];
 
   @ManyToMany(() => Benefit, (benefit) => benefit.jobs)
   @JoinTable({

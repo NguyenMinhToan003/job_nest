@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UploadService } from 'src/upload/upload.service';
-import { CreateCvDto } from './dto/create-cv.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cv } from './entities/cv.entity';
 import { Repository } from 'typeorm';
@@ -10,25 +9,35 @@ export class CvService {
   @InjectRepository(Cv)
   private readonly cvRepository: Repository<Cv>;
   constructor(private readonly uploadService: UploadService) {}
-  async create(
-    file: {
-      cv?: Express.Multer.File[];
-      background?: Express.Multer.File[];
-    },
-    dto: CreateCvDto,
-  ) {
-    try {
-      const cv = file.cv[0];
-      const files = await this.uploadService.uploadFile([cv]);
-      console.log('files', files);
-      return this.cvRepository.save({
-        publicId: files[0].public_id,
-        url: files[0].secure_url,
-        user: { id: dto.userId },
-      });
-    } catch (error) {
-      console.log('error', error);
-      throw new Error('Error creating CV');
+  async create(cv: Express.Multer.File, userId: number) {
+    const arrayName = cv.originalname.split('.');
+    const typeFile = arrayName[arrayName.length - 1];
+    const arrayTypeFile = ['pdf', 'docx', 'doc'];
+    if (!arrayTypeFile.includes(typeFile)) {
+      throw new BadRequestException('Chỉ chấp nhận file pdf, docx, doc');
     }
+    const cloudinaryFile = await this.uploadService.uploadFile([cv]);
+    return this.cvRepository.save({
+      publicId: cloudinaryFile[0].display_name,
+      url: cloudinaryFile[0].secure_url,
+      user: { id: userId },
+      typeFile: typeFile,
+      name: cv.originalname,
+      updatedAt: new Date(),
+    });
+  }
+
+  async findAllByUserId(userId: number) {
+    return await this.cvRepository.find({
+      where: { user: { id: userId } },
+      order: { updatedAt: 'DESC' },
+    });
+  }
+
+  async findCvByUserIdAndCvId(userId: number, cvId: number) {
+    console.log(userId, cvId);
+    return await this.cvRepository.findOne({
+      where: { user: { id: +userId }, id: +cvId },
+    });
   }
 }

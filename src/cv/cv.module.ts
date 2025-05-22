@@ -9,5 +9,6 @@ import { Cv } from './entities/cv.entity';
   imports: [UploadModule, TypeOrmModule.forFeature([Cv])],
   controllers: [CvController],
   providers: [CvService],
+  exports: [CvService],
 })
 export class CvModule {}
