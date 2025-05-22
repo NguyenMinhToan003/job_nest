@@ -1,10 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
 import { Repository } from 'typeorm';
+import { UpdateLocationDto } from './dto/update-location.dto';
 
 @Injectable()
 export class LocationService {
@@ -23,7 +28,7 @@ export class LocationService {
       data.predictions = data.predictions.map((item) => {
         return {
           name: item.description,
-          plandId: item.place_id,
+          placeId: item.place_id,
         };
       });
       return data;
@@ -50,12 +55,15 @@ export class LocationService {
   }
 
   async createLocation(companyId: number, body: CreateLocationDto) {
+    console.log('body', body);
     return await this.locationRepository.save({
       name: body.name,
-      plandId: body.plandId,
+      placeId: body.placeId,
       city: body.city,
       district: body.district,
       company: { id: companyId },
+      lat: body.lat,
+      lng: body.lng,
     });
   }
   async findByCompany(companyId: number) {
@@ -70,6 +78,54 @@ export class LocationService {
           city: true,
         },
       },
+    });
+  }
+  async updateLocation(companyId: number, id: number, body: UpdateLocationDto) {
+    const location = await this.locationRepository.findOne({
+      where: {
+        id,
+        company: {
+          id: companyId,
+        },
+      },
+    });
+    if (!location) {
+      throw new NotFoundException('Location not found');
+    }
+    return await this.locationRepository.save({
+      ...location,
+      ...body,
+    });
+  }
+
+  async toggleEnableLocation(id: number, companyId: number) {
+    const listLocation = await this.locationRepository.find({
+      where: {
+        company: {
+          id: companyId,
+        },
+      },
+    });
+    const countLocationEnabled = listLocation.filter(
+      (location) => location.enabled === 1,
+    ).length;
+    if (countLocationEnabled >= 4 && !listLocation[id].enabled) {
+      throw new BadRequestException('Chỉ được tối đa 4 địa điểm');
+    }
+    const location = await this.locationRepository.findOne({
+      where: {
+        id,
+        company: {
+          id: companyId,
+        },
+      },
+    });
+    if (!location) {
+      throw new NotFoundException('Location not found');
+    }
+    return await this.locationRepository.save({
+      ...location,
+      enabled: location.enabled === 1 ? 0 : 1,
     });
   }
 }

@@ -15,12 +15,13 @@ export class UploadService {
     file: Express.Multer.File,
     folder: string,
   ): Promise<CloudinaryResponse> {
+    const options = {
+      folder,
+      resource_type: 'auto',
+    };
     return new Promise((resolve, reject) => {
       const uploadStream = this.cloudinary.uploader.upload_stream(
-        {
-          resource_type: 'auto',
-          folder,
-        },
+        options,
         (error, result) => {
           if (error) {
             return reject(error);
@@ -28,14 +29,12 @@ export class UploadService {
           resolve(result);
         },
       );
-
       Readable.from(file.buffer).pipe(uploadStream);
     });
   }
 
   async uploadFile(files: Express.Multer.File[]): Promise<any[]> {
     const uploadedFiles = [];
-
     for (const file of files) {
       try {
         const folder = this.configService.get('CLOUDINARY_FOLDER');

@@ -1,6 +1,6 @@
-import { APPLY_JOB_STATUS } from 'src/decorators/customize';
+import { Cv } from 'src/cv/entities/cv.entity';
 import { Job } from 'src/job/entities/job.entity';
-import { User } from 'src/users/entities/user.entity';
+import { APPLY_JOB_STATUS } from 'src/types/enum';
 import {
   Column,
   Entity,
@@ -14,9 +14,6 @@ export class ApplyJob {
   @PrimaryGeneratedColumn({ name: 'ma_ung_tuyen' })
   id: number;
 
-  @Column({ name: 'ma_nguoi_dung' })
-  userId: number;
-
   @Column({ name: 'ma_viec_lam' })
   jobId: number;
 
@@ -27,8 +24,11 @@ export class ApplyJob {
   })
   time: Date;
 
-  @Column({ name: 'cv_id', nullable: true })
-  cvId: number;
+  @Column({ name: 'ten_ung_vien', nullable: false })
+  username: string;
+
+  @Column({ name: 'so_dien_thoai', nullable: false })
+  phone: string;
 
   @Column({
     name: 'trang_thai',
@@ -53,11 +53,11 @@ export class ApplyJob {
   @Column({ name: 'trang_thai_xem' })
   viewStatus: number;
 
-  @ManyToOne(() => User, (user) => user.applyJobs)
-  @JoinColumn({ name: 'ma_nguoi_dung' })
-  user: User;
-
   @ManyToOne(() => Job, (job) => job.applyJobs)
   @JoinColumn({ name: 'ma_viec_lam' })
   job: Job;
+
+  @ManyToOne(() => Cv, (cv) => cv.applyJobs)
+  @JoinColumn({ name: 'ma_cv' })
+  cv: Cv;
 }

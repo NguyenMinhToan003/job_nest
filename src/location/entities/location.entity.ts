@@ -17,8 +17,34 @@ export class Location {
   id: number;
   @Column({ name: 'ten_dia_diem', length: 255 })
   name: string;
-  @Column({ name: 'plandId', length: 255 })
-  plandId: string;
+
+  @Column({
+    name: 'toa_do_x',
+    nullable: false,
+    type: 'decimal',
+    precision: 10,
+    scale: 8,
+  })
+  lat: number;
+  @Column({
+    name: 'toa_do_y',
+    nullable: false,
+    type: 'decimal',
+    precision: 11,
+    scale: 8,
+  })
+  lng: number;
+
+  // giai thich precision va scale
+  // precision: Tong so chu so
+  // scale: So chu so sau dau phay
+  // vi du: 10,12345678
+
+  @Column({ name: 'kich_hoat', type: 'tinyint', default: 0 })
+  enabled: number;
+
+  @Column({ name: 'placeId', length: 255 })
+  placeId: string;
   @ManyToOne(() => District, (district) => district.locations, {
     nullable: false,
   })
@@ -30,6 +56,7 @@ export class Location {
   })
   @JoinColumn({ name: 'ma_doanh_nghiep', referencedColumnName: 'id' })
   company: Company;
+
   @ManyToMany(() => Job, (job) => job.locations)
   @JoinTable({
     name: 'dia_diem_cong_viec',

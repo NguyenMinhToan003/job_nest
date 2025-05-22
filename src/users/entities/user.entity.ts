@@ -1,5 +1,4 @@
 import { Account } from 'src/account/entities/account.entity';
-import { ApplyJob } from 'src/apply-job/entities/apply-job.entity';
 import { Cv } from 'src/cv/entities/cv.entity';
 import { Follow } from 'src/follow/entities/follow.entity';
 import { NotiSetting } from 'src/noti-setting/entities/noti-setting.entity';
@@ -25,6 +24,10 @@ export class User {
   name: string;
   @Column({ name: 'hinh_anh', length: 255, nullable: true })
   avatar: string;
+
+  @Column({ name: 'so_dien_thoai', length: 20, nullable: true })
+  phone: string;
+
   @Column({
     name: 'gioi_tinh',
     type: 'enum',
@@ -59,9 +62,6 @@ export class User {
 
   @OneToMany(() => SaveJob, (saveJob) => saveJob.user)
   saveJobs: SaveJob[];
-
-  @OneToMany(() => ApplyJob, (applyJob) => applyJob.user)
-  applyJobs: ApplyJob[];
 
   @OneToMany(() => NotiSetting, (notiSetting) => notiSetting.user)
   notiSettings: NotiSetting[];

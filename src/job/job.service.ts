@@ -9,7 +9,7 @@ import {
   MoreThanOrEqual,
   Repository,
 } from 'typeorm';
-import { UpdateJobDto } from './dto/update-job.dto';
+import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 
 @Injectable()
 export class JobService {
@@ -26,7 +26,7 @@ export class JobService {
       quantity: createJobDto.quantity,
       minSalary: createJobDto.minSalary,
       maxSalary: createJobDto.maxSalary,
-      status: 1,
+      status: 0,
       skills: createJobDto.skills,
       locations: createJobDto.locations,
       createdAt: new Date(),
@@ -34,7 +34,7 @@ export class JobService {
       typeJobs: createJobDto.types,
       expiredAt: new Date(new Date().setDate(new Date().getDate() + 30)),
       company: { id: companyId },
-      level: createJobDto.level,
+      levels: createJobDto.levels,
     });
     return this.jobRepository.save(job);
   }
@@ -51,7 +51,7 @@ export class JobService {
           },
         },
         skills: true,
-        level: true,
+        levels: true,
         typeJobs: true,
         majors: true,
       },
@@ -66,6 +66,11 @@ export class JobService {
     console.log('companyId', companyId);
     return this.jobRepository.find({
       where: { company: { id: companyId } },
+      relations: {
+        applyJobs: {
+          cv: true,
+        },
+      },
     });
   }
 
@@ -78,9 +83,14 @@ export class JobService {
         company: true,
         locations: true,
         skills: true,
-        level: true,
+        levels: true,
         typeJobs: true,
         majors: true,
+        applyJobs: {
+          cv: {
+            user: true,
+          },
+        },
       },
     });
   }
@@ -101,8 +111,8 @@ export class JobService {
       requirement: dto.requirement,
       quantity: dto.quantity,
       minSalary: dto.minSalary,
+      isShow: dto.isShow,
       maxSalary: dto.maxSalary,
-      status: 1,
       skills: dto.skills,
       locations: dto.locations,
       createdAt: new Date(),
@@ -110,27 +120,33 @@ export class JobService {
       typeJobs: dto.types,
       expiredAt: new Date(new Date().setDate(new Date().getDate() + 30)),
       company: { id: companyId },
-      level: dto.level,
+      levels: dto.levels,
     });
     return this.jobRepository.save(updatedJob);
   }
 
   async filter(body: JobFilterDto): Promise<{ total: number; data: Job[] }> {
-    const where: any = {};
+    const where: any = {
+      status: 1,
+      isShow: 1,
+    };
+    if (body.id) {
+      where.id = body.id;
+    }
     if (body.search) {
       where.name = Like(`%${body.search}%`);
     }
-    if (body.level) {
-      where.level = { id: body.level };
+    if (body.levels) {
+      where.levels = { id: body.levels };
     }
     if (body.experience) {
       where.experience = { id: body.experience };
     }
-    if (body.typeJob) {
-      where.typeJobs = { id: body.typeJob };
+    if (body.typeJobs) {
+      where.typeJobs = { id: body.typeJobs };
     }
-    if (body.city) {
-      where.locations = { district: { city: { id: body.city } } };
+    if (body.citys) {
+      where.locations = { district: { city: { id: body.citys } } };
     }
     if (body.minSalary && body.maxSalary) {
       where.minSalary = Between(body.minSalary, body.maxSalary);
@@ -152,7 +168,7 @@ export class JobService {
           },
         },
         skills: true,
-        level: true,
+        levels: true,
         typeJobs: true,
         majors: true,
       },
@@ -164,5 +180,18 @@ export class JobService {
       total: jobs.length,
       data: jobs,
     };
+  }
+
+  async adminUpdate(id: number, dto: UpdateJobAdminDto) {
+    const job = await this.jobRepository.findOne({
+      where: { id },
+    });
+    if (!job) {
+      throw new ForbiddenException('You are not allowed to update this job');
+    }
+    const updatedJob = this.jobRepository.merge(job, {
+      status: dto.status,
+    });
+    return this.jobRepository.save(updatedJob);
   }
 }

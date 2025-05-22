@@ -51,7 +51,7 @@ export class CompanyService {
       },
     });
     if (!company) {
-      throw new Error('Company not found');
+      throw new BadRequestException('Company not found');
     }
     delete company.account.password;
     return company;
@@ -87,10 +87,13 @@ export class CompanyService {
     const company = await this.companyRepository.findOne({
       where: {
         id: companyId,
+        locations: {
+          enabled: 1,
+        },
       },
       relations: {
         jobs: {
-          level: true,
+          levels: true,
           benefits: true,
           locations: {
             district: {

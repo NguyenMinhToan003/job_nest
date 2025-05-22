@@ -7,7 +7,13 @@ export class CreateLocationDto {
   @IsNotEmpty()
   district: District;
   @IsNotEmpty()
-  plandId: string;
+  placeId: string;
   @IsNotEmpty()
   city: string;
+
+  @IsNotEmpty()
+  lat: number;
+
+  @IsNotEmpty()
+  lng: number;
 }

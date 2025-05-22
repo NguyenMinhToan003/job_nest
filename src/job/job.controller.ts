@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { JobService } from './job.service';
 import { CreateJobDto, JobFilterDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
+import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { Public, ROLE_LIST, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 
@@ -60,5 +60,12 @@ export class JobController {
   @Post('filter')
   filter(@Body() filterJobDto: JobFilterDto) {
     return this.jobService.filter(filterJobDto);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Patch('admin/:jobId')
+  changeStatusJob(@Param('jobId') id: number, @Body() dto: UpdateJobAdminDto) {
+    return this.jobService.adminUpdate(+id, dto);
   }
 }

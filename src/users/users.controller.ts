@@ -1,6 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, LoginUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from 'src/decorators/customize';
 
 @Controller('users')
@@ -13,9 +13,9 @@ export class UsersController {
     return await this.usersService.register(dto);
   }
 
-  @Public()
-  @Post('login')
-  async login(@Body() loginDto: LoginUserDto) {
-    return await this.usersService.login(loginDto);
+  @Get('me')
+  async getMe(@Req() req) {
+    const userId = req.user.id;
+    return await this.usersService.getMe(userId);
   }
 }
