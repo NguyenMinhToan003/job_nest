@@ -27,6 +27,8 @@ export class UsersService {
       id: account.id,
       name: dto.name,
       avatar: dto.avatar,
+      phone: dto.phone,
+      gender: dto.gender,
     });
     return user;
   }

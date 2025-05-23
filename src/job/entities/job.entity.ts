@@ -49,7 +49,7 @@ export class Job {
   createdAt: Date;
 
   @Column({ name: 'trang_thai', type: 'tinyint' })
-  status: number;
+  isActive: number;
 
   @Column({
     name: 'thoi_gian_het_han',

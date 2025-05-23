@@ -10,7 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JobService } from './job.service';
-import { CreateJobDto, JobFilterDto } from './dto/create-job.dto';
+import {
+  CompanyFilterJobDto,
+  CreateJobDto,
+  JobFilterDto,
+} from './dto/create-job.dto';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { Public, ROLE_LIST, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
@@ -37,17 +41,20 @@ export class JobController {
     return this.jobService.findAll();
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.COMPANY)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jobService.remove(+id);
+  remove(@Req() req, @Param('id') id: string) {
+    const companyId = req.user.id;
+    return this.jobService.remove(+companyId, +id);
   }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.COMPANY)
   @Post('company')
-  findByCompanyId(@Req() req) {
+  findByCompanyId(@Req() req, @Body() filter: CompanyFilterJobDto) {
     const companyId = req.user.id;
-    return this.jobService.findByCompanyId(+companyId);
+    return this.jobService.findByCompanyId(+companyId, filter);
   }
 
   @Patch(':id')
@@ -67,5 +74,13 @@ export class JobController {
   @Patch('admin/:jobId')
   changeStatusJob(@Param('jobId') id: number, @Body() dto: UpdateJobAdminDto) {
     return this.jobService.adminUpdate(+id, dto);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.COMPANY)
+  @Patch('company/toggle-is-show/:jobId')
+  toggleViewStatus(@Req() req, @Param('jobId') jobId: number) {
+    const companyId = req.user.id;
+    return this.jobService.toggleIsShow(+companyId, jobId);
   }
 }

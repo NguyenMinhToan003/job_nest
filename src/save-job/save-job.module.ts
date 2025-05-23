@@ -3,9 +3,10 @@ import { SaveJobService } from './save-job.service';
 import { SaveJobController } from './save-job.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SaveJob } from './entities/save-job.entity';
+import { JobModule } from 'src/job/job.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SaveJob])],
+  imports: [JobModule, TypeOrmModule.forFeature([SaveJob])],
   controllers: [SaveJobController],
   providers: [SaveJobService],
 })

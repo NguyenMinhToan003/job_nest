@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSaveJobDto } from './dto/create-save-job.dto';
-import { UpdateSaveJobDto } from './dto/update-save-job.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { SaveJob } from './entities/save-job.entity';
+import { Repository } from 'typeorm';
+import { JobService } from 'src/job/job.service';
 
 @Injectable()
 export class SaveJobService {
-  create(createSaveJobDto: CreateSaveJobDto) {
-    return 'This action adds a new saveJob';
+  constructor(
+    @InjectRepository(SaveJob)
+    private saveJobRepository: Repository<SaveJob>,
+    private jobService: JobService,
+  ) {}
+  async create(userId: number, createSaveJobDto: CreateSaveJobDto) {
+    const checkJob = await this.jobService.findOne(createSaveJobDto.jobId);
+    if (!checkJob || checkJob.isActive === 0 || checkJob.isShow === 0) {
+      throw new BadRequestException('Công việc không tồn tại');
+    }
+    if (checkJob.expiredAt < new Date()) {
+      throw new BadRequestException('Công việc đã hết hạn');
+    }
+    return this.saveJobRepository.save({
+      id: userId,
+      job: { id: createSaveJobDto.jobId },
+      savedDate: new Date(),
+    });
   }
-
-  findAll() {
-    return `This action returns all saveJob`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} saveJob`;
-  }
-
-  update(id: number, updateSaveJobDto: UpdateSaveJobDto) {
-    return `This action updates a #${id} saveJob`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} saveJob`;
+  getMe(userId: number) {
+    return this.saveJobRepository.find({
+      where: { id: userId },
+      relations: {
+        job: {
+          company: true,
+          locations: {
+            district: {
+              city: true,
+            },
+          },
+        },
+      },
+      order: {
+        savedDate: 'DESC',
+      },
+    });
   }
 }
