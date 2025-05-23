@@ -1,42 +1,27 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { SaveJobService } from './save-job.service';
 import { CreateSaveJobDto } from './dto/create-save-job.dto';
-import { UpdateSaveJobDto } from './dto/update-save-job.dto';
+import { RolesGuard } from 'src/auth/passport/role.guard';
+import { ROLE_LIST, Roles } from 'src/decorators/customize';
 
 @Controller('save-job')
 export class SaveJobController {
   constructor(private readonly saveJobService: SaveJobService) {}
 
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.USER)
   @Post()
-  create(@Body() createSaveJobDto: CreateSaveJobDto) {
-    return this.saveJobService.create(createSaveJobDto);
+  create(@Req() req, @Body() createSaveJobDto: CreateSaveJobDto) {
+    const userId = req.user.id;
+    console.log('userId', createSaveJobDto);
+    return this.saveJobService.create(userId, createSaveJobDto);
   }
 
-  @Get()
-  findAll() {
-    return this.saveJobService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.saveJobService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSaveJobDto: UpdateSaveJobDto) {
-    return this.saveJobService.update(+id, updateSaveJobDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.saveJobService.remove(+id);
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.USER)
+  @Post('me')
+  getMe(@Req() req) {
+    const userId = req.user.id;
+    return this.saveJobService.getMe(userId);
   }
 }

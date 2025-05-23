@@ -14,6 +14,7 @@ import {
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/job/job.service';
 import { CvService } from 'src/cv/cv.service';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class ApplyJobService {
@@ -27,28 +28,29 @@ export class ApplyJobService {
   async applyJob(jobId: number, userId: number, body: CreateApplyJobDto) {
     const checkPermission = await this.cvService.findCvByUserIdAndCvId(
       userId,
-      body.cv.id,
+      body.cvId,
     );
     if (!checkPermission) {
       throw new NotFoundException('Lỗi sử dụng CV');
     }
     const checkJob = await this.jobService.findOne(jobId);
-    if (!checkJob || checkJob.status === 0) {
+    if (!checkJob || checkJob.isActive === 0 || checkJob.isShow === 0) {
       throw new NotFoundException('Công việc không tồn tại');
     }
-    console.log('checkJob', body.cv, userId, jobId);
+    if (checkJob.expiredAt < new Date()) {
+      throw new BadRequestException('Công việc đã hết hạn');
+    }
     const checkLastApplyJob = await this.applyJobRepository.findOne({
       where: {
-        cv: { id: body.cv.id },
+        cv: { id: body.cvId },
         job: { id: +jobId },
       },
       order: { time: 'DESC' },
     });
-    console.log('checkLastApplyJob', checkLastApplyJob);
     if (!checkLastApplyJob) {
       const applyJob = this.applyJobRepository.create({
         job: { id: jobId },
-        cv: body.cv,
+        cv: { id: body.cvId },
         status: APPLY_JOB_STATUS.APPLY,
         time: new Date(),
         viewStatus: 0,
@@ -68,13 +70,12 @@ export class ApplyJobService {
       throw new BadRequestException('Bạn đã được nhận vào công việc này rồi');
     }
     if (checkLastApplyJob.status === APPLY_JOB_STATUS.REJECT) {
-      const currentTime = new Date();
-      const replyTime = new Date(checkLastApplyJob.replyTime);
-      const diffTime = Math.abs(currentTime.getTime() - replyTime.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      if (diffDays < 7) {
+      const time = dayjs(checkLastApplyJob.replyTime);
+      const timeNow = dayjs(new Date());
+      const diff = time.diff(timeNow, 'day');
+      if (diff > 1) {
         throw new BadRequestException(
-          'Bạn đã bị từ chối ứng tuyển công việc này, vui lòng thử lại sau 7 ngày',
+          'Bạn đã từ chối công việc này, vui lòng ứng tuyển lại sau 3 ngày',
         );
       }
     }
@@ -82,7 +83,7 @@ export class ApplyJobService {
     // Cho phép apply lại
     const applyJob = this.applyJobRepository.create({
       job: { id: jobId },
-      cv: body.cv,
+      cv: { id: body.cvId },
       status: APPLY_JOB_STATUS.APPLY,
       time: new Date(),
       viewStatus: 0,
@@ -173,7 +174,6 @@ export class ApplyJobService {
     } else if (job.company.id !== companyId) {
       throw new BadRequestException('Bạn không có quyền xem ứng tuyển này');
     }
-    console.log('job', param.jobId);
     return this.applyJobRepository.find({
       where: {
         job: { id: +param.jobId },

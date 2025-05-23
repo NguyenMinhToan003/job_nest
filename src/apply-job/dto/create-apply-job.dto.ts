@@ -1,25 +1,29 @@
-import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { Cv } from 'src/cv/entities/cv.entity';
-import { Job } from 'src/job/entities/job.entity';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPhoneNumber,
+} from 'class-validator';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
-import { User } from 'src/users/entities/user.entity';
 
 export class CreateApplyJobDto {
   @IsOptional()
   note: string;
 
-  @IsNotEmpty()
-  cv: Cv;
+  @IsNotEmpty({ message: 'Bạn chưa chỉ định CV' })
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: 'CV không hợp lệ' },
+  )
+  cvId: number;
 
   @IsNotEmpty()
   username: string;
 
   @IsNotEmpty()
+  @IsPhoneNumber('VN')
   phone: string;
-}
-export class ApplyJobDto {
-  job: Job;
-  user: User;
 }
 export class GetApplyByStatusDto {
   @IsEnum(APPLY_JOB_STATUS)

@@ -10,14 +10,14 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @IsOptional()
-  role: string;
-
   @IsNotEmpty()
   name: string;
 
   @IsOptional()
   avatar: string;
+
+  @IsOptional()
+  gender: string;
 
   @IsOptional()
   @IsPhoneNumber('VN')

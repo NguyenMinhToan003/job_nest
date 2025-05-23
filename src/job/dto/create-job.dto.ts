@@ -1,17 +1,11 @@
 import {
+  ArrayMinSize,
   IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Benefit } from 'src/benefit/entities/benefit.entity';
-import { Experience } from 'src/experience/entities/experience.entity';
-import { Level } from 'src/level/entities/level.entity';
-import { Location } from 'src/location/entities/location.entity';
-import { Skill } from 'src/skill/entities/skill.entity';
-import { TypeJob } from 'src/type-job/entities/type-job.entity';
-
 export class CreateJobDto {
   @IsNotEmpty()
   name: string;
@@ -21,30 +15,42 @@ export class CreateJobDto {
   quantity: number;
 
   @IsNotEmpty()
-  benefits: Benefit[];
+  @IsString({ each: true })
+  benefits: string[];
 
   @IsNotEmpty()
-  skills: Skill[];
+  @IsInt({ each: true })
+  @ArrayMinSize(1)
+  skills: number[];
 
   @IsNotEmpty()
-  locations: Location[];
+  @IsInt({ each: true })
+  @ArrayMinSize(1)
+  locations: number[];
 
   @IsNotEmpty()
-  experience: Experience;
+  @IsInt()
+  experience: number;
 
   @IsNotEmpty()
-  levels: Level[];
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  levels: string[];
 
   @IsNotEmpty()
-  types: TypeJob[];
+  @IsInt({ each: true })
+  @ArrayMinSize(1)
+  types: number[];
 
   @IsNotEmpty()
   requirement: string;
 
   @IsNotEmpty()
+  @IsNumber()
   minSalary: number;
 
   @IsNotEmpty()
+  @IsNumber()
   maxSalary: number;
 
   @IsNotEmpty()
@@ -60,7 +66,7 @@ export class JobFilterDto {
   search?: string;
 
   @IsOptional()
-  levels?: Level[];
+  levels?: string[];
 
   @IsOptional()
   experience?: string;
@@ -86,4 +92,47 @@ export class JobFilterDto {
 
   @IsOptional()
   skills?: string;
+}
+export class CompanyFilterJobDto {
+  @IsOptional()
+  @IsInt()
+  id?: number;
+
+  @IsOptional()
+  search?: string;
+
+  @IsOptional()
+  levels?: string[];
+
+  @IsOptional()
+  experience?: string;
+
+  @IsOptional()
+  @IsInt()
+  typeJobs?: number[];
+
+  @IsOptional()
+  @IsNumber()
+  minSalary?: number;
+
+  @IsOptional()
+  @IsNumber()
+  maxSalary?: number;
+
+  @IsOptional()
+  locations?: number[];
+
+  @IsOptional()
+  benefits?: string[];
+
+  @IsOptional()
+  skills?: string[];
+
+  @IsOptional()
+  @IsInt()
+  isActive?: number;
+
+  @IsOptional()
+  @IsInt()
+  isShow?: number;
 }
