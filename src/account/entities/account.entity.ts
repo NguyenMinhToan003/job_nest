@@ -1,6 +1,7 @@
-import { Company } from 'src/company/entities/company.entity';
-import { User } from 'src/users/entities/user.entity';
+import { ROLE_LIST } from 'src/types/enum';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Employer } from 'src/employer/entities/employer.entity';
+import { Candidate } from 'src/candidate/entities/candidate.entity';
 
 @Entity({ name: 'tai_khoan' })
 export class Account {
@@ -17,8 +18,9 @@ export class Account {
   @Column({
     name: 'vai_tro',
     type: 'enum',
-    enum: ['USER', 'ADMIN', 'DOANH_NGHIEP'],
-    default: 'USER',
+    enum: ROLE_LIST,
+    default: ROLE_LIST.CANDIDATE,
+    enumName: 'vai_tro',
   })
   role: string;
   @Column({ name: 'trang_thai', default: 1 })
@@ -30,9 +32,9 @@ export class Account {
   })
   createdAt: Date;
 
-  @OneToOne(() => User, (user) => user.account)
-  user: User;
+  @OneToOne(() => Candidate, (user) => user.account)
+  user: Candidate;
 
-  @OneToOne(() => Company, (company) => company.account)
-  company: Company;
+  @OneToOne(() => Employer, (employer) => employer.account)
+  employer: Employer;
 }

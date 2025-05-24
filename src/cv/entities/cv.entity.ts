@@ -1,5 +1,5 @@
 import { ApplyJob } from 'src/apply-job/entities/apply-job.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Candidate } from 'src/candidate/entities/candidate.entity';
 import {
   Column,
   Entity,
@@ -29,9 +29,9 @@ export class Cv {
   @Column({ name: 'tg_cap_nhat' })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.cv, { nullable: false })
+  @ManyToOne(() => Candidate, (user) => user.cv, { nullable: false })
   @JoinColumn({ name: 'ma_nguoi_dung' })
-  user: User;
+  user: Candidate;
 
   @OneToMany(() => ApplyJob, (applyJob) => applyJob.cv)
   applyJobs: ApplyJob[];

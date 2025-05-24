@@ -1,63 +1,68 @@
 import { Cv } from 'src/cv/entities/cv.entity';
+import { Interview } from 'src/interview/entities/interview.entity';
 import { Job } from 'src/job/entities/job.entity';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
+  JoinColumn,
+  OneToMany,
+  // OneToMany,
 } from 'typeorm';
+// import { Interview } from './interview.entity';
+// import { ApplyJobNote } from './apply-job-note.entity';
 
 @Entity({ name: 'ung_tuyen' })
+@Unique(['cvId', 'jobId']) // Ràng buộc mỗi CV ứng tuyển 1 job 1 lần
 export class ApplyJob {
-  @PrimaryGeneratedColumn({ name: 'ma_ung_tuyen' })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'ma_viec_lam' })
+  @Column({ name: 'ma_cv' })
+  cvId: number;
+
+  @Column({ name: 'ma_cong_viec' })
   jobId: number;
 
   @Column({
-    name: 'thoi_gian',
+    name: 'thoi_gian_ung_tuyen',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  time: Date;
-
-  @Column({ name: 'ten_ung_vien', nullable: false })
-  username: string;
-
-  @Column({ name: 'so_dien_thoai', nullable: false })
-  phone: string;
+  applyTime: Date;
 
   @Column({
-    name: 'trang_thai',
     type: 'enum',
     enum: APPLY_JOB_STATUS,
-    enumName: 'apply_job_status',
-    default: APPLY_JOB_STATUS.APPLY,
+    enumName: 'trang_thai_ung_tuyen',
+    default: APPLY_JOB_STATUS.PENDING,
   })
   status: APPLY_JOB_STATUS;
 
-  @Column({ name: 'ghi_chu', nullable: true })
+  @Column({ nullable: true, type: 'text' })
   note: string;
-  @Column({ name: 'thoi_gian_tra_loi', nullable: true, type: 'timestamp' })
-  replyTime: Date;
-  @Column({
-    name: 'thoi_gian_hen_phong_van',
-    nullable: true,
-    type: 'timestamp',
-  })
-  interviewTime: Date;
 
-  @Column({ name: 'trang_thai_xem' })
+  @Column({ name: 'da_xem', default: 0 })
   viewStatus: number;
 
-  @ManyToOne(() => Job, (job) => job.applyJobs)
-  @JoinColumn({ name: 'ma_viec_lam' })
+  // Quan hệ ManyToOne đến Job
+  @ManyToOne(() => Job, (job) => job.applyJobs, { nullable: false })
+  @JoinColumn({ name: 'ma_cong_viec' })
   job: Job;
 
-  @ManyToOne(() => Cv, (cv) => cv.applyJobs)
+  // Quan hệ ManyToOne đến CV
+  @ManyToOne(() => Cv, (cv) => cv.applyJobs, { nullable: false })
   @JoinColumn({ name: 'ma_cv' })
   cv: Cv;
+
+  // Quan hệ OneToMany với các cuộc phỏng vấn
+  @OneToMany(() => Interview, (interview) => interview.applyJob)
+  interviews: Interview[];
+
+  // // Quan hệ OneToMany với các ghi chú (note) mở rộng
+  // @OneToMany(() => ApplyJobNote, (note) => note.applyJob)
+  // notes: ApplyJobNote[];
 }

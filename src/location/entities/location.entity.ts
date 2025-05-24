@@ -1,5 +1,5 @@
-import { Company } from 'src/company/entities/company.entity';
 import { District } from 'src/district/entities/district.entity';
+import { Employer } from 'src/employer/entities/employer.entity';
 import { Job } from 'src/job/entities/job.entity';
 import {
   Column,
@@ -51,11 +51,11 @@ export class Location {
   @JoinColumn({ name: 'ma_quan_huyen', referencedColumnName: 'id' })
   district: District;
 
-  @ManyToOne(() => Company, (company) => company.locations, {
+  @ManyToOne(() => Employer, (employer) => employer.locations, {
     nullable: false,
   })
   @JoinColumn({ name: 'ma_doanh_nghiep', referencedColumnName: 'id' })
-  company: Company;
+  employer: Employer;
 
   @ManyToMany(() => Job, (job) => job.locations)
   @JoinTable({

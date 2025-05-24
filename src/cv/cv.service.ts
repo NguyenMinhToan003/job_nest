@@ -40,4 +40,9 @@ export class CvService {
       where: { user: { id: +userId }, id: +cvId },
     });
   }
+  async findOne(id: number) {
+    return await this.cvRepository.findOne({
+      where: { id: +id },
+    });
+  }
 }

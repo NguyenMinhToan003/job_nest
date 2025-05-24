@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
 import { JobModule } from 'src/job/job.module';
 import { CvModule } from 'src/cv/cv.module';
+import { ApplyJobValidatorService } from './validate-apply.service';
 
 @Module({
   imports: [CvModule, JobModule, TypeOrmModule.forFeature([ApplyJob])],
   controllers: [ApplyJobController],
-  providers: [ApplyJobService],
+  providers: [ApplyJobService, ApplyJobValidatorService],
 })
 export class ApplyJobModule {}

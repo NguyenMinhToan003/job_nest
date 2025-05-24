@@ -10,15 +10,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
 import { Repository } from 'typeorm';
 import { UpdateLocationDto } from './dto/update-location.dto';
+import { ValidationLocationService } from './validationLocation.service';
 
 @Injectable()
 export class LocationService {
   constructor(
     @InjectRepository(Location)
     private readonly locationRepository: Repository<Location>,
+    private readonly validationLocationService: ValidationLocationService,
     private readonly configService: ConfigService,
   ) {}
-
   async findByMap(search: string) {
     try {
       const response = await axios.get(
@@ -32,9 +33,9 @@ export class LocationService {
         };
       });
       return data;
-    } catch (error) {
-      console.error('Error fetching data from Goong API:', error);
-      throw new Error('Failed to fetch location data');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error: any) {
+      throw new BadRequestException('Error fetching data from Goong API');
     }
   }
   async findByMapDetail(placeId: string) {
@@ -55,24 +56,31 @@ export class LocationService {
   }
 
   async createLocation(companyId: number, body: CreateLocationDto) {
-    console.log('body', body);
+    await this.validationLocationService.validatePlaceIdExist(
+      body.placeId,
+      companyId,
+    );
     return await this.locationRepository.save({
       name: body.name,
       placeId: body.placeId,
       city: body.city,
       district: body.district,
-      company: { id: companyId },
+      employer: { id: companyId },
       lat: body.lat,
       lng: body.lng,
     });
   }
-  async findByCompany(companyId: number) {
-    return await this.locationRepository.find({
-      where: {
-        company: {
-          id: companyId,
-        },
+  async findByCompany(companyId: number, enabled?: number) {
+    const where = {
+      employer: {
+        id: companyId,
       },
+    };
+    if (enabled) {
+      where['enabled'] = enabled;
+    }
+    return await this.locationRepository.find({
+      where,
       relations: {
         district: {
           city: true,
@@ -84,7 +92,7 @@ export class LocationService {
     const location = await this.locationRepository.findOne({
       where: {
         id,
-        company: {
+        employer: {
           id: companyId,
         },
       },
@@ -101,7 +109,7 @@ export class LocationService {
   async toggleEnableLocation(id: number, companyId: number) {
     const listLocation = await this.locationRepository.find({
       where: {
-        company: {
+        employer: {
           id: companyId,
         },
       },
@@ -112,20 +120,29 @@ export class LocationService {
     if (countLocationEnabled >= 4 && !listLocation[id].enabled) {
       throw new BadRequestException('Chỉ được tối đa 4 địa điểm');
     }
+    const location = await this.findOne(id, companyId);
+    return await this.locationRepository.save({
+      ...location,
+      enabled: location.enabled === 1 ? 0 : 1,
+    });
+  }
+  async findOne(id, companyId: number) {
     const location = await this.locationRepository.findOne({
       where: {
         id,
-        company: {
+        employer: {
           id: companyId,
         },
       },
     });
     if (!location) {
-      throw new NotFoundException('Location not found');
+      throw new NotFoundException('Địa điểm không tồn tại');
     }
-    return await this.locationRepository.save({
-      ...location,
-      enabled: location.enabled === 1 ? 0 : 1,
-    });
+    return location;
+  }
+
+  async deleteLocation(id: number, companyId: number) {
+    await this.findOne(id, companyId);
+    return await this.locationRepository.delete({ id });
   }
 }

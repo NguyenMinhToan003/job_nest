@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AccountModule } from './account/account.module';
-import { UsersModule } from './users/users.module';
 import { AdminModule } from './admin/admin.module';
-import { CompanyModule } from './company/company.module';
+import { EmployerModule } from './employer/employer.module';
 import { CvModule } from './cv/cv.module';
 import { JobModule } from './job/job.module';
 import { SkillModule } from './skill/skill.module';
@@ -29,6 +28,8 @@ import { BenefitModule } from './benefit/benefit.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
+import { InterviewModule } from './interview/interview.module';
+import { CandidateModule } from './candidate/candidate.module';
 
 @Module({
   imports: [
@@ -48,9 +49,9 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
       }),
     }),
     AccountModule,
-    UsersModule,
+    CandidateModule,
     AdminModule,
-    CompanyModule,
+    EmployerModule,
     CvModule,
     JobModule,
     SkillModule,
@@ -71,6 +72,7 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
     TypeJobModule,
     BenefitModule,
     AuthModule,
+    InterviewModule,
   ],
   controllers: [AppController],
   providers: [

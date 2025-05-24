@@ -1,11 +1,11 @@
 import { City } from 'src/city/entities/city.entity';
 import { Skill } from 'src/skill/entities/skill.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Candidate } from 'src/candidate/entities/candidate.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'thong_bao_cai_dat' })
 export class NotiSetting {
-  @PrimaryColumn({ name: 'ma_nguoi_dung' })
+  @PrimaryColumn({ name: 'ma_tai_khoan' })
   userId: string;
   @PrimaryColumn({ name: 'ma_ki_nang' })
   skillId: number;
@@ -20,9 +20,11 @@ export class NotiSetting {
   })
   time: Date;
 
-  @ManyToOne(() => User, (user) => user.notiSettings, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'ma_nguoi_dung', referencedColumnName: 'id' })
-  user: User;
+  @ManyToOne(() => Candidate, (user) => user.notiSettings, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
+  user: Candidate;
 
   // Quan hệ tới Skill
   @ManyToOne(() => Skill, (skill) => skill.notiSettings, {

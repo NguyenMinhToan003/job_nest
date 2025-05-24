@@ -31,7 +31,7 @@ export class SaveJobService {
       where: { id: userId },
       relations: {
         job: {
-          company: true,
+          employer: true,
           locations: {
             district: {
               city: true,

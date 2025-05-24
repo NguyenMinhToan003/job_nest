@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccountService } from 'src/account/account.service';
 import { AuthService } from 'src/auth/auth.service';
-import { ROLE_LIST } from 'src/decorators/customize';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-candidate.dto';
+import { ROLE_LIST } from 'src/types/enum';
+import { Candidate } from './entities/candidate.entity';
 
 @Injectable()
-export class UsersService {
+export class CandidateService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
+    @InjectRepository(Candidate)
+    private readonly userRepo: Repository<Candidate>,
     private accountService: AccountService,
     private authService: AuthService,
   ) {}
@@ -20,7 +20,7 @@ export class UsersService {
     const account = await this.accountService.create({
       email: dto.email,
       password: hashPassword,
-      role: ROLE_LIST.USER,
+      role: ROLE_LIST.CANDIDATE,
       googleId: dto.googleId,
     });
     const user = this.userRepo.save({

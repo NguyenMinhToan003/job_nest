@@ -1,4 +1,4 @@
-import { Company } from 'src/company/entities/company.entity';
+import { Employer } from 'src/employer/entities/employer.entity';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'quoc_gia' })
@@ -10,6 +10,6 @@ export class Country {
   @Column({ name: 'quoc_ki', length: 255 })
   flag: string;
 
-  @OneToMany(() => Company, (company) => company.country)
-  companies: Company[];
+  @OneToMany(() => Employer, (employer) => employer.country)
+  companies: Employer[];
 }

@@ -66,14 +66,16 @@ export class JobFilterDto {
   search?: string;
 
   @IsOptional()
+  @IsString({ each: true })
   levels?: string[];
 
   @IsOptional()
-  experience?: string;
+  @IsInt({ each: true })
+  experience?: string[];
 
   @IsOptional()
-  @IsInt()
-  typeJobs?: number;
+  @IsInt({ each: true })
+  typeJobs?: number[];
 
   @IsOptional()
   @IsNumber()
@@ -84,14 +86,16 @@ export class JobFilterDto {
   maxSalary?: number;
 
   @IsOptional()
-  @IsString()
-  citys?: string;
+  @IsString({ each: true })
+  citys?: string[];
 
   @IsOptional()
-  benefits?: string;
+  @IsString({ each: true })
+  benefits?: string[];
 
   @IsOptional()
-  skills?: string;
+  @IsInt({ each: true })
+  skills?: number[];
 }
 export class CompanyFilterJobDto {
   @IsOptional()
@@ -105,7 +109,8 @@ export class CompanyFilterJobDto {
   levels?: string[];
 
   @IsOptional()
-  experience?: string;
+  @IsInt()
+  experience?: number;
 
   @IsOptional()
   @IsInt()
@@ -135,4 +140,7 @@ export class CompanyFilterJobDto {
   @IsOptional()
   @IsInt()
   isShow?: number;
+
+  @IsOptional()
+  isExpired?: number;
 }

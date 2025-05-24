@@ -1,21 +1,23 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateCompanyDto, LoginCompanyDto } from './dto/create-company.dto';
+import { CreateCompanyDto, LoginCompanyDto } from './dto/create-employer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Company } from './entities/company.entity';
 import { Repository } from 'typeorm';
 import { AccountService } from 'src/account/account.service';
-import { ROLE_LIST } from 'src/decorators/customize';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import { UpdateCompanyDto } from './dto/update-employer.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { SignInResponse } from 'src/types/auth';
+import { LocationService } from 'src/location/location.service';
+import { ROLE_LIST } from 'src/types/enum';
+import { Employer } from './entities/employer.entity';
 
 @Injectable()
-export class CompanyService {
+export class EmployerService {
   constructor(
-    @InjectRepository(Company)
-    private readonly companyRepository: Repository<Company>,
+    @InjectRepository(Employer)
+    private readonly employerRepo: Repository<Employer>,
     private readonly accountService: AccountService,
     private readonly authService: AuthService,
+    private readonly locationService: LocationService,
   ) {}
 
   async register(dto: CreateCompanyDto) {
@@ -23,18 +25,18 @@ export class CompanyService {
     const account = await this.accountService.create({
       email: dto.email,
       password: hashPassword,
-      role: ROLE_LIST.COMPANY,
+      role: ROLE_LIST.EMPLOYER,
       googleId: dto.googleId,
     });
-    const company = this.companyRepository.save({
+    const employer = this.employerRepo.save({
       id: account.id,
       name: dto.name,
       logo: dto.logo,
     });
-    return company;
+    return employer;
   }
   async findAll() {
-    return this.companyRepository.find({
+    return this.employerRepo.find({
       relations: {
         account: true,
       },
@@ -42,7 +44,7 @@ export class CompanyService {
   }
 
   async findOne(id: number) {
-    const company = await this.companyRepository.findOne({
+    const employer = await this.employerRepo.findOne({
       where: {
         id: id,
       },
@@ -50,11 +52,11 @@ export class CompanyService {
         account: true,
       },
     });
-    if (!company) {
-      throw new BadRequestException('Company not found');
+    if (!employer) {
+      throw new BadRequestException(' not found');
     }
-    delete company.account.password;
-    return company;
+    delete employer.account.password;
+    return employer;
   }
 
   async login(dto: LoginCompanyDto): Promise<SignInResponse> {
@@ -69,27 +71,24 @@ export class CompanyService {
   }
 
   async updated(id: number, dto: UpdateCompanyDto) {
-    const company = await this.companyRepository.findOne({
+    const employer = await this.employerRepo.findOne({
       where: {
         id: id,
       },
     });
-    if (!company) {
-      throw new BadRequestException('Company not found');
+    if (!employer) {
+      throw new BadRequestException(' not found');
     }
-    return this.companyRepository.save({
-      ...company,
+    return this.employerRepo.save({
+      ...employer,
       ...dto,
     });
   }
 
   async getCompanyDetail(companyId: number) {
-    const company = await this.companyRepository.findOne({
+    const employer = await this.employerRepo.findOne({
       where: {
-        id: companyId,
-        locations: {
-          enabled: 1,
-        },
+        id: +companyId,
       },
       relations: {
         jobs: {
@@ -103,16 +102,13 @@ export class CompanyService {
           typeJobs: true,
           skills: true,
         },
-        locations: {
-          district: {
-            city: true,
-          },
-        },
       },
     });
-    if (!company) {
-      throw new BadRequestException('Company not found');
+    if (!employer) {
+      throw new BadRequestException('Công ty không tồn tại');
     }
-    return company;
+    const locations = await this.locationService.findByCompany(companyId, 1);
+    employer.locations = locations;
+    return employer;
   }
 }

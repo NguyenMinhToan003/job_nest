@@ -3,7 +3,7 @@ import { Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'admin' })
 export class Admin {
-  @PrimaryColumn({ name: 'tai_khoan_id' })
+  @PrimaryColumn({ name: 'ma_tai_khoan' })
   id: number;
   @PrimaryColumn({ name: 'chuc_vu_id' })
   roleId: number;
@@ -11,6 +11,6 @@ export class Admin {
   status: number;
 
   @OneToOne(() => Account, (account) => account.id)
-  @JoinColumn({ name: 'tai_khoan_id' })
+  @JoinColumn({ name: 'ma_tai_khoan' })
   account: Account;
 }

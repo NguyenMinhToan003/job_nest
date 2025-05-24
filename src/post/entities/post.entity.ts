@@ -1,4 +1,4 @@
-import { Company } from 'src/company/entities/company.entity';
+import { Employer } from 'src/employer/entities/employer.entity';
 import {
   Column,
   Entity,
@@ -16,7 +16,7 @@ export class Post {
   @Column({ name: 'noi_dung', length: 255 })
   content: string;
 
-  @ManyToOne(() => Company, (company) => company.posts)
+  @ManyToOne(() => Employer, (employer) => employer.posts)
   @JoinColumn({ name: 'ma_doanh_nghiep', referencedColumnName: 'id' })
-  company: Company;
+  employer: Employer;
 }

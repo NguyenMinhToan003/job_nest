@@ -9,6 +9,7 @@ import { Job } from './entities/job.entity';
 import {
   Between,
   DataSource,
+  LessThan,
   LessThanOrEqual,
   Like,
   MoreThanOrEqual,
@@ -23,7 +24,7 @@ export class JobService {
     private jobRepository: Repository<Job>,
     private dataSource: DataSource,
   ) {}
-  async create(companyId: number, createJobDto: CreateJobDto) {
+  async create(employerId: number, createJobDto: CreateJobDto) {
     console.log('createJobDto', createJobDto);
     const job = this.jobRepository.create({
       name: createJobDto.name,
@@ -35,7 +36,7 @@ export class JobService {
       isActive: 0,
       createdAt: new Date(),
       expiredAt: new Date(new Date().setDate(new Date().getDate() + 28)),
-      company: { id: companyId },
+      employer: { id: employerId },
       benefits: createJobDto.benefits.map((id) => ({ id })),
       skills: createJobDto.skills.map((id) => ({ id })),
       locations: createJobDto.locations.map((id) => ({ id })),
@@ -51,7 +52,7 @@ export class JobService {
       relations: {
         experience: true,
         benefits: true,
-        company: true,
+        employer: true,
         locations: {
           district: {
             city: true,
@@ -65,11 +66,11 @@ export class JobService {
     });
   }
 
-  async remove(companyId: number, id: number) {
+  async remove(employerId: number, id: number) {
     const job = await this.jobRepository.findOne({
       where: {
         id,
-        company: { id: companyId },
+        employer: { id: employerId },
       },
     });
 
@@ -107,15 +108,21 @@ export class JobService {
     return this.jobRepository.delete(id);
   }
 
-  async findByCompanyId(companyId: number, filter: CompanyFilterJobDto) {
+  async findByEmployerId(employerId: number, filter: CompanyFilterJobDto) {
     const where = {
-      company: { id: companyId },
+      employer: { id: employerId },
     } as any;
     if (filter.isActive !== undefined) {
       where.isActive = filter.isActive;
     }
-    console.log(filter);
-    console.log('where', where);
+    if (filter.isExpired !== undefined) {
+      const currentDate = new Date();
+      if (filter.isExpired === 1) {
+        where.expiredAt = LessThan(currentDate);
+      } else {
+        where.expiredAt = MoreThanOrEqual(currentDate);
+      }
+    }
     return this.jobRepository.find({
       where,
       relations: {
@@ -132,7 +139,7 @@ export class JobService {
       relations: {
         experience: true,
         benefits: true,
-        company: true,
+        employer: true,
         locations: true,
         skills: true,
         levels: true,
@@ -146,11 +153,11 @@ export class JobService {
       },
     });
   }
-  async update(id: number, companyId: number, dto: UpdateJobDto) {
+  async update(id: number, employerId: number, dto: UpdateJobDto) {
     const job = await this.jobRepository.findOne({
       where: {
         id,
-        company: { id: companyId },
+        employer: { id: employerId },
       },
     });
     if (!job) {
@@ -181,6 +188,7 @@ export class JobService {
     const where: any = {
       isActive: 1,
       isShow: 1,
+      expiredAt: MoreThanOrEqual(new Date()),
     };
     if (body.id) {
       where.id = body.id;
@@ -189,16 +197,28 @@ export class JobService {
       where.name = Like(`%${body.search}%`);
     }
     if (body.levels) {
-      where.levels = { id: body.levels };
+      where.levels = body.levels.map((level) => ({ id: level }));
     }
     if (body.experience) {
-      where.experience = { id: body.experience };
+      where.experience = body.experience.map((experience) => ({
+        id: experience,
+      }));
     }
     if (body.typeJobs) {
-      where.typeJobs = { id: body.typeJobs };
+      where.typeJobs = body.typeJobs.map((typeJob) => ({
+        id: typeJob,
+      }));
     }
     if (body.citys) {
-      where.locations = { district: { city: { id: body.citys } } };
+      where.locations = body.citys.map((city) => ({
+        district: { city: { id: city } },
+      }));
+    }
+    if (body.benefits) {
+      where.benefits = body.benefits.map((benefit) => ({ id: benefit }));
+    }
+    if (body.skills) {
+      where.skills = body.skills.map((skill) => ({ id: skill }));
     }
     if (body.minSalary && body.maxSalary) {
       where.minSalary = Between(body.minSalary, body.maxSalary);
@@ -213,7 +233,7 @@ export class JobService {
       relations: {
         experience: true,
         benefits: true,
-        company: true,
+        employer: true,
         locations: {
           district: {
             city: true,
@@ -246,9 +266,9 @@ export class JobService {
     });
     return this.jobRepository.save(updatedJob);
   }
-  async toggleIsShow(companyId: number, jobId: number) {
+  async toggleIsShow(employerId: number, jobId: number) {
     const job = await this.jobRepository.findOne({
-      where: { id: +jobId, company: { id: +companyId } },
+      where: { id: +jobId, employer: { id: +employerId } },
     });
     if (!job) {
       throw new ForbiddenException('Bạn không có quyền sửa công việc này');

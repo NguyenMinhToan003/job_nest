@@ -10,14 +10,15 @@ import {
 import { CvService } from './cv.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from 'src/auth/passport/role.guard';
-import { ROLE_LIST, Roles } from 'src/decorators/customize';
+import { Roles } from 'src/decorators/customize';
+import { ROLE_LIST } from 'src/types/enum';
 
 @Controller('cv')
 export class CvController {
   constructor(private readonly cvService: CvService) {}
 
   @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.USER)
+  @Roles(ROLE_LIST.CANDIDATE)
   @Post()
   @UseInterceptors(FileInterceptor('cv'))
   create(
@@ -30,7 +31,7 @@ export class CvController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.USER)
+  @Roles(ROLE_LIST.CANDIDATE)
   @Get('me')
   findAll(@Req() req) {
     const userId = req.user.id;

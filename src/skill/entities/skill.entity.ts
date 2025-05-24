@@ -1,6 +1,6 @@
+import { Candidate } from 'src/candidate/entities/candidate.entity';
 import { Job } from 'src/job/entities/job.entity';
 import { NotiSetting } from 'src/noti-setting/entities/noti-setting.entity';
-import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
@@ -22,16 +22,16 @@ export class Skill {
   @Column({ name: 'trang_thai', type: 'tinyint' })
   status: number;
 
-  @ManyToMany(() => User, (user) => user.skills)
+  @ManyToMany(() => Candidate, (user) => user.skills)
   @JoinTable({
-    name: 'nguoi_dung_ky_nang',
+    name: 'nguoi_ung_tuyen_ky_nang',
     joinColumn: { name: 'ma_ky_nang', referencedColumnName: 'id' },
     inverseJoinColumn: {
-      name: 'tai_khoan_id',
+      name: 'ma_tai_khoan',
       referencedColumnName: 'id',
     },
   })
-  users: User[];
+  users: Candidate[];
 
   @ManyToMany(() => Job, (job) => job.skills)
   @JoinTable({

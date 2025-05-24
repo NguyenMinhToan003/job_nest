@@ -16,8 +16,9 @@ import {
   JobFilterDto,
 } from './dto/create-job.dto';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { Public, ROLE_LIST, Roles } from 'src/decorators/customize';
+import { Public, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
+import { ROLE_LIST } from 'src/types/enum';
 
 @Controller('job')
 export class JobController {
@@ -25,8 +26,8 @@ export class JobController {
 
   @Post()
   create(@Req() req, @Body() createJobDto: CreateJobDto) {
-    const companyId = req.user.id;
-    return this.jobService.create(companyId, createJobDto);
+    const employerId = req.user.id;
+    return this.jobService.create(employerId, createJobDto);
   }
 
   @Public()
@@ -42,25 +43,25 @@ export class JobController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.COMPANY)
+  @Roles(ROLE_LIST.EMPLOYER)
   @Delete(':id')
   remove(@Req() req, @Param('id') id: string) {
-    const companyId = req.user.id;
-    return this.jobService.remove(+companyId, +id);
+    const employerId = req.user.id;
+    return this.jobService.remove(+employerId, +id);
   }
 
   @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.COMPANY)
-  @Post('company')
-  findByCompanyId(@Req() req, @Body() filter: CompanyFilterJobDto) {
-    const companyId = req.user.id;
-    return this.jobService.findByCompanyId(+companyId, filter);
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('employer')
+  findByEmployerId(@Req() req, @Body() filter: CompanyFilterJobDto) {
+    const employerId = req.user.id;
+    return this.jobService.findByEmployerId(+employerId, filter);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Req() req, @Body() dto: UpdateJobDto) {
-    const companyId = req.user.id;
-    return this.jobService.update(+id, companyId, dto);
+    const employerId = req.user.id;
+    return this.jobService.update(+id, employerId, dto);
   }
 
   @Public()
@@ -77,10 +78,10 @@ export class JobController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.COMPANY)
-  @Patch('company/toggle-is-show/:jobId')
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Patch('employer/toggle-is-show/:jobId')
   toggleViewStatus(@Req() req, @Param('jobId') jobId: number) {
-    const companyId = req.user.id;
-    return this.jobService.toggleIsShow(+companyId, jobId);
+    const employerId = req.user.id;
+    return this.jobService.toggleIsShow(+employerId, jobId);
   }
 }

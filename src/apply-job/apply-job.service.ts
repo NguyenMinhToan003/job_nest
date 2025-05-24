@@ -1,12 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
 import { Repository } from 'typeorm';
 import {
+  ApplyJobWithNewCvDto,
   CreateApplyJobDto,
   GetApplyByStatusDto,
   GetApplyJobByJobIdDto,
@@ -14,7 +11,7 @@ import {
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/job/job.service';
 import { CvService } from 'src/cv/cv.service';
-import dayjs from 'dayjs';
+import { ApplyJobValidatorService } from './validate-apply.service';
 
 @Injectable()
 export class ApplyJobService {
@@ -23,75 +20,48 @@ export class ApplyJobService {
     private applyJobRepository: Repository<ApplyJob>,
     private jobService: JobService,
     private cvService: CvService,
+    private readonly applyJobValidatorService: ApplyJobValidatorService,
   ) {}
 
   async applyJob(jobId: number, userId: number, body: CreateApplyJobDto) {
-    const checkPermission = await this.cvService.findCvByUserIdAndCvId(
+    await this.applyJobValidatorService.validateApplyPermission(
+      jobId,
       userId,
       body.cvId,
     );
-    if (!checkPermission) {
-      throw new NotFoundException('Lỗi sử dụng CV');
-    }
-    const checkJob = await this.jobService.findOne(jobId);
-    if (!checkJob || checkJob.isActive === 0 || checkJob.isShow === 0) {
-      throw new NotFoundException('Công việc không tồn tại');
-    }
-    if (checkJob.expiredAt < new Date()) {
-      throw new BadRequestException('Công việc đã hết hạn');
-    }
-    const checkLastApplyJob = await this.applyJobRepository.findOne({
-      where: {
-        cv: { id: body.cvId },
-        job: { id: +jobId },
-      },
-      order: { time: 'DESC' },
-    });
-    if (!checkLastApplyJob) {
-      const applyJob = this.applyJobRepository.create({
-        job: { id: jobId },
-        cv: { id: body.cvId },
-        status: APPLY_JOB_STATUS.APPLY,
-        time: new Date(),
-        viewStatus: 0,
-        username: body.username,
-        phone: body.phone,
-        note: body.note,
-        replyTime: null,
-        interviewTime: null,
-      });
-      return this.applyJobRepository.save(applyJob);
-    }
-
-    if (checkLastApplyJob.status === APPLY_JOB_STATUS.APPLY) {
-      throw new BadRequestException('Bạn đã ứng tuyển công việc này rồi');
-    }
-    if (checkLastApplyJob.status === APPLY_JOB_STATUS.ACCEPT) {
-      throw new BadRequestException('Bạn đã được nhận vào công việc này rồi');
-    }
-    if (checkLastApplyJob.status === APPLY_JOB_STATUS.REJECT) {
-      const time = dayjs(checkLastApplyJob.replyTime);
-      const timeNow = dayjs(new Date());
-      const diff = time.diff(timeNow, 'day');
-      if (diff > 1) {
-        throw new BadRequestException(
-          'Bạn đã từ chối công việc này, vui lòng ứng tuyển lại sau 3 ngày',
-        );
-      }
-    }
-
-    // Cho phép apply lại
     const applyJob = this.applyJobRepository.create({
       job: { id: jobId },
       cv: { id: body.cvId },
-      status: APPLY_JOB_STATUS.APPLY,
-      time: new Date(),
+      status: APPLY_JOB_STATUS.PENDING,
+      applyTime: new Date(),
       viewStatus: 0,
-      username: body.username,
-      phone: body.phone,
+      // username: body.username,
+      // phone: body.phone,
       note: body.note,
-      replyTime: null,
-      interviewTime: null,
+    });
+    return this.applyJobRepository.save(applyJob);
+  }
+
+  async applyJobWithNewCv(
+    cv: Express.Multer.File,
+    jobId: number,
+    userId: number,
+    body: ApplyJobWithNewCvDto,
+  ) {
+    await this.applyJobValidatorService.validateApplyJobExistence(
+      jobId,
+      userId,
+    );
+    const cvNew = await this.cvService.create(cv, userId);
+    const applyJob = this.applyJobRepository.create({
+      job: { id: jobId },
+      cv: { id: cvNew.id },
+      status: APPLY_JOB_STATUS.PENDING,
+      applyTime: new Date(),
+      viewStatus: 0,
+      // username: body.username,
+      // phone: body.phone,
+      note: body.note,
     });
     return this.applyJobRepository.save(applyJob);
   }
@@ -103,7 +73,7 @@ export class ApplyJobService {
       },
       relations: {
         job: {
-          company: true,
+          employer: true,
           locations: {
             district: {
               city: true,
@@ -117,18 +87,19 @@ export class ApplyJobService {
         cv: true,
       },
       order: {
-        time: 'DESC',
+        applyTime: 'DESC',
       },
     });
   }
+
   async getApplyJobByCompanyId(companyId: number) {
     return this.applyJobRepository.find({
       where: {
-        job: { company: { id: companyId } },
+        job: { employer: { id: companyId } },
       },
       relations: {
         job: {
-          company: true,
+          employer: true,
           locations: {
             district: {
               city: true,
@@ -152,7 +123,7 @@ export class ApplyJobService {
       },
       relations: {
         job: {
-          company: true,
+          employer: true,
           locations: {
             district: {
               city: true,
@@ -171,7 +142,7 @@ export class ApplyJobService {
     const job = await this.jobService.findOne(param.jobId);
     if (!job) {
       throw new BadRequestException('Công việc không tồn tại');
-    } else if (job.company.id !== companyId) {
+    } else if (job.employer.id !== companyId) {
       throw new BadRequestException('Bạn không có quyền xem ứng tuyển này');
     }
     return this.applyJobRepository.find({

@@ -25,6 +25,23 @@ export class CreateApplyJobDto {
   @IsPhoneNumber('VN')
   phone: string;
 }
+export class ApplyJobWithNewCvDto {
+  @IsOptional()
+  note: string;
+
+  @IsOptional()
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: 'CV không hợp lệ' },
+  )
+  cvId: number;
+  @IsNotEmpty()
+  username: string;
+
+  @IsNotEmpty()
+  @IsPhoneNumber('VN')
+  phone: string;
+}
 export class GetApplyByStatusDto {
   @IsEnum(APPLY_JOB_STATUS)
   @IsNotEmpty()

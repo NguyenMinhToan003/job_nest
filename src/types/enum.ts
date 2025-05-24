@@ -1,7 +1,14 @@
-// daxem, daxem, tuchoi, chapnhap, huy
 export enum APPLY_JOB_STATUS {
-  APPLY = 'UNG_TUYEN',
-  ACCEPT = 'THANH_CONG',
-  REJECT = 'TU_CHOI',
-  CANCEL = 'HUY',
+  PENDING = 'DANG_XU_LY',
+  INTERVIEW = 'PHONG_VAN',
+  ACCEPTED = 'DA_DUOC_CHAP_NHAN',
+  OFFER = 'DA_CO_LOI_MOI',
+  REJECTED = 'DA_TU_CHOI',
+  CANCELED = 'DA_RUT_UNG_TUYEN',
+}
+
+export enum ROLE_LIST {
+  ADMIN = 'QUAN_TRI',
+  EMPLOYER = 'NHA_TUYEN_DUNG',
+  CANDIDATE = 'UNG_VIEN',
 }

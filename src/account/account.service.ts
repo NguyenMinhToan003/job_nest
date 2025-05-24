@@ -25,7 +25,7 @@ export class AccountService {
   findCompanyId(companyId: number) {
     return this.accountRepository.findOne({
       where: { id: companyId },
-      relations: { company: true },
+      relations: { employer: true },
     });
   }
   update(id: number, dto: CreateAccountDto) {

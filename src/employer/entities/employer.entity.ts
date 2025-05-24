@@ -14,9 +14,9 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-@Entity({ name: 'doanh_nghiep' })
-export class Company {
-  @PrimaryColumn({ name: 'tai_khoan_id' })
+@Entity({ name: 'nha_tuyen_dung' })
+export class Employer {
+  @PrimaryColumn({ name: 'ma_tai_khoan' })
   id: number;
   @Column({ name: 'ten_doanh_nghiep', length: 255, nullable: true })
   name: string;
@@ -27,23 +27,23 @@ export class Company {
   @Column({ name: 'ma_so_thue', length: 255, nullable: true })
   taxCode: string;
 
-  @OneToOne(() => Account, (account) => account.company)
-  @JoinColumn({ name: 'tai_khoan_id', referencedColumnName: 'id' })
+  @OneToOne(() => Account, (account) => account.employer)
+  @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
   account: Account;
 
   @ManyToOne(() => Country, (country) => country.companies)
   @JoinColumn({ name: 'ma_quoc_gia', referencedColumnName: 'code' })
   country: Country;
 
-  @OneToMany(() => Post, (post) => post.company)
+  @OneToMany(() => Post, (post) => post.employer)
   posts: Post[];
 
-  @OneToMany(() => Location, (location) => location.company)
+  @OneToMany(() => Location, (location) => location.employer)
   locations: Location[];
 
-  @OneToMany(() => Follow, (follow) => follow.company)
+  @OneToMany(() => Follow, (follow) => follow.employer)
   follows: Follow[];
 
-  @OneToMany(() => Job, (job) => job.company)
+  @OneToMany(() => Job, (job) => job.employer)
   jobs: Job[];
 }

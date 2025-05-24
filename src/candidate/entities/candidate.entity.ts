@@ -15,9 +15,9 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-@Entity({ name: 'nguoi_dung' })
-export class User {
-  @PrimaryColumn({ name: 'tai_khoan_id' })
+@Entity({ name: 'nguoi_ung_tuyen' })
+export class Candidate {
+  @PrimaryColumn({ name: 'ma_tai_khoan' })
   id: number;
 
   @Column({ name: 'ho_ten', length: 255, nullable: true })
@@ -46,13 +46,13 @@ export class User {
   cv: Cv[];
 
   @OneToOne(() => Account, (account) => account.user)
-  @JoinColumn({ name: 'tai_khoan_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
   account: Account;
 
   @ManyToMany(() => Skill, (skill) => skill.users)
   @JoinTable({
-    name: 'nguoi_dung_ky_nang',
-    joinColumn: { name: 'tai_khoan_id', referencedColumnName: 'id' },
+    name: 'nguoi_ung_tuyen_ky_nang',
+    joinColumn: { name: 'ma_tai_khoan', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'ma_ky_nang', referencedColumnName: 'id' },
   })
   skills: Skill[];

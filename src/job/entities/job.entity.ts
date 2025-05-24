@@ -1,6 +1,6 @@
 import { ApplyJob } from 'src/apply-job/entities/apply-job.entity';
 import { Benefit } from 'src/benefit/entities/benefit.entity';
-import { Company } from 'src/company/entities/company.entity';
+import { Employer } from 'src/employer/entities/employer.entity';
 import { Experience } from 'src/experience/entities/experience.entity';
 import { Level } from 'src/level/entities/level.entity';
 import { Location } from 'src/location/entities/location.entity';
@@ -71,9 +71,9 @@ export class Job {
     },
   })
   majors: Major[];
-  @ManyToOne(() => Company, (company) => company.jobs, { nullable: false })
+  @ManyToOne(() => Employer, (employer) => employer.jobs, { nullable: false })
   @JoinColumn({ name: 'ma_cong_ty' })
-  company: Company;
+  employer: Employer;
   @ManyToMany(() => Location, (location) => location.jobs)
   @JoinTable({
     name: 'dia_diem_cong_viec',
