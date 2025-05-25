@@ -1,7 +1,19 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/dto';
 import { Public } from 'src/decorators/customize';
+import { GoogleOAuthGuard } from './passport/google-oauth.guard';
+import { CreateUserDto } from 'src/modules/candidate/dto/create-candidate.dto';
+import { CreateCompanyDto } from 'src/modules/employer/dto/create-employer.dto';
+import { ROLE_LIST } from 'src/types/enum';
 
 @Controller('auth')
 export class AuthController {
@@ -9,7 +21,34 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  async login(@Body() dto: AuthDto) {
-    return this.authService.signIn(dto);
+  async login(@Res() res, @Body() dto: AuthDto) {
+    return this.authService.signIn(res, dto);
+  }
+
+  @Public()
+  @UseGuards(GoogleOAuthGuard)
+  @Get('google')
+  async googleAuth() {}
+
+  @Public()
+  @UseGuards(GoogleOAuthGuard)
+  @Get('google/callback')
+  async googleAuthCallback(@Req() req, @Res() res) {
+    const role = req.user?.role || ROLE_LIST.CANDIDATE;
+    if (!Object.values(ROLE_LIST).includes(role)) {
+      throw new Error('Vai trò không hợp lệ');
+    }
+    return this.authService.loginGoogle(req, res, role);
+  }
+
+  @Public()
+  @Post('register/candidate')
+  async registerCandidate(@Body() dto: CreateUserDto) {
+    return this.authService.registerCandidate(dto);
+  }
+  @Public()
+  @Post('register/employer')
+  async registerEmployer(@Body() dto: CreateCompanyDto) {
+    return this.authService.registerEmployer(dto);
   }
 }

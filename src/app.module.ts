@@ -1,35 +1,38 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AccountModule } from './account/account.module';
-import { AdminModule } from './admin/admin.module';
-import { EmployerModule } from './employer/employer.module';
-import { CvModule } from './cv/cv.module';
-import { JobModule } from './job/job.module';
-import { SkillModule } from './skill/skill.module';
-import { LocationModule } from './location/location.module';
-import { DistrictModule } from './district/district.module';
-import { CityModule } from './city/city.module';
-import { CountryModule } from './country/country.module';
-import { MajorModule } from './major/major.module';
-import { PostModule } from './post/post.module';
-import { NotiSettingModule } from './noti-setting/noti-setting.module';
-import { LevelModule } from './level/level.module';
-import { SaveJobModule } from './save-job/save-job.module';
-import { ApplyJobModule } from './apply-job/apply-job.module';
-import { FollowModule } from './follow/follow.module';
-import { RateModule } from './rate/rate.module';
+import { AccountModule } from './modules/account/account.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { EmployerModule } from './modules/employer/employer.module';
+import { CvModule } from './modules/cv/cv.module';
+import { JobModule } from './modules/job/job.module';
+import { SkillModule } from './modules/skill/skill.module';
+import { DistrictModule } from './modules/district/district.module';
+import { CityModule } from './modules/city/city.module';
+import { CountryModule } from './modules/country/country.module';
+import { PostModule } from './modules/post/post.module';
+import { NotiSettingModule } from './modules/noti-setting/noti-setting.module';
+import { SaveJobModule } from './modules/save-job/save-job.module';
+import { ApplyJobModule } from './modules/apply-job/apply-job.module';
+import { FollowModule } from './modules/follow/follow.module';
+import { RateModule } from './modules/rate/rate.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
-import { ExperienceModule } from './experience/experience.module';
-import { TypeJobModule } from './type-job/type-job.module';
-import { BenefitModule } from './benefit/benefit.module';
+import { ExperienceModule } from './modules/experience/experience.module';
+import { TypeJobModule } from './modules/type-job/type-job.module';
+import { BenefitModule } from './modules/benefit/benefit.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
-import { InterviewModule } from './interview/interview.module';
-import { CandidateModule } from './candidate/candidate.module';
+import { InterviewModule } from './modules/interview/interview.module';
+import { CandidateModule } from './modules/candidate/candidate.module';
+import { LocationModule } from './modules/location/location.module';
+import { MajorModule } from './modules/major/major.module';
+import { LevelModule } from './modules/level/level.module';
+import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
+import { AuthTokenModule } from './modules/auth_token/auth_token.module';
+import { GetwayModule } from './getway/getway.module';
 
 @Module({
   imports: [
@@ -73,6 +76,9 @@ import { CandidateModule } from './candidate/candidate.module';
     BenefitModule,
     AuthModule,
     InterviewModule,
+    GoogleCalendarModule,
+    AuthTokenModule,
+    GetwayModule,
   ],
   controllers: [AppController],
   providers: [

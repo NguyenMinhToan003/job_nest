@@ -1,0 +1,50 @@
+import { ROLE_LIST } from 'src/types/enum';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Employer } from 'src/modules/employer/entities/employer.entity';
+import { Candidate } from 'src/modules/candidate/entities/candidate.entity';
+import { AuthToken } from 'src/modules/auth_token/entities/auth_token.entity';
+
+@Entity({ name: 'tai_khoan' })
+export class Account {
+  @PrimaryGeneratedColumn({ name: 'id' })
+  id: number;
+
+  @Column({ name: 'google_id', nullable: true })
+  googleId: string;
+
+  @Column({ name: 'email', length: 255, unique: true })
+  email: string;
+  @Column({ name: 'mat_khau', length: 255, nullable: true })
+  password: string;
+  @Column({
+    name: 'vai_tro',
+    type: 'enum',
+    enum: ROLE_LIST,
+    default: ROLE_LIST.CANDIDATE,
+    enumName: 'vai_tro',
+  })
+  role: string;
+  @Column({ name: 'trang_thai', default: 1 })
+  status: number;
+  @Column({
+    name: 'ngay_tao',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
+
+  @OneToOne(() => Candidate, (candidate) => candidate.account)
+  candidate: Candidate;
+
+  @OneToOne(() => Employer, (employer) => employer.account)
+  employer: Employer;
+
+  @OneToMany(() => AuthToken, (authToken) => authToken.account)
+  authTokens: AuthToken[];
+}
