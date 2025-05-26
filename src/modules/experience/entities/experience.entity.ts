@@ -12,6 +12,9 @@ export class Experience {
   @Column({ name: 'mo_ta_khinh_nghiem' })
   description: string;
 
+  @Column({ name: 'trang_thai_khinh_nghiem', default: 1 })
+  status: number;
+
   @OneToMany(() => Job, (job) => job.experience)
   jobs: Job[];
 }

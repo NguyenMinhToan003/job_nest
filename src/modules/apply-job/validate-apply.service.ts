@@ -8,7 +8,7 @@ import { CvService } from 'src/modules/cv/cv.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
-import { APPLY_JOB_STATUS } from 'src/types/enum';
+import { APPLY_JOB_STATUS, JOB_STATUS } from 'src/types/enum';
 import dayjs from 'dayjs';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class ApplyJobValidatorService {
    */
   async validateJobExistenceOrStatus(jobId: number) {
     const job = await this.jobService.findOne(jobId);
-    if (!job || job.isActive === 0 || job.isShow === 0) {
+    if (!job || job.isActive === JOB_STATUS.PENDING || job.isShow === 0) {
       throw new NotFoundException('Công việc không tồn tại hoặc đã bị ẩn');
     }
     if (job.expiredAt < new Date()) {

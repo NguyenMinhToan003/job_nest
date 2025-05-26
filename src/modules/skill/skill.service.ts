@@ -1,8 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Skill } from './entities/skill.entity';
 import { Repository } from 'typeorm';
 import { CreateSkillDto } from './dto/create-skill.dto';
+import { UpdateSkillDto } from './dto/update-skill.dto';
+import { JOB_STATUS } from 'src/types/enum';
 
 @Injectable()
 export class SkillService {
@@ -47,11 +53,65 @@ export class SkillService {
   }
 
   async create(dto: CreateSkillDto) {
+    const existingSkill = await this.skillRepository.findOneBy({
+      name: dto.name,
+    });
+    if (existingSkill) {
+      throw new BadRequestException('Kĩ năng đã tồn tại');
+    }
     const skill = this.skillRepository.create(dto);
     return this.skillRepository.save(skill);
   }
 
   async findAll() {
+    return this.skillRepository.find({
+      where: { status: 1 },
+    });
+  }
+
+  async findAllByAdmin() {
     return this.skillRepository.find();
+  }
+
+  async update(id: number, dto: UpdateSkillDto) {
+    const skill = await this.skillRepository.findOneBy({ id });
+    if (!skill) {
+      throw new NotFoundException('Kĩ năng không tồn tại');
+    }
+    const existingSkill = await this.skillRepository.findOneBy({
+      name: dto.name,
+    });
+
+    if (existingSkill && existingSkill.id !== id) {
+      throw new BadRequestException('Kĩ năng đã tồn tại');
+    }
+    if (dto.name !== undefined) {
+      skill.name = dto.name;
+    }
+    if (dto.description !== undefined) {
+      skill.description = dto.description;
+    }
+    if (dto.status !== undefined) {
+      skill.status = dto.status;
+    }
+    return this.skillRepository.save(skill);
+  }
+
+  async delete(id: number) {
+    const skill = await this.skillRepository.findOne({
+      where: { id, status: JOB_STATUS.ACTIVE },
+      relations: {
+        jobs: true,
+      },
+    });
+    if (skill.jobs && skill.jobs.length > 0) {
+      throw new BadRequestException(
+        'Không thể xóa kỹ năng này vì nó đang được sử dụng trong các công việc',
+      );
+    }
+    if (!skill) {
+      throw new BadRequestException('Kĩ năng không tồn tại');
+    }
+    return this.skillRepository.remove(skill);
   }
 }

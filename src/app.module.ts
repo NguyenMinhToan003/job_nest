@@ -33,6 +33,9 @@ import { LevelModule } from './modules/level/level.module';
 import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
 import { AuthTokenModule } from './modules/auth_token/auth_token.module';
 import { GetwayModule } from './getway/getway.module';
+import { EmployerNotiModule } from './modules/employer-noti/employer-noti.module';
+// import { NotiAccountModule } from './modules/noti-account/noti-account.module';
+import { NotiAccountModule } from './modules/noti-account/noti-account.module';
 
 @Module({
   imports: [
@@ -79,6 +82,9 @@ import { GetwayModule } from './getway/getway.module';
     GoogleCalendarModule,
     AuthTokenModule,
     GetwayModule,
+    EmployerNotiModule,
+    NotiAccountModule,
+    // NotiAccountModule,
   ],
   controllers: [AppController],
   providers: [

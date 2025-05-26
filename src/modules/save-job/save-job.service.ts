@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SaveJob } from './entities/save-job.entity';
 import { Repository } from 'typeorm';
 import { JobService } from 'src/modules/job/job.service';
+import { JOB_STATUS } from 'src/types/enum';
 
 @Injectable()
 export class SaveJobService {
@@ -14,7 +15,11 @@ export class SaveJobService {
   ) {}
   async create(userId: number, createSaveJobDto: CreateSaveJobDto) {
     const checkJob = await this.jobService.findOne(createSaveJobDto.jobId);
-    if (!checkJob || checkJob.isActive === 0 || checkJob.isShow === 0) {
+    if (
+      !checkJob ||
+      checkJob.isActive === JOB_STATUS.PENDING ||
+      checkJob.isShow === 0
+    ) {
       throw new BadRequestException('Công việc không tồn tại');
     }
     if (checkJob.expiredAt < new Date()) {

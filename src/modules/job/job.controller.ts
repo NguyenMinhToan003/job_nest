@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { JobService } from './job.service';
 import {
+  AdminJobFilterDto,
   CompanyFilterJobDto,
   CreateJobDto,
   JobFilterDto,
@@ -36,10 +37,11 @@ export class JobController {
     return this.jobService.findOne(+id);
   }
 
-  @Public()
-  @Get()
-  findAll() {
-    return this.jobService.findAll();
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Post('/admin/filter')
+  findAll(@Body() filter: AdminJobFilterDto) {
+    return this.jobService.findAll(filter);
   }
 
   @UseGuards(RolesGuard)

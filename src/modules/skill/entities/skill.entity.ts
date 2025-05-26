@@ -19,7 +19,7 @@ export class Skill {
   @Column({ name: 'mo_ta', length: 255 })
   description: string;
 
-  @Column({ name: 'trang_thai', type: 'tinyint' })
+  @Column({ name: 'trang_thai', type: 'tinyint', default: 1 })
   status: number;
 
   @ManyToMany(() => Candidate, (candidate) => candidate.skills)

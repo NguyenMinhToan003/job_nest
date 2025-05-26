@@ -8,6 +8,12 @@ export class TypeJob {
   @Column({ name: 'ten_hinh_thuc_lam_viec', length: 255 })
   name: string;
 
+  @Column({ name: 'trang_thai', type: 'tinyint', default: 1 })
+  status: number;
+
+  @Column({ name: 'mo_ta', type: 'text', nullable: true })
+  description: string;
+
   @ManyToMany(() => Job, (job) => job.typeJobs)
   jobs: Job[];
 }

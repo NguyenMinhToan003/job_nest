@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
+  AdminJobFilterDto,
   CompanyFilterJobDto,
   CreateJobDto,
   JobFilterDto,
@@ -16,6 +17,8 @@ import {
   Repository,
 } from 'typeorm';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
+import { JOB_STATUS } from 'src/types/enum';
+import { AccountService } from '../account/account.service';
 
 @Injectable()
 export class JobService {
@@ -23,9 +26,20 @@ export class JobService {
     @InjectRepository(Job)
     private jobRepository: Repository<Job>,
     private dataSource: DataSource,
+    private accountService: AccountService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
-    console.log('createJobDto', createJobDto);
+    const employer = await this.accountService.findEmployerWhere({
+      id: employerId,
+    });
+    if (!employer) {
+      throw new ForbiddenException('Nhà tuyển dụng không tồn tại');
+    }
+    if (employer[0].status === 0) {
+      throw new ForbiddenException(
+        'Tài khoản nhà tuyển dụng chưa được xác minh ',
+      );
+    }
     const job = this.jobRepository.create({
       name: createJobDto.name,
       description: createJobDto.description,
@@ -33,7 +47,7 @@ export class JobService {
       quantity: createJobDto.quantity,
       minSalary: createJobDto.minSalary,
       maxSalary: createJobDto.maxSalary,
-      isActive: 0,
+      isActive: JOB_STATUS.PENDING,
       createdAt: new Date(),
       expiredAt: new Date(new Date().setDate(new Date().getDate() + 28)),
       employer: { id: employerId },
@@ -47,8 +61,54 @@ export class JobService {
     return this.jobRepository.save(job);
   }
 
-  findAll() {
+  findAll(filter?: AdminJobFilterDto) {
+    console.log('filter', filter);
+    const where: any = {};
+    if (filter.search) {
+      where.name = Like(`%${filter.search}%`);
+    }
+    if (filter.isActive !== undefined) {
+      where.isActive = filter.isActive;
+    }
+    if (filter.isExpired !== undefined) {
+      where.expiredAt = filter.isExpired
+        ? LessThan(new Date())
+        : MoreThanOrEqual(new Date());
+    }
+    if (filter.levels) {
+      where.levels = filter.levels.map((level) => ({ id: level }));
+    }
+    if (filter.experience) {
+      where.experience = filter.experience.map((experience) => ({
+        id: experience,
+      }));
+    }
+    if (filter.typeJobs) {
+      where.typeJobs = filter.typeJobs.map((typeJob) => ({
+        id: typeJob,
+      }));
+    }
+    if (filter.citys) {
+      where.locations = filter.citys.map((city) => ({
+        district: { city: { id: city } },
+      }));
+    }
+    if (filter.benefits) {
+      where.benefits = filter.benefits.map((benefit) => ({ id: benefit }));
+    }
+    if (filter.skills) {
+      where.skills = filter.skills.map((skill) => ({ id: skill }));
+    }
+    if (filter.minSalary && filter.maxSalary) {
+      where.minSalary = Between(filter.minSalary, filter.maxSalary);
+    } else if (filter.minSalary) {
+      where.minSalary = MoreThanOrEqual(filter.minSalary);
+    } else if (filter.maxSalary) {
+      where.maxSalary = LessThanOrEqual(filter.maxSalary);
+    }
+
     return this.jobRepository.find({
+      where,
       relations: {
         experience: true,
         benefits: true,
@@ -61,7 +121,6 @@ export class JobService {
         skills: true,
         levels: true,
         typeJobs: true,
-        majors: true,
       },
     });
   }
@@ -78,11 +137,10 @@ export class JobService {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
 
-    if (job.isActive === 1) {
-      throw new ForbiddenException('Không thể xóa khi đã xét duyệt');
-    }
+    // if (job.isActive === 1) {
+    //   throw new ForbiddenException('Không thể xóa khi đã xét duyệt');
+    // }
 
-    // Xóa thủ công các bảng trung gian
     await this.dataSource
       .createQueryBuilder()
       .delete()
@@ -104,7 +162,6 @@ export class JobService {
       .where('ma_cong_viec = :id', { id })
       .execute();
 
-    // Cuối cùng xóa job
     return this.jobRepository.delete(id);
   }
 
@@ -144,7 +201,6 @@ export class JobService {
         skills: true,
         levels: true,
         typeJobs: true,
-        majors: true,
         applyJobs: {
           cv: {
             candidate: true,
@@ -163,9 +219,28 @@ export class JobService {
     if (!job) {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
-
-    if (job.isActive === 1) {
+    if (job.isActive === JOB_STATUS.ACTIVE) {
       throw new ForbiddenException('không thể sửa khi đã xét duyệt');
+    }
+    // check dto is not empty
+    if (
+      !dto.name &&
+      !dto.description &&
+      !dto.requirement &&
+      !dto.quantity &&
+      !dto.minSalary &&
+      !dto.maxSalary &&
+      !dto.benefits?.length &&
+      !dto.skills?.length &&
+      !dto.locations?.length &&
+      !dto.experience &&
+      !dto.types?.length &&
+      !dto.levels?.length
+    ) {
+      throw new ForbiddenException('Không có dữ liệu để cập nhật');
+    }
+    if (job.isActive === JOB_STATUS.BLOCK) {
+      job.isActive = JOB_STATUS.PENDING;
     }
     const updatedJob = this.jobRepository.merge(job, {
       name: dto.name,
@@ -186,7 +261,7 @@ export class JobService {
 
   async filter(body: JobFilterDto): Promise<{ total: number; data: Job[] }> {
     const where: any = {
-      isActive: 1,
+      isActive: JOB_STATUS.ACTIVE,
       isShow: 1,
       expiredAt: MoreThanOrEqual(new Date()),
     };
@@ -242,7 +317,6 @@ export class JobService {
         skills: true,
         levels: true,
         typeJobs: true,
-        majors: true,
       },
       order: {
         createdAt: 'DESC',

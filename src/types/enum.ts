@@ -21,3 +21,13 @@ export enum PROVIDER_LIST {
   GOOGLE = 'GOOGLE',
   GITHUB = 'GITHUB',
 }
+export enum JOB_STATUS {
+  PENDING = 0,
+  ACTIVE = 1,
+  BLOCK = -1,
+}
+export enum NOTI_TYPE {
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  DEFAULT = 'DEFAULT',
+}

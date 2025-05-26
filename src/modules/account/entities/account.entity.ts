@@ -9,6 +9,7 @@ import {
 import { Employer } from 'src/modules/employer/entities/employer.entity';
 import { Candidate } from 'src/modules/candidate/entities/candidate.entity';
 import { AuthToken } from 'src/modules/auth_token/entities/auth_token.entity';
+import { NotiAccount } from 'src/modules/noti-account/entities/noti-account.entity';
 
 @Entity({ name: 'tai_khoan' })
 export class Account {
@@ -47,4 +48,10 @@ export class Account {
 
   @OneToMany(() => AuthToken, (authToken) => authToken.account)
   authTokens: AuthToken[];
+
+  @OneToMany(() => NotiAccount, (notiAccount) => notiAccount.receiverAccount)
+  receiverAccount: NotiAccount[];
+
+  @OneToMany(() => NotiAccount, (notiAccount) => notiAccount.senderAccount)
+  senderAccount: NotiAccount[];
 }

@@ -1,29 +1,17 @@
-import { Job } from 'src/modules/job/entities/job.entity';
-import { Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Employer } from 'src/modules/employer/entities/employer.entity';
+import { Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'nganh_nghe' })
+@Entity({ name: 'linh_vuc' })
 export class Major {
-  @PrimaryColumn({ name: 'ma_nganh_nghe' })
+  @PrimaryColumn({ name: 'ma_linh_vuc' })
   id: string;
-  @PrimaryColumn({ name: 'ten_nganh_nghe', length: 255 })
+  @PrimaryColumn({ name: 'ten_linh_vuc', length: 255 })
   name: string;
   @PrimaryColumn({ name: 'mo_ta', length: 255 })
   description: string;
   @PrimaryColumn({ name: 'trang_thai', type: 'tinyint' })
   status: number;
 
-  @ManyToMany(() => Job, (job) => job.majors)
-  @JoinTable({
-    name: 'nganh_nghe_cong_viec',
-    joinColumn: {
-      name: 'ma_nganh_nghe',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'ma_cong_viec',
-      referencedColumnName: 'id',
-    },
-  })
-  jobs: Job[];
+  @OneToMany(() => Employer, (employer) => employer.major)
+  employers: Employer[];
 }
-// TiepThi/Marketing, KeToan/Accounting, QuanTriKinhDoanh/BusinessAdministration, QuanLyChungKhoan/SecuritiesManagement, QuanLyNganHang/BankManagement, QuanLyDuAn/ProjectManagement, QuanLyChuyenMon/ProfessionalManagement, QuanLyChuyenVien/ProfessionalManager, QuanLyNhaHang/RestaurantManagement, QuanLyKhachSan/HotelManagement, QuanLyDuLich/TourismManagement

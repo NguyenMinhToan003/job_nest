@@ -9,6 +9,10 @@ export class Level {
   name: string;
   @Column({ name: 'mo_ta', length: 255 })
   description: string;
+
+  @Column({ name: 'trang_thai', default: 1 })
+  status: number;
+
   @ManyToMany(() => Job, (job) => job.levels)
   jobs: Job[];
 }
