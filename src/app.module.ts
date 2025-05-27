@@ -30,7 +30,6 @@ import { CandidateModule } from './modules/candidate/candidate.module';
 import { LocationModule } from './modules/location/location.module';
 import { MajorModule } from './modules/major/major.module';
 import { LevelModule } from './modules/level/level.module';
-import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
 import { AuthTokenModule } from './modules/auth_token/auth_token.module';
 import { NotiAccountModule } from './modules/noti-account/noti-account.module';
 import { RoomchatModule } from './modules/roomchat/roomchat.module';
@@ -78,7 +77,6 @@ import { MessagesModule } from './modules/messages/messages.module';
     BenefitModule,
     AuthModule,
     InterviewModule,
-    GoogleCalendarModule,
     AuthTokenModule,
     NotiAccountModule,
     RoomchatModule,

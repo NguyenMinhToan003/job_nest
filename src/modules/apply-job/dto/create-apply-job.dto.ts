@@ -51,3 +51,11 @@ export class GetApplyJobByJobIdDto {
   @IsNotEmpty()
   jobId: number;
 }
+
+export class FilterApplyJobDto {
+  @IsOptional()
+  jobId?: number;
+
+  @IsOptional()
+  status?: APPLY_JOB_STATUS;
+}

@@ -35,7 +35,6 @@ export class AuthTokenService {
     });
 
     if (!authToken) {
-      // Nếu không tìm thấy, tạo mới
       return this.create({
         ...dto,
         accountId,

@@ -16,6 +16,7 @@ export class InterviewService {
     private accountService: AccountService,
     private authTokenService: AuthTokenService,
   ) {}
+
   async create(dto: CreateInterviewDto) {
     const employer = await this.accountService.findCandidateWhere({
       id: dto.employerId,
@@ -62,7 +63,6 @@ export class InterviewService {
           },
         },
       );
-      console.log(candidates.map((c) => ({ id: c.id })));
       await this.interviewRepository.save({
         interviewTime: timeStart,
         duration: dto.duration,
@@ -75,13 +75,11 @@ export class InterviewService {
         meetingLink: data.htmlLink,
         calendarId: data.calendarId,
         employer: { id: dto.employerId },
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       return data;
     } catch (error) {
-      console.log('Error creating interview:', error);
-      throw new Error(`Error creating interview: ${error.message}`);
+      console.error('Error creating Google Calendar event:', error);
+      throw new Error('Failed to create interview in Google Calendar');
     }
   }
 }
