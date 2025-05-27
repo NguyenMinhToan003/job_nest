@@ -32,7 +32,6 @@ import { MajorModule } from './modules/major/major.module';
 import { LevelModule } from './modules/level/level.module';
 import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
 import { AuthTokenModule } from './modules/auth_token/auth_token.module';
-import { GetwayModule } from './getway/getway.module';
 import { NotiAccountModule } from './modules/noti-account/noti-account.module';
 import { RoomchatModule } from './modules/roomchat/roomchat.module';
 import { MessagesModule } from './modules/messages/messages.module';
@@ -81,7 +80,6 @@ import { MessagesModule } from './modules/messages/messages.module';
     InterviewModule,
     GoogleCalendarModule,
     AuthTokenModule,
-    GetwayModule,
     NotiAccountModule,
     RoomchatModule,
     MessagesModule,
