@@ -1,8 +1,6 @@
 import { Account } from 'src/modules/account/entities/account.entity';
 import { Country } from 'src/modules/country/entities/country.entity';
-import { EmployerNoti } from 'src/modules/employer-noti/entities/employer-noti.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
-import { Interview } from 'src/modules/interview/entities/interview.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
 import { Major } from 'src/modules/major/entities/major.entity';
@@ -49,12 +47,6 @@ export class Employer {
 
   @OneToMany(() => Job, (job) => job.employer)
   jobs: Job[];
-
-  @OneToMany(() => Interview, (interview) => interview.employer)
-  interviews: Interview[];
-
-  @OneToMany(() => EmployerNoti, (employerNoti) => employerNoti.employer)
-  employerNotis: EmployerNoti[];
 
   @ManyToOne(() => Major, (major) => major.employers)
   @JoinColumn({ name: 'ma_linh_vuc', referencedColumnName: 'id' })

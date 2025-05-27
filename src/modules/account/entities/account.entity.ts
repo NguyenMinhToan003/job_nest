@@ -2,6 +2,8 @@ import { ROLE_LIST } from 'src/types/enum';
 import {
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -10,13 +12,15 @@ import { Employer } from 'src/modules/employer/entities/employer.entity';
 import { Candidate } from 'src/modules/candidate/entities/candidate.entity';
 import { AuthToken } from 'src/modules/auth_token/entities/auth_token.entity';
 import { NotiAccount } from 'src/modules/noti-account/entities/noti-account.entity';
+import { Roomchat } from 'src/modules/roomchat/entities/roomchat.entity';
+import { Message } from 'src/modules/messages/entities/message.entity';
 
 @Entity({ name: 'tai_khoan' })
 export class Account {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @Column({ name: 'google_id', nullable: true })
+  @Column({ name: 'ma_google', nullable: true })
   googleId: string;
 
   @Column({ name: 'email', length: 255, unique: true })
@@ -54,4 +58,21 @@ export class Account {
 
   @OneToMany(() => NotiAccount, (notiAccount) => notiAccount.senderAccount)
   senderAccount: NotiAccount[];
+
+  @ManyToMany(() => Roomchat, (room) => room.accounts)
+  @JoinTable({
+    name: 'phong_nhan_tin_tai_khoan',
+    joinColumn: { name: 'ma_tai_khoan', referencedColumnName: 'id' },
+    inverseJoinColumn: {
+      name: 'ma_phong_nhan_tin',
+      referencedColumnName: 'id',
+    },
+  })
+  rooms: Roomchat[];
+
+  @OneToMany(() => Message, (message) => message.sender, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  messages: Message[];
 }

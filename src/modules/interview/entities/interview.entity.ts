@@ -1,6 +1,4 @@
 import { ApplyJob } from 'src/modules/apply-job/entities/apply-job.entity';
-import { Candidate } from 'src/modules/candidate/entities/candidate.entity';
-import { Employer } from 'src/modules/employer/entities/employer.entity';
 import { INTERVIEW_STATUS } from 'src/types/enum';
 import {
   Column,
@@ -8,8 +6,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
-  ManyToMany,
-  JoinTable,
 } from 'typeorm';
 
 @Entity({ name: 'phong_van' })
@@ -70,19 +66,7 @@ export class Interview {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => Employer, (employer) => employer.interviews)
-  @JoinColumn({ name: 'ma_nha_tuyen_dung' })
-  employer: Employer;
-
   @ManyToOne(() => ApplyJob, (applyJob) => applyJob.interviews)
   @JoinColumn({ name: 'ma_ung_tuyen' })
   applyJob: ApplyJob;
-
-  @ManyToMany(() => Candidate, (candidate) => candidate.interviews)
-  @JoinTable({
-    name: 'ung_vien_phong_van',
-    joinColumn: { name: 'ma_phong_van', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'ma_ung_vien', referencedColumnName: 'id' },
-  })
-  candidates: Candidate[];
 }

@@ -58,6 +58,7 @@ export class AuthService {
     }
     const { profile, accessToken, refreshToken } = req.user;
     const account = await this.accountService.getAccountByGoogleId(profile.id);
+    console.log('account', account);
     if (account) {
       const accessTokenLocal = await this.jwtService.signAsync({
         sub: account.id,

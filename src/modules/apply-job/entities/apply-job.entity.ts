@@ -12,11 +12,9 @@ import {
   OneToMany,
   // OneToMany,
 } from 'typeorm';
-// import { Interview } from './interview.entity';
-// import { ApplyJobNote } from './apply-job-note.entity';
 
 @Entity({ name: 'ung_tuyen' })
-@Unique(['cvId', 'jobId']) // Ràng buộc mỗi CV ứng tuyển 1 job 1 lần
+@Unique(['cvId', 'jobId'])
 export class ApplyJob {
   @PrimaryGeneratedColumn()
   id: number;

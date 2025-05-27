@@ -1,7 +1,6 @@
 import { Account } from 'src/modules/account/entities/account.entity';
 import { Cv } from 'src/modules/cv/entities/cv.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
-import { Interview } from 'src/modules/interview/entities/interview.entity';
 import { NotiSetting } from 'src/modules/noti-setting/entities/noti-setting.entity';
 import { SaveJob } from 'src/modules/save-job/entities/save-job.entity';
 import { Skill } from 'src/modules/skill/entities/skill.entity';
@@ -66,12 +65,4 @@ export class Candidate {
 
   @OneToMany(() => NotiSetting, (notiSetting) => notiSetting.candidate)
   notiSettings: NotiSetting[];
-
-  @ManyToMany(() => Interview, (interview) => interview.candidates)
-  @JoinTable({
-    name: 'ung_vien_phong_van',
-    joinColumn: { name: 'ma_ung_vien', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'ma_phong_van', referencedColumnName: 'id' },
-  })
-  interviews: Interview[];
 }

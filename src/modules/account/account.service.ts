@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -58,5 +58,16 @@ export class AccountService {
       where: { googleId },
       relations: { candidate: true, employer: true },
     });
+  }
+  async toggleStatusEmployer(id: number) {
+    const account = await this.accountRepository.findOne({
+      where: { id },
+      relations: { employer: true },
+    });
+    if (!account || !account.employer) {
+      throw new NotFoundException('Employer not found');
+    }
+    account.status = account.status === 1 ? 0 : 1;
+    return this.accountRepository.save(account);
   }
 }
