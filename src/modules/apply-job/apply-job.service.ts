@@ -35,8 +35,6 @@ export class ApplyJobService {
       status: APPLY_JOB_STATUS.PENDING,
       applyTime: new Date(),
       viewStatus: 0,
-      // username: body.username,
-      // phone: body.phone,
       note: body.note,
     });
     return this.applyJobRepository.save(applyJob);
@@ -59,8 +57,6 @@ export class ApplyJobService {
       status: APPLY_JOB_STATUS.PENDING,
       applyTime: new Date(),
       viewStatus: 0,
-      // username: body.username,
-      // phone: body.phone,
       note: body.note,
     });
     return this.applyJobRepository.save(applyJob);
@@ -88,6 +84,12 @@ export class ApplyJobService {
       order: {
         applyTime: 'DESC',
       },
+    });
+  }
+
+  async findOne(where: any) {
+    return this.applyJobRepository.findOne({
+      where,
     });
   }
 

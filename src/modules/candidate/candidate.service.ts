@@ -3,12 +3,14 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Candidate } from './entities/candidate.entity';
 import { UpdateUserDto } from './dto/update-candidate.dto';
+import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
 export class CandidateService {
   constructor(
     @InjectRepository(Candidate)
     private readonly candidateRepo: Repository<Candidate>,
+    private uploadService: UploadService,
   ) {}
 
   async create(accountId, dto) {
@@ -36,10 +38,15 @@ export class CandidateService {
     delete candidate.account.googleId;
     return candidate;
   }
-  async updateMe(userId: number, dto: UpdateUserDto) {
+  async updateMe(
+    userId: number,
+    dto: UpdateUserDto,
+    avatar?: Express.Multer.File,
+  ) {
     const candidate = await this.candidateRepo.findOne({
       where: { id: userId },
     });
+
     if (!candidate) {
       throw new Error('Candidate not found');
     }
@@ -52,6 +59,15 @@ export class CandidateService {
     if (dto.phone !== undefined) {
       candidate.phone = dto.phone;
     }
+    console.log('avatar', avatar);
+    if (avatar) {
+      const uploadAvatar = await this.uploadService.uploadFile([avatar]);
+      console.log('uploadAvatar', uploadAvatar);
+      if (uploadAvatar && uploadAvatar.length > 0) {
+        candidate.avatar = uploadAvatar[0].secure_url;
+      }
+    }
+    console.log('candidate', candidate);
     return this.candidateRepo.save(candidate);
   }
 }

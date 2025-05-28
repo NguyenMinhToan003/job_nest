@@ -5,13 +5,17 @@ import { Repository } from 'typeorm';
 import { UpdateCompanyDto } from './dto/update-employer.dto';
 import { Employer } from './entities/employer.entity';
 import { LocationService } from '../location/location.service';
+import { FollowService } from '../follow/follow.service';
+import { JobService } from '../job/job.service';
 
 @Injectable()
 export class EmployerService {
   constructor(
     @InjectRepository(Employer)
-    private readonly employerRepo: Repository<Employer>,
-    private readonly locationService: LocationService,
+    private employerRepo: Repository<Employer>,
+    private locationService: LocationService,
+    private followService: FollowService,
+    private jobService: JobService,
   ) {}
 
   async create(accountId: number, dto: CreateCompanyDto): Promise<Employer> {
@@ -60,23 +64,16 @@ export class EmployerService {
     });
   }
 
-  async getCompanyDetail(companyId: number) {
+  async getCompanyDetail(companyId: number, accountId?: number) {
+    const isFollowed = accountId
+      ? await this.followService.findOne({
+          employer: { id: +companyId },
+          candidate: { id: +accountId },
+        })
+      : null;
     const employer = await this.employerRepo.findOne({
       where: {
         id: +companyId,
-      },
-      relations: {
-        jobs: {
-          levels: true,
-          benefits: true,
-          locations: {
-            district: {
-              city: true,
-            },
-          },
-          typeJobs: true,
-          skills: true,
-        },
       },
     });
     if (!employer) {
@@ -84,6 +81,14 @@ export class EmployerService {
     }
     const locations = await this.locationService.findByCompany(companyId, 1);
     employer.locations = locations;
-    return employer;
+    const jobIsNotExpired = await this.jobService.filter({
+      employerId: +companyId,
+    });
+    console.log('jobIsNotExpired', jobIsNotExpired);
+    return {
+      ...employer,
+      isFollowed: !!isFollowed,
+      jobs: jobIsNotExpired.data,
+    };
   }
 }

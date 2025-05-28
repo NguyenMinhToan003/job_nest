@@ -26,7 +26,8 @@ export class EmployerController {
 
   @Public()
   @Get('detail/:companyId')
-  async getCompanyDetail(@Param('companyId') companyId: number) {
-    return this.employerService.getCompanyDetail(companyId);
+  async getCompanyDetail(@Param('companyId') companyId: number, @Req() req) {
+    const accountId = req.user?.id;
+    return this.employerService.getCompanyDetail(companyId, accountId);
   }
 }

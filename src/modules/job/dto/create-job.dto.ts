@@ -100,6 +100,10 @@ export class JobFilterDto {
   @IsOptional()
   @IsInt({ each: true })
   skills?: number[];
+
+  @IsOptional()
+  @IsInt()
+  employerId: number;
 }
 export class AdminJobFilterDto {
   @IsOptional()
@@ -147,6 +151,10 @@ export class AdminJobFilterDto {
   @IsOptional()
   @IsInt({ each: true })
   skills?: number[];
+
+  @IsOptional()
+  @IsInt()
+  employerId: number;
 }
 export class CompanyFilterJobDto {
   @IsOptional()

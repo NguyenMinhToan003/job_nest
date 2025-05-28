@@ -8,5 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([Follow])],
   controllers: [FollowController],
   providers: [FollowService],
+  exports: [FollowService],
 })
 export class FollowModule {}

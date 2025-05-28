@@ -3,14 +3,33 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { NotiAccount } from './entities/noti-account.entity';
 import { Repository } from 'typeorm';
 import { CreateNotiAccountDto } from './dto/create-noti-account.dto';
+import { AccountService } from '../account/account.service';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class NotiAccountService {
   constructor(
     @InjectRepository(NotiAccount)
     private notiAccountRepository: Repository<NotiAccount>,
+    private mailerService: MailerService,
+    private accountService: AccountService,
   ) {}
   async create(accountId: number, dto: CreateNotiAccountDto) {
+    const receiverAccount = await this.accountService.findOne({
+      id: dto.receiverAccountId,
+    });
+    console.log('receiverAccount', receiverAccount.email);
+    await this.mailerService.sendMail({
+      to: receiverAccount.email,
+      from: 'tuyendung123@gmail.com',
+      subject: dto.title,
+      template: 'job-status',
+      context: {
+        content: dto.content,
+        link: dto.link,
+        title: dto.title,
+      },
+    });
     return this.notiAccountRepository.save({
       content: dto.content,
       link: dto.link,

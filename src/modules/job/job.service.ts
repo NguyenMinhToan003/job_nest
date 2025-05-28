@@ -29,6 +29,11 @@ export class JobService {
     private accountService: AccountService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
+    if (createJobDto.minSalary > createJobDto.maxSalary) {
+      throw new ForbiddenException(
+        'Mức lương tối thiểu không thể lớn hơn mức lương tối đa',
+      );
+    }
     const employer = await this.accountService.findEmployerWhere({
       id: employerId,
     });
@@ -106,6 +111,9 @@ export class JobService {
     } else if (filter.maxSalary) {
       where.maxSalary = LessThanOrEqual(filter.maxSalary);
     }
+    if (filter.employerId) {
+      where.employer = { id: filter.employerId };
+    }
 
     return this.jobRepository.find({
       where,
@@ -137,10 +145,6 @@ export class JobService {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
 
-    // if (job.isActive === 1) {
-    //   throw new ForbiddenException('Không thể xóa khi đã xét duyệt');
-    // }
-
     await this.dataSource
       .createQueryBuilder()
       .delete()
@@ -169,6 +173,7 @@ export class JobService {
     const where = {
       employer: { id: employerId },
     } as any;
+
     if (filter.isActive !== undefined) {
       where.isActive = filter.isActive;
     }
@@ -180,6 +185,7 @@ export class JobService {
         where.expiredAt = MoreThanOrEqual(currentDate);
       }
     }
+    console.log('where', where);
     return this.jobRepository.find({
       where,
       relations: {
@@ -222,23 +228,6 @@ export class JobService {
     if (job.isActive === JOB_STATUS.ACTIVE) {
       throw new ForbiddenException('không thể sửa khi đã xét duyệt');
     }
-    // check dto is not empty
-    if (
-      !dto.name &&
-      !dto.description &&
-      !dto.requirement &&
-      !dto.quantity &&
-      !dto.minSalary &&
-      !dto.maxSalary &&
-      !dto.benefits?.length &&
-      !dto.skills?.length &&
-      !dto.locations?.length &&
-      !dto.experience &&
-      !dto.types?.length &&
-      !dto.levels?.length
-    ) {
-      throw new ForbiddenException('Không có dữ liệu để cập nhật');
-    }
     if (job.isActive === JOB_STATUS.BLOCK) {
       job.isActive = JOB_STATUS.PENDING;
     }
@@ -259,7 +248,10 @@ export class JobService {
     return this.jobRepository.save(updatedJob);
   }
 
-  async filter(body: JobFilterDto): Promise<{ total: number; data: Job[] }> {
+  async filter(
+    body: JobFilterDto,
+    accountId?: number,
+  ): Promise<{ total: number; data: Job[] }> {
     const where: any = {
       isActive: JOB_STATUS.ACTIVE,
       isShow: 1,
@@ -302,6 +294,9 @@ export class JobService {
     } else if (body.maxSalary) {
       where.maxSalary = LessThanOrEqual(body.maxSalary);
     }
+    if (body.employerId) {
+      where.employer = { id: body.employerId };
+    }
 
     const jobs = await this.jobRepository.find({
       where,
@@ -322,9 +317,38 @@ export class JobService {
         createdAt: 'DESC',
       },
     });
+    console.log(accountId, 'accountId');
+    if (accountId === undefined) {
+      return {
+        total: jobs.length,
+        data: jobs,
+      };
+    }
+    // them isApplied va isSaved vao tung job
+    const jobForAccount = [];
+    for (const job of jobs) {
+      const isApplied = await this.jobRepository.findOne({
+        where: {
+          id: job.id,
+          applyJobs: { cv: { candidate: { id: accountId } } },
+        },
+      });
+      const isSaved = await this.jobRepository.findOne({
+        where: {
+          id: job.id,
+          saveJobs: { candidate: { id: accountId } },
+        },
+      });
+
+      jobForAccount.push({
+        ...job,
+        isApplied: !!isApplied,
+        isSaved: !!isSaved,
+      });
+    }
     return {
-      total: jobs.length,
-      data: jobs,
+      total: jobForAccount.length,
+      data: jobForAccount,
     };
   }
 

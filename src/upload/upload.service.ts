@@ -33,8 +33,10 @@ export class UploadService {
     });
   }
 
-  async uploadFile(files: Express.Multer.File[]): Promise<any[]> {
-    const uploadedFiles = [];
+  async uploadFile(
+    files: Express.Multer.File[],
+  ): Promise<CloudinaryResponse[]> {
+    const uploadedFiles = [] as CloudinaryResponse[];
     for (const file of files) {
       try {
         const folder = this.configService.get('CLOUDINARY_FOLDER');

@@ -17,7 +17,7 @@ import { ApplyJobModule } from './modules/apply-job/apply-job.module';
 import { FollowModule } from './modules/follow/follow.module';
 import { RateModule } from './modules/rate/rate.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
 import { ExperienceModule } from './modules/experience/experience.module';
 import { TypeJobModule } from './modules/type-job/type-job.module';
@@ -34,7 +34,8 @@ import { AuthTokenModule } from './modules/auth_token/auth_token.module';
 import { NotiAccountModule } from './modules/noti-account/noti-account.module';
 import { RoomchatModule } from './modules/roomchat/roomchat.module';
 import { MessagesModule } from './modules/messages/messages.module';
-
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -51,6 +52,33 @@ import { MessagesModule } from './modules/messages/messages.module';
         synchronize: true,
         autoLoadEntities: true,
       }),
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: configService.get<string>('MAIL_HOST'),
+          port: configService.get<number>('MAIL_PORT'),
+          secure: true,
+          ignoreTLS: true,
+          auth: {
+            user: configService.get<string>('MAIL_USER'),
+            pass: configService.get<string>('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: 'tuyendung123@gmail.com',
+        },
+        preview: false,
+        template: {
+          dir: process.cwd() + '/src/mail/templates/',
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+      inject: [ConfigService],
     }),
     AccountModule,
     CandidateModule,

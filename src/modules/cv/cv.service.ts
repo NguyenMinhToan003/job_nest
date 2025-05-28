@@ -12,9 +12,9 @@ export class CvService {
   async create(cv: Express.Multer.File, candidateId: number) {
     const arrayName = cv.originalname.split('.');
     const typeFile = arrayName[arrayName.length - 1];
-    const arrayTypeFile = ['pdf', 'docx', 'doc'];
+    const arrayTypeFile = ['pdf'];
     if (!arrayTypeFile.includes(typeFile)) {
-      throw new BadRequestException('Chỉ chấp nhận file pdf, docx, doc');
+      throw new BadRequestException('Chỉ chấp nhận file pdf');
     }
     const cloudinaryFile = await this.uploadService.uploadFile([cv]);
     return this.cvRepository.save({

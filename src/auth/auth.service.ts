@@ -27,7 +27,22 @@ export class AuthService {
     console.log('dto', dto);
     const account = await this.accountService.findEmail(dto.email);
     if (!account) {
-      throw new UnauthorizedException('tai khoan khong ton tai');
+      throw new UnauthorizedException('Tài khoản hoặc mật khẩu không đúng');
+    }
+
+    if (account.password === null) {
+      throw new UnauthorizedException(
+        'Tài khoản này đã đăng nhập bằng Google, không thể đăng nhập bằng mật khẩu',
+      );
+    }
+
+    const isPasswordValid = await this.validatePassword(
+      dto.password,
+      account.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Tài khoản hoặc mật khẩu không đúng');
     }
     const payload = { sub: account.id };
     const accessToken = await this.jwtService.signAsync(payload);
@@ -35,7 +50,6 @@ export class AuthService {
     res.cookie(this.configService.get<string>('JWT_COOKIE_NAME'), accessToken, {
       httpOnly: true,
       secure: false,
-      sameSite: 'strict',
       maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
     });
     res.status(200).json({ role: account.role });

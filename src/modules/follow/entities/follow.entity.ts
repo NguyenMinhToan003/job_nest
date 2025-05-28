@@ -4,10 +4,10 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'theo_doi' })
 export class Follow {
-  @PrimaryColumn({ name: 'ma_tai_khoan' })
+  @PrimaryColumn({ name: 'ma_ung_vien' })
   userId: number;
 
-  @PrimaryColumn({ name: 'ma_doanh_nghiep' })
+  @PrimaryColumn({ name: 'ma_nha_tuyen_dung' })
   companyId: number;
 
   @Column({
@@ -18,7 +18,7 @@ export class Follow {
   time: Date;
 
   @ManyToOne(() => Candidate, (candidate) => candidate.follows)
-  @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'ma_ung_vien', referencedColumnName: 'id' })
   candidate: Candidate;
 
   @ManyToOne(() => Employer, (employer) => employer.follows)

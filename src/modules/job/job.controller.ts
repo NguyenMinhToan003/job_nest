@@ -17,7 +17,7 @@ import {
   JobFilterDto,
 } from './dto/create-job.dto';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { Public, Roles } from 'src/decorators/customize';
+import { Dynamic, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { ROLE_LIST } from 'src/types/enum';
 
@@ -31,10 +31,21 @@ export class JobController {
     return this.jobService.create(employerId, createJobDto);
   }
 
-  @Public()
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER, ROLE_LIST.ADMIN)
+  @Get('view/:id')
+  async viewJob(@Param('id') id: string) {
     return this.jobService.findOne(+id);
+  }
+
+  @Dynamic()
+  @Get(':id')
+  async findOne(@Param('id') id: string, @Req() req) {
+    const accountId = req.user?.id;
+    const filter = { id: +id } as JobFilterDto;
+    const jobs = await this.jobService.filter(filter, accountId);
+    // console.log('jobs', jobs[0]);
+    return jobs.total > 0 ? jobs.data[0] : null;
   }
 
   @UseGuards(RolesGuard)
@@ -66,10 +77,11 @@ export class JobController {
     return this.jobService.update(+id, employerId, dto);
   }
 
-  @Public()
+  @Dynamic()
   @Post('filter')
-  filter(@Body() filterJobDto: JobFilterDto) {
-    return this.jobService.filter(filterJobDto);
+  filter(@Req() req, @Body() filterJobDto: JobFilterDto) {
+    const accountId = req.user?.id;
+    return this.jobService.filter(filterJobDto, accountId);
   }
 
   @UseGuards(RolesGuard)
