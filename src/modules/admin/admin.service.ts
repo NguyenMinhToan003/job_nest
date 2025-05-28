@@ -22,7 +22,7 @@ export class AdminService {
     }
     const account = await this.accountService.create({
       email: 'admin@gmail.com',
-      password: '1',
+      password: '$2b$10$8nmRti0gi08ra0ZxjzTXMOKJ/S3oS2FhaL6ryVwnEVcMxKxI2/xRS',
       role: ROLE_LIST.ADMIN,
       googleId: null,
     });

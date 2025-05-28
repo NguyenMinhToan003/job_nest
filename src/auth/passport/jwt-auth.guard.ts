@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_DINAMIC_KEY, IS_PUBLIC_KEY } from 'src/decorators/customize';
+import { IS_GET_TOKEN, IS_PUBLIC_KEY } from 'src/decorators/customize';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -25,11 +25,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   handleRequest(err, user, info, context: ExecutionContext) {
-    const isDinamyc = this.reflector.getAllAndOverride<boolean>(
-      IS_DINAMIC_KEY,
-      [context.getHandler(), context.getClass()],
-    );
-    if (isDinamyc) {
+    const getToken = this.reflector.getAllAndOverride<boolean>(IS_GET_TOKEN, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (getToken) {
       return user;
     }
     if (err || !user) {

@@ -17,7 +17,7 @@ import {
   JobFilterDto,
 } from './dto/create-job.dto';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { Dynamic, Roles } from 'src/decorators/customize';
+import { GetToken, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { ROLE_LIST } from 'src/types/enum';
 
@@ -38,13 +38,12 @@ export class JobController {
     return this.jobService.findOne(+id);
   }
 
-  @Dynamic()
+  @GetToken()
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req) {
     const accountId = req.user?.id;
     const filter = { id: +id } as JobFilterDto;
     const jobs = await this.jobService.filter(filter, accountId);
-    // console.log('jobs', jobs[0]);
     return jobs.total > 0 ? jobs.data[0] : null;
   }
 
@@ -77,7 +76,7 @@ export class JobController {
     return this.jobService.update(+id, employerId, dto);
   }
 
-  @Dynamic()
+  @GetToken()
   @Post('filter')
   filter(@Req() req, @Body() filterJobDto: JobFilterDto) {
     const accountId = req.user?.id;
