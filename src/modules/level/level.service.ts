@@ -18,14 +18,33 @@ export class LevelService {
 
   async createDefaultLevel() {
     const defaultLevel = [
-      { name: 'Internship', description: 'Internship', id: 'internship' },
-      { name: 'Fresher', description: 'Fresher', id: 'fresher' },
-      { name: 'Junior', description: 'Junior', id: 'junior' },
-      { name: 'Mid', description: 'Mid', id: 'mid' },
-      { name: 'Senior', description: 'Senior', id: 'senior' },
-      { name: 'Lead', description: 'Lead', id: 'lead' },
-      { name: 'Manager', description: 'Manager', id: 'manager' },
-      { name: 'Director', description: 'Director', id: 'director' },
+      {
+        name: 'Intern',
+        description: 'Sinh viên thực tập, chưa có kinh nghiệm',
+        status: 1,
+      },
+      {
+        name: 'Fresher',
+        description: 'Mới tốt nghiệp, kinh nghiệm < 1 năm',
+        status: 1,
+      },
+      { name: 'Junior', description: 'Kinh nghiệm từ 1 đến 2 năm', status: 1 },
+      { name: 'Middle', description: 'Kinh nghiệm từ 2 đến 4 năm', status: 1 },
+      {
+        name: 'Senior',
+        description: 'Kinh nghiệm trên 4 năm, làm việc độc lập',
+        status: 1,
+      },
+      {
+        name: 'Lead',
+        description: 'Dẫn dắt nhóm nhỏ, hỗ trợ định hướng kỹ thuật',
+        status: 1,
+      },
+      {
+        name: 'Manager',
+        description: 'Quản lý dự án hoặc đội nhóm',
+        status: 1,
+      },
     ];
 
     await this.levelRepository.save(defaultLevel);
@@ -45,7 +64,7 @@ export class LevelService {
     return this.levelRepository.find();
   }
 
-  async update(id: string, dto: UpdateLevelDto) {
+  async update(id: number, dto: UpdateLevelDto) {
     const level = await this.levelRepository.findOneBy({ id });
     if (!level) {
       throw new NotFoundException('Cấp bậc không tồn tại');
@@ -68,7 +87,7 @@ export class LevelService {
     return this.levelRepository.save(level);
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     const level = await this.levelRepository.findOne({
       where: { id },
       relations: { jobs: true },
@@ -84,7 +103,7 @@ export class LevelService {
     return this.levelRepository.remove(level);
   }
 
-  async toggleStatus(id: string) {
+  async toggleStatus(id: number) {
     const level = await this.levelRepository.findOneBy({ id });
     if (!level) {
       throw new NotFoundException('Cấp bậc không tồn tại');

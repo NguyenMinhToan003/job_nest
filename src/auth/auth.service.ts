@@ -4,13 +4,11 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AccountService } from 'src/modules/account/account.service';
 import { AuthDto } from './dto/dto';
-import { PROVIDER_LIST, ROLE_LIST } from 'src/types/enum';
+import { ROLE_LIST } from 'src/types/enum';
 import { CandidateService } from 'src/modules/candidate/candidate.service';
 import { EmployerService } from 'src/modules/employer/employer.service';
 import { CreateUserDto } from 'src/modules/candidate/dto/create-candidate.dto';
 import { CreateCompanyDto } from 'src/modules/employer/dto/create-employer.dto';
-import { AuthTokenService } from 'src/modules/auth_token/auth_token.service';
-import { CreateAuthTokenDto } from 'src/modules/auth_token/dto/create-auth_token.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +18,6 @@ export class AuthService {
     private accountService: AccountService,
     private candidateService: CandidateService,
     private employerService: EmployerService,
-    private authTokenService: AuthTokenService,
   ) {}
 
   async signIn(res, dto: AuthDto) {
@@ -70,7 +67,7 @@ export class AuthService {
     if (!req.user) {
       throw new UnauthorizedException('Google authentication failed');
     }
-    const { profile, accessToken, refreshToken } = req.user;
+    const { profile } = req.user;
     const account = await this.accountService.getAccountByGoogleId(profile.id);
     console.log('account', account);
     if (account) {
@@ -87,10 +84,6 @@ export class AuthService {
           maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
         },
       );
-      this.authTokenService.update(account.id, PROVIDER_LIST.GOOGLE, {
-        accessToken,
-        refreshToken,
-      } as CreateAuthTokenDto);
       res.redirect(
         `${this.configService.get<string>('FRONTEND_URL')}/login-success`,
       );

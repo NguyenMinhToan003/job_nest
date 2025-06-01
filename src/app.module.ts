@@ -15,7 +15,6 @@ import { NotiSettingModule } from './modules/noti-setting/noti-setting.module';
 import { SaveJobModule } from './modules/save-job/save-job.module';
 import { ApplyJobModule } from './modules/apply-job/apply-job.module';
 import { FollowModule } from './modules/follow/follow.module';
-import { RateModule } from './modules/rate/rate.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
@@ -25,17 +24,16 @@ import { BenefitModule } from './modules/benefit/benefit.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
-import { InterviewModule } from './modules/interview/interview.module';
 import { CandidateModule } from './modules/candidate/candidate.module';
 import { LocationModule } from './modules/location/location.module';
 import { MajorModule } from './modules/major/major.module';
 import { LevelModule } from './modules/level/level.module';
-import { AuthTokenModule } from './modules/auth_token/auth_token.module';
 import { NotiAccountModule } from './modules/noti-account/noti-account.module';
-import { RoomchatModule } from './modules/roomchat/roomchat.module';
-import { MessagesModule } from './modules/messages/messages.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { FieldModule } from './modules/field/field.module';
+import { ResumeModule } from './modules/resume/resume.module';
+import { SeedModule } from './seed/seed.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -85,6 +83,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     AdminModule,
     EmployerModule,
     CvModule,
+    SeedModule,
     JobModule,
     SkillModule,
     LocationModule,
@@ -98,17 +97,14 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     SaveJobModule,
     ApplyJobModule,
     FollowModule,
-    RateModule,
     UploadModule,
     ExperienceModule,
     TypeJobModule,
     BenefitModule,
     AuthModule,
-    InterviewModule,
-    AuthTokenModule,
     NotiAccountModule,
-    RoomchatModule,
-    MessagesModule,
+    ResumeModule,
+    FieldModule,
   ],
   controllers: [AppController],
   providers: [

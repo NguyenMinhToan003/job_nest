@@ -10,8 +10,8 @@ import {
 import { CvService } from './cv.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from 'src/auth/passport/role.guard';
-import { Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
+import { Roles } from 'src/decorators/customize';
 
 @Controller('cv')
 export class CvController {
@@ -19,8 +19,8 @@ export class CvController {
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)
-  @Post()
   @UseInterceptors(FileInterceptor('cv'))
+  @Post()
   create(
     @UploadedFile()
     cv: Express.Multer.File,

@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,10 +9,6 @@ import { Admin } from './entities/admin.entity';
   imports: [AccountModule, TypeOrmModule.forFeature([Admin])],
   controllers: [AdminController],
   providers: [AdminService],
+  exports: [AdminService],
 })
-export class AdminModule implements OnModuleInit {
-  constructor(private readonly adminService: AdminService) {}
-  onModuleInit() {
-    this.adminService.createAdminDefault();
-  }
-}
+export class AdminModule {}

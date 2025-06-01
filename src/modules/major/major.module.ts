@@ -1,18 +1,14 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MajorService } from './major.service';
 import { MajorController } from './major.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Major } from './entities/major.entity';
+import { FieldModule } from '../field/field.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Major])],
+  imports: [FieldModule, MajorModule, TypeOrmModule.forFeature([Major])],
   controllers: [MajorController],
   providers: [MajorService],
+  exports: [MajorService],
 })
-export class MajorModule implements OnModuleInit {
-  constructor(private readonly majorService: MajorService) {}
-
-  onModuleInit() {
-    this.majorService.createDefaultMajor();
-  }
-}
+export class MajorModule {}

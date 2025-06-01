@@ -31,7 +31,7 @@ export class CandidateService {
         notiSettings: true,
         skills: true,
         saveJobs: true,
-        cv: true,
+        resumes: true,
       },
     });
     delete candidate.account.password;
@@ -59,7 +59,6 @@ export class CandidateService {
     if (dto.phone !== undefined) {
       candidate.phone = dto.phone;
     }
-    console.log('avatar', avatar);
     if (avatar) {
       const uploadAvatar = await this.uploadService.uploadFile([avatar]);
       console.log('uploadAvatar', uploadAvatar);
@@ -67,7 +66,6 @@ export class CandidateService {
         candidate.avatar = uploadAvatar[0].secure_url;
       }
     }
-    console.log('candidate', candidate);
     return this.candidateRepo.save(candidate);
   }
 }

@@ -4,7 +4,7 @@ import { CreateMajorDto } from './dto/create-major.dto';
 
 @Controller('major')
 export class MajorController {
-  constructor(private readonly majorService: MajorService) {}
+  constructor(private majorService: MajorService) {}
 
   @Post()
   async create(@Body() createMajorDto: CreateMajorDto) {

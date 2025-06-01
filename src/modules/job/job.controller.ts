@@ -33,7 +33,7 @@ export class JobController {
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER, ROLE_LIST.ADMIN)
-  @Get('view/:id')
+  @Get('view-all-job/:id')
   async viewJob(@Param('id') id: string) {
     return this.jobService.findOne(+id);
   }

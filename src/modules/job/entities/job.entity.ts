@@ -36,11 +36,23 @@ export class Job {
   @Column({ name: 'yeu_cau', length: 255 })
   requirement: string;
 
-  @Column({ name: 'luong_min', type: 'float' })
-  minSalary: number;
+  @Column({
+    name: 'luong_min',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
+  minSalary: number | null;
 
-  @Column({ name: 'luong_max', type: 'float' })
-  maxSalary: number;
+  @Column({
+    name: 'luong_max',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
+  maxSalary: number | null;
 
   @Column({ name: 'hien_thi_cong_viec', type: 'tinyint', default: 1 })
   isShow: number;

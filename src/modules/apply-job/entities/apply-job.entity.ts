@@ -1,6 +1,5 @@
-import { Cv } from 'src/modules/cv/entities/cv.entity';
-import { Interview } from 'src/modules/interview/entities/interview.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
+import { Resume } from 'src/modules/resume/entities/resume.entity';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import {
   Column,
@@ -9,8 +8,6 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   JoinColumn,
-  OneToMany,
-  // OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'ung_tuyen' })
@@ -52,13 +49,9 @@ export class ApplyJob {
   job: Job;
 
   // Quan hệ ManyToOne đến CV
-  @ManyToOne(() => Cv, (cv) => cv.applyJobs, { nullable: false })
+  @ManyToOne(() => Resume, (resume) => resume.applyJobs, { nullable: false })
   @JoinColumn({ name: 'ma_cv' })
-  cv: Cv;
-
-  // Quan hệ OneToMany với các cuộc phỏng vấn
-  @OneToMany(() => Interview, (interview) => interview.applyJob)
-  interviews: Interview[];
+  cv: Resume;
 
   // // Quan hệ OneToMany với các ghi chú (note) mở rộng
   // @OneToMany(() => ApplyJobNote, (note) => note.applyJob)

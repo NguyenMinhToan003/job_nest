@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  ValidateIf,
 } from 'class-validator';
 import { JOB_STATUS } from 'src/types/enum';
 export class CreateJobDto {
@@ -37,9 +38,9 @@ export class CreateJobDto {
   experience: number;
 
   @IsNotEmpty()
-  @IsString({ each: true })
+  @IsInt({ each: true })
   @ArrayMinSize(1)
-  levels: string[];
+  levels: number[];
 
   @IsNotEmpty()
   @IsInt({ each: true })
@@ -49,13 +50,15 @@ export class CreateJobDto {
   @IsNotEmpty()
   requirement: string;
 
-  @IsNotEmpty()
+  @ValidateIf((o) => o.minSalary !== null)
   @IsNumber()
-  minSalary: number;
+  @Min(0)
+  minSalary: number | null;
 
-  @IsNotEmpty()
+  @ValidateIf((o) => o.maxSalary !== null)
   @IsNumber()
-  maxSalary: number;
+  @Min(0)
+  maxSalary: number | null;
 
   @IsNotEmpty()
   description: string;

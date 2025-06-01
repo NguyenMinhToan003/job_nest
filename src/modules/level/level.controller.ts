@@ -42,21 +42,21 @@ export class LevelController {
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.ADMIN)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateLevelDto) {
+  async update(@Param('id') id: number, @Body() dto: UpdateLevelDto) {
     return this.levelService.update(id, dto);
   }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.ADMIN)
   @Delete(':id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: number) {
     return this.levelService.delete(id);
   }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.ADMIN)
   @Patch('toggle-status/:id')
-  async toggleStatus(@Param('id') id: string) {
+  async toggleStatus(@Param('id') id: number) {
     return this.levelService.toggleStatus(id);
   }
 }

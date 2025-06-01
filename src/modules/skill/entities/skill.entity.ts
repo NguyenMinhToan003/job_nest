@@ -1,11 +1,15 @@
 import { Candidate } from 'src/modules/candidate/entities/candidate.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
+import { Major } from 'src/modules/major/entities/major.entity';
 import { NotiSetting } from 'src/modules/noti-setting/entities/noti-setting.entity';
+import { Resume } from 'src/modules/resume/entities/resume.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -16,8 +20,6 @@ export class Skill {
   id: number;
   @Column({ name: 'ten_ky_nang', length: 255 })
   name: string;
-  @Column({ name: 'mo_ta', length: 255 })
-  description: string;
 
   @Column({ name: 'trang_thai', type: 'tinyint', default: 1 })
   status: number;
@@ -46,7 +48,22 @@ export class Skill {
 
   @OneToMany(() => NotiSetting, (notiSetting) => notiSetting.skill)
   notiSettings: NotiSetting[];
+
+  @ManyToMany(() => Resume, (resume) => resume.skills)
+  @JoinTable({
+    name: 'ho_so_xin_viec_ky_nang',
+    joinColumn: { name: 'ma_ky_nang', referencedColumnName: 'id' },
+    inverseJoinColumn: {
+      name: 'ma_ho_so_xin_viec',
+      referencedColumnName: 'id',
+    },
+  })
+  resumes: Resume[];
+
+  @ManyToOne(() => Major, (major) => major.skills)
+  @JoinColumn({ name: 'ma_chuyen_mon' })
+  major: Major;
 }
-//reactjs, nodejs, typescript, javascript, java, python, ruby, php, c#, c++, go, swift, kotlin
+//reactjs, nodejs, typescript, javascript, ajava, python, ruby, php, c#, c++, go, swift, kotlin
 //, html, css, sql, nosql, mongodb, mysql, postgresql, oracle, redis, elasticsearch
 // typescript, javascript, java, python, ruby, php, c#, c++, go, swift, kotlin

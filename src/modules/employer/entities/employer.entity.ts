@@ -3,7 +3,6 @@ import { Country } from 'src/modules/country/entities/country.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
-import { Major } from 'src/modules/major/entities/major.entity';
 import { Post } from 'src/modules/post/entities/post.entity';
 import {
   Column,
@@ -47,8 +46,4 @@ export class Employer {
 
   @OneToMany(() => Job, (job) => job.employer)
   jobs: Job[];
-
-  @ManyToOne(() => Major, (major) => major.employers)
-  @JoinColumn({ name: 'ma_linh_vuc', referencedColumnName: 'id' })
-  major: Major;
 }

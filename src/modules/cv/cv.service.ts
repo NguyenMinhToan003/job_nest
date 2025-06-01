@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UploadService } from 'src/upload/upload.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,7 +21,7 @@ export class CvService {
     return this.cvRepository.save({
       publicId: cloudinaryFile[0].display_name,
       url: cloudinaryFile[0].secure_url,
-      candidate: { id: candidateId },
+      resume: { id: candidateId },
       typeFile: typeFile,
       name: cv.originalname,
       updatedAt: new Date(),
@@ -29,7 +30,7 @@ export class CvService {
 
   async findAllByUserId(candidateId: number) {
     return await this.cvRepository.find({
-      where: { candidate: { id: candidateId } },
+      where: { resume: { id: candidateId } },
       order: { updatedAt: 'DESC' },
     });
   }
@@ -37,9 +38,10 @@ export class CvService {
   async findCvByUserIdAndCvId(candidateId: number, cvId: number) {
     console.log(candidateId, cvId);
     return await this.cvRepository.findOne({
-      where: { candidate: { id: +candidateId }, id: +cvId },
+      where: { resume: { id: +candidateId }, id: +cvId },
     });
   }
+
   async findOne(id: number) {
     return await this.cvRepository.findOne({
       where: { id: +id },

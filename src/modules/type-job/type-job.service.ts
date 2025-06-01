@@ -20,34 +20,24 @@ export class TypeJobService {
   async createDefaultTypeJob() {
     const defaultTypeJobs = [
       {
-        name: 'Văn phòng',
-        status: 1,
-        id: 1,
-        description: 'Công việc văn phòng',
-      },
-      {
         name: 'Nhân viên chính thức',
+        description: 'Làm việc toàn thời gian',
         status: 1,
-        id: 2,
-        description: 'Công việc nhân viên chính thức',
       },
       {
-        name: 'Thực tập',
+        name: 'Bán thời gian',
+        description: 'Làm việc bán thời gian',
         status: 1,
-        id: 3,
-        description: 'Công việc thực tập',
-      },
-      {
-        name: 'Freelance',
-        status: 1,
-        id: 4,
-        description: 'Công việc freelance',
       },
       {
         name: 'Thời vụ',
+        description: 'Làm việc theo dự án hoặc thời vụ',
         status: 1,
-        id: 5,
-        description: 'Công việc thời vụ',
+      },
+      {
+        name: 'Thực tập',
+        description: 'Sinh viên thực tập, chưa có kinh nghiệm',
+        status: 1,
       },
     ];
 
@@ -93,7 +83,7 @@ export class TypeJobService {
 
   async delete(id: number) {
     const typeJob = await this.typeJobRepository.findOne({
-      where: { id }, // Giả sử có quan hệ với bảng công việc
+      where: { id },
       relations: { jobs: true },
     });
     if (!typeJob) {

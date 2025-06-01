@@ -8,11 +8,9 @@ import { AuthController } from './auth.controller';
 import { GoogleStrategy } from './passport/google.strategy';
 import { CandidateModule } from 'src/modules/candidate/candidate.module';
 import { EmployerModule } from 'src/modules/employer/employer.module';
-import { AuthTokenModule } from 'src/modules/auth_token/auth_token.module';
 
 @Module({
   imports: [
-    AuthTokenModule,
     CandidateModule,
     EmployerModule,
     AccountModule,

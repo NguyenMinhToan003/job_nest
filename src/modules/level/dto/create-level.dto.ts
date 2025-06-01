@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateLevelDto {
   @IsNotEmpty()
-  @IsString()
-  id: string;
+  @IsInt()
+  id: number;
 
   @IsNotEmpty()
   name: string;

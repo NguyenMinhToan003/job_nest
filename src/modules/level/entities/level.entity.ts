@@ -1,10 +1,17 @@
 import { Job } from 'src/modules/job/entities/job.entity';
-import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Resume } from 'src/modules/resume/entities/resume.entity';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'cap_bac' })
 export class Level {
-  @PrimaryColumn({ name: 'ma_cap_bac' })
-  id: string;
+  @PrimaryGeneratedColumn({ name: 'ma_cap_bac' })
+  id: number;
   @Column({ name: 'ten_cap_bac', length: 255 })
   name: string;
   @Column({ name: 'mo_ta', length: 255 })
@@ -15,4 +22,7 @@ export class Level {
 
   @ManyToMany(() => Job, (job) => job.levels)
   jobs: Job[];
+
+  @OneToMany(() => Resume, (resume) => resume.level)
+  resumes: Resume[];
 }

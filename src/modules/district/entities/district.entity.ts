@@ -1,3 +1,4 @@
+import { Resume } from 'src/modules/resume/entities/resume.entity';
 import { City } from 'src/modules/city/entities/city.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
 import {
@@ -23,4 +24,7 @@ export class District {
 
   @OneToMany(() => Location, (location) => location.district)
   locations: Location[];
+
+  @OneToMany(() => Resume, (hobby) => hobby.district)
+  resumes: Resume[];
 }

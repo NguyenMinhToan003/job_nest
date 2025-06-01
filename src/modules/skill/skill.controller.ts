@@ -23,10 +23,7 @@ export class SkillController {
   @Roles(ROLE_LIST.ADMIN)
   @Post()
   async create(@Body() dto: CreateSkillDto) {
-    return this.skillService.create({
-      name: dto.name,
-      description: dto.description,
-    });
+    return this.skillService.create(dto);
   }
 
   @Public()

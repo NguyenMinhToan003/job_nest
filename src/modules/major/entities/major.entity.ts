@@ -1,17 +1,31 @@
-import { Employer } from 'src/modules/employer/entities/employer.entity';
-import { Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Field } from 'src/modules/field/entities/field.entity';
+import { Skill } from 'src/modules/skill/entities/skill.entity';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity({ name: 'linh_vuc' })
+@Entity({ name: 'chuyen_mon' })
 export class Major {
-  @PrimaryColumn({ name: 'ma_linh_vuc' })
-  id: string;
-  @PrimaryColumn({ name: 'ten_linh_vuc', length: 255 })
+  @PrimaryGeneratedColumn({ name: 'ma_chuyen_mon' })
+  id: number;
+  @Column({ name: 'ten_chuyen_mon', length: 255 })
   name: string;
-  @PrimaryColumn({ name: 'mo_ta', length: 255 })
+  @Column({ name: 'mo_ta', length: 255 })
   description: string;
-  @PrimaryColumn({ name: 'trang_thai', type: 'tinyint' })
-  status: number;
 
-  @OneToMany(() => Employer, (employer) => employer.major)
-  employers: Employer[];
+  @DeleteDateColumn({ name: 'ngay_an' })
+  hidenAt: Date;
+
+  @ManyToOne(() => Field, (field) => field.majors)
+  @JoinColumn({ name: 'ma_linh_vuc' })
+  field: Field;
+
+  @OneToMany(() => Skill, (skill) => skill.major)
+  skills: Skill[];
 }
