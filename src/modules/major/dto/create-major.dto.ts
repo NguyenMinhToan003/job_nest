@@ -5,8 +5,5 @@ export class CreateMajorDto {
   name: string;
 
   @IsNotEmpty()
-  description: string;
-
-  @IsNotEmpty()
   status: number;
 }

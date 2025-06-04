@@ -13,8 +13,6 @@ export class Field {
   id: number;
   @Column({ name: 'ten_linh_vuc' })
   name: string;
-  @Column({ name: 'mo_ta', length: 255 })
-  description: string;
   @DeleteDateColumn({ name: 'ngay_an' })
   hidenAt: Date;
 

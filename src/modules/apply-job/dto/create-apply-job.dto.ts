@@ -11,19 +11,15 @@ export class CreateApplyJobDto {
   @IsOptional()
   note: string;
 
-  @IsNotEmpty({ message: 'Bạn chưa chỉ định CV' })
-  @IsNumber(
-    { allowNaN: false, allowInfinity: false },
-    { message: 'CV không hợp lệ' },
-  )
-  cvId: number;
-
   @IsNotEmpty()
   username: string;
 
   @IsNotEmpty()
   @IsPhoneNumber('VN')
   phone: string;
+
+  @IsNotEmpty()
+  resumeVersionId: number;
 }
 export class ApplyJobWithNewCvDto {
   @IsOptional()

@@ -16,8 +16,6 @@ export class Major {
   id: number;
   @Column({ name: 'ten_chuyen_mon', length: 255 })
   name: string;
-  @Column({ name: 'mo_ta', length: 255 })
-  description: string;
 
   @DeleteDateColumn({ name: 'ngay_an' })
   hidenAt: Date;

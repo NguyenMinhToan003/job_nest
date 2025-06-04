@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from './entities/job.entity';
 import {
   Between,
-  DataSource,
   LessThan,
   LessThanOrEqual,
   Like,
@@ -19,14 +18,15 @@ import {
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { JOB_STATUS } from 'src/types/enum';
 import { AccountService } from '../account/account.service';
+import { LanguageJobService } from 'src/language-job/language-job.service';
 
 @Injectable()
 export class JobService {
   constructor(
     @InjectRepository(Job)
     private jobRepository: Repository<Job>,
-    private dataSource: DataSource,
     private accountService: AccountService,
+    private languageJobService: LanguageJobService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
     if (createJobDto.minSalary > createJobDto.maxSalary) {
@@ -45,7 +45,7 @@ export class JobService {
         'Tài khoản nhà tuyển dụng chưa được xác minh ',
       );
     }
-    const job = this.jobRepository.create({
+    const job = await this.jobRepository.save({
       name: createJobDto.name,
       description: createJobDto.description,
       requirement: createJobDto.requirement,
@@ -62,8 +62,20 @@ export class JobService {
       experience: { id: createJobDto.experience },
       typeJobs: createJobDto.types.map((id) => ({ id })),
       levels: createJobDto.levels.map((id) => ({ id })),
+      education: createJobDto.education ? { id: createJobDto.education } : null,
     });
-    return this.jobRepository.save(job);
+
+    if (createJobDto.languages && createJobDto.languages.length > 0) {
+      for (const language of createJobDto.languages) {
+        console.log('check', job.id, language.languageId, language.level);
+        await this.languageJobService.create({
+          jobId: job.id,
+          languageId: language.languageId,
+          level: language.level,
+        });
+      }
+    }
+    return job;
   }
 
   findAll(filter?: AdminJobFilterDto) {
@@ -129,6 +141,10 @@ export class JobService {
         skills: true,
         levels: true,
         typeJobs: true,
+        education: true,
+        languageJobs: {
+          language: true,
+        },
       },
     });
   }
@@ -144,28 +160,6 @@ export class JobService {
     if (!job) {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
-
-    await this.dataSource
-      .createQueryBuilder()
-      .delete()
-      .from('cong_viec_ky_nang')
-      .where('ma_cong_viec = :id', { id })
-      .execute();
-
-    await this.dataSource
-      .createQueryBuilder()
-      .delete()
-      .from('dia_diem_cong_viec')
-      .where('ma_cong_viec = :id', { id })
-      .execute();
-
-    await this.dataSource
-      .createQueryBuilder()
-      .delete()
-      .from('phuc_loi_cong_viec')
-      .where('ma_cong_viec = :id', { id })
-      .execute();
-
     return this.jobRepository.delete(id);
   }
 
@@ -190,7 +184,11 @@ export class JobService {
       where,
       relations: {
         applyJobs: {
-          cv: true,
+          resumeVersion: {
+            resume: {
+              candidate: true,
+            },
+          },
         },
       },
     });
@@ -207,9 +205,15 @@ export class JobService {
         skills: true,
         levels: true,
         typeJobs: true,
+        education: true,
+        languageJobs: {
+          language: true,
+        },
         applyJobs: {
-          cv: {
-            candidate: true,
+          resumeVersion: {
+            resume: {
+              candidate: true,
+            },
           },
         },
       },
@@ -231,6 +235,7 @@ export class JobService {
     if (job.isActive === JOB_STATUS.BLOCK) {
       job.isActive = JOB_STATUS.PENDING;
     }
+    console.log(dto);
     const updatedJob = this.jobRepository.merge(job, {
       name: dto.name,
       description: dto.description,
@@ -244,6 +249,7 @@ export class JobService {
       experience: { id: dto.experience },
       typeJobs: dto.types.map((id) => ({ id })),
       levels: dto.levels.map((id) => ({ id })),
+      education: { id: dto.education },
     });
     return this.jobRepository.save(updatedJob);
   }
@@ -330,7 +336,9 @@ export class JobService {
       const isApplied = await this.jobRepository.findOne({
         where: {
           id: job.id,
-          applyJobs: { cv: { candidate: { id: accountId } } },
+          applyJobs: {
+            resumeVersion: { resume: { candidate: { id: accountId } } },
+          },
         },
       });
       const isSaved = await this.jobRepository.findOne({

@@ -22,32 +22,26 @@ export class MajorService {
     const defaultMajors = [
       {
         name: 'Lập trình Web',
-        description: 'Phát triển giao diện website, ứng dụng web hiện đại',
         field: fields.find((f) => f.name === 'Công nghệ thông tin'),
       },
       {
         name: 'Lập trình Mobile',
-        description: 'Phát triển ứng dụng di động trên iOS',
         field: fields.find((f) => f.name === 'Công nghệ thông tin'),
       },
       {
         name: 'Phát triển Backend',
-        description: 'Xây dựng API và xử lý logic phía máy chủ',
         field: fields.find((f) => f.name === 'Công nghệ thông tin'),
       },
       {
         name: 'Cơ sở dữ liệu',
-        description: 'Thiết kế và quản lý hệ thống dữ liệu',
         field: fields.find((f) => f.name === 'Công nghệ thông tin'),
       },
       {
         name: 'Khoa học Dữ liệu',
-        description: 'Phân tích, xử lý và khai thác dữ liệu lớn',
         field: fields.find((f) => f.name === 'Công nghệ thông tin'),
       },
       {
         name: 'DevOps',
-        description: 'Tự động hóa triển khai, CI/CD và vận hành hệ thống',
         field: fields.find((f) => f.name === 'Công nghệ thông tin'),
       },
     ];

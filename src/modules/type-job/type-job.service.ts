@@ -21,22 +21,18 @@ export class TypeJobService {
     const defaultTypeJobs = [
       {
         name: 'Nhân viên chính thức',
-        description: 'Làm việc toàn thời gian',
         status: 1,
       },
       {
         name: 'Bán thời gian',
-        description: 'Làm việc bán thời gian',
         status: 1,
       },
       {
         name: 'Thời vụ',
-        description: 'Làm việc theo dự án hoặc thời vụ',
         status: 1,
       },
       {
         name: 'Thực tập',
-        description: 'Sinh viên thực tập, chưa có kinh nghiệm',
         status: 1,
       },
     ];
@@ -72,9 +68,7 @@ export class TypeJobService {
     if (dto.name !== undefined) {
       typeJob.name = dto.name;
     }
-    if (dto.description !== undefined) {
-      typeJob.description = dto.description;
-    }
+
     if (dto.status !== undefined) {
       typeJob.status = dto.status;
     }

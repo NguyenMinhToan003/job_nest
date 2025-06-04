@@ -1,5 +1,10 @@
 // roles.guard.ts
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from 'src/decorators/customize';
 
@@ -12,11 +17,15 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
-    console.log('Required Roles:', requiredRoles);
     if (!requiredRoles) return true;
 
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.includes(user?.role);
-    // tra ve TRUE hoac FALSE sau do se chay // vao JwtAuthGuard.handleRequest
+    const check = requiredRoles.includes(user?.role);
+    if (!check) {
+      throw new UnauthorizedException(
+        `Bạn không có quyền truy cập chức năng này.`,
+      );
+    }
+    return check;
   }
 }

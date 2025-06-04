@@ -1,6 +1,6 @@
-import { Resume } from 'src/modules/resume/entities/resume.entity';
 import { City } from 'src/modules/city/entities/city.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
+import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
 import {
   Column,
   Entity,
@@ -25,6 +25,6 @@ export class District {
   @OneToMany(() => Location, (location) => location.district)
   locations: Location[];
 
-  @OneToMany(() => Resume, (hobby) => hobby.district)
-  resumes: Resume[];
+  @OneToMany(() => ResumeVersion, (resumeVersion) => resumeVersion.district)
+  resumeVersions: ResumeVersion[];
 }

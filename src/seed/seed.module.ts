@@ -11,6 +11,8 @@ import { AdminModule } from '../modules/admin/admin.module';
 import { CityModule } from '../modules/city/city.module';
 import { DistrictModule } from '../modules/district/district.module';
 import { SeedController } from './seed.controller';
+import { EducationModule } from 'src/modules/education/education.module';
+import { LanguageModule } from 'src/modules/language/language.module';
 @Module({
   imports: [
     FieldModule,
@@ -19,7 +21,9 @@ import { SeedController } from './seed.controller';
     SkillModule,
     BenefitModule,
     ExperienceModule,
+    EducationModule,
     TypeJobModule,
+    LanguageModule,
     AdminModule,
     CityModule,
     DistrictModule,

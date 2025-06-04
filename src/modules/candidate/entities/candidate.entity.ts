@@ -1,15 +1,12 @@
 import { Account } from 'src/modules/account/entities/account.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
 import { NotiSetting } from 'src/modules/noti-setting/entities/noti-setting.entity';
-import { Resume } from 'src/modules/resume/entities/resume.entity';
 import { SaveJob } from 'src/modules/save-job/entities/save-job.entity';
-import { Skill } from 'src/modules/skill/entities/skill.entity';
+import { Resume } from 'src/modules/resume/entities/resume.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryColumn,
@@ -22,10 +19,10 @@ export class Candidate {
 
   @Column({ name: 'ho_ten', length: 255, nullable: true })
   name: string;
-  @Column({ name: 'hinh_anh', length: 255, nullable: true })
+  @Column({ name: 'hinh_anh', nullable: true })
   avatar: string;
 
-  @Column({ name: 'so_dien_thoai', length: 20, nullable: true })
+  @Column({ name: 'so_dien_thoai', length: 11, nullable: true })
   phone: string;
 
   @Column({
@@ -45,14 +42,6 @@ export class Candidate {
   @OneToOne(() => Account, (account) => account.candidate)
   @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
   account: Account;
-
-  @ManyToMany(() => Skill, (skill) => skill.candidates)
-  @JoinTable({
-    name: 'nguoi_ung_tuyen_ky_nang',
-    joinColumn: { name: 'ma_tai_khoan', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'ma_ky_nang', referencedColumnName: 'id' },
-  })
-  skills: Skill[];
 
   @OneToMany(() => Follow, (follow) => follow.candidate)
   follows: Follow[];

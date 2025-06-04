@@ -1,3 +1,4 @@
+import { Education } from 'src/modules/education/entities/education.entity';
 import { ApplyJob } from 'src/modules/apply-job/entities/apply-job.entity';
 import { Benefit } from 'src/modules/benefit/entities/benefit.entity';
 import { Employer } from 'src/modules/employer/entities/employer.entity';
@@ -18,6 +19,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { LanguageJob } from 'src/language-job/entities/language-job.entity';
 
 @Entity({ name: 'cong_viec' })
 export class Job {
@@ -88,27 +90,23 @@ export class Job {
   @ManyToOne(() => Employer, (employer) => employer.jobs, { nullable: false })
   @JoinColumn({ name: 'ma_cong_ty' })
   employer: Employer;
-  @ManyToMany(() => Location, (location) => location.jobs)
+  @ManyToMany(() => Location, (location) => location.jobs, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'dia_diem_cong_viec',
     joinColumn: {
       name: 'ma_cong_viec',
-      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
       name: 'ma_dia_diem',
-      referencedColumnName: 'id',
     },
   })
   locations: Location[];
 
-  @Column({ name: 'cau_hoi_thu_viec', length: 255 })
-  interviewQuestion: string;
-
-  @Column({ name: 'co_bat_buoc_tra_loi', type: 'tinyint', default: 0 })
-  isRequiredQuestion: number;
-
-  @ManyToMany(() => TypeJob, (typeJob) => typeJob.jobs)
+  @ManyToMany(() => TypeJob, (typeJob) => typeJob.jobs, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'loai_hinh_lam_viec_cong_viec',
     joinColumn: {
@@ -122,7 +120,9 @@ export class Job {
   })
   typeJobs: TypeJob[];
 
-  @ManyToMany(() => Level, (level) => level.jobs)
+  @ManyToMany(() => Level, (level) => level.jobs, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'cap_bac_cong_viec',
     joinColumn: {
@@ -136,7 +136,9 @@ export class Job {
   })
   levels: Level[];
 
-  @ManyToMany(() => Benefit, (benefit) => benefit.jobs)
+  @ManyToMany(() => Benefit, (benefit) => benefit.jobs, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'phuc_loi_cong_viec',
     joinColumn: {
@@ -173,4 +175,13 @@ export class Job {
     },
   })
   skills: Skill[];
+
+  @ManyToOne(() => Education, (education) => education.jobs)
+  @JoinColumn({ name: 'ma_trinh_do' })
+  education: Education;
+
+  @OneToMany(() => LanguageJob, (languageJob) => languageJob.job, {
+    nullable: true,
+  })
+  languageJobs: LanguageJob[];
 }

@@ -29,9 +29,7 @@ export class CandidateService {
       relations: {
         account: true,
         notiSettings: true,
-        skills: true,
         saveJobs: true,
-        resumes: true,
       },
     });
     delete candidate.account.password;

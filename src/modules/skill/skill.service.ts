@@ -49,7 +49,7 @@ export class SkillService {
       { name: 'Elasticsearch', major: majorMap['DevOps'] },
     ].map((skill) => ({
       name: skill.name,
-      description: skill.name,
+
       status: JOB_STATUS.ACTIVE,
       major: skill.major,
     }));

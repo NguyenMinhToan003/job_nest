@@ -30,7 +30,7 @@ export class CvService {
 
   async findAllByUserId(candidateId: number) {
     return await this.cvRepository.find({
-      where: { resume: { id: candidateId } },
+      // where: { resume: { id: candidateId } },
       order: { updatedAt: 'DESC' },
     });
   }
@@ -38,7 +38,7 @@ export class CvService {
   async findCvByUserIdAndCvId(candidateId: number, cvId: number) {
     console.log(candidateId, cvId);
     return await this.cvRepository.findOne({
-      where: { resume: { id: +candidateId }, id: +cvId },
+      // where: { resume: { id: +candidateId }, id: +cvId },
     });
   }
 

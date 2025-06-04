@@ -5,7 +5,6 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -58,16 +57,5 @@ export class Location {
   employer: Employer;
 
   @ManyToMany(() => Job, (job) => job.locations)
-  @JoinTable({
-    name: 'dia_diem_cong_viec',
-    joinColumn: {
-      name: 'ma_dia_diem',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'ma_cong_viec',
-      referencedColumnName: 'id',
-    },
-  })
   jobs: Job[];
 }

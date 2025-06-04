@@ -33,7 +33,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return user;
     }
     if (err || !user) {
-      throw err || new UnauthorizedException('access token không hợp lệ');
+      throw new UnauthorizedException(
+        'Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.',
+      );
     }
     return user;
   }

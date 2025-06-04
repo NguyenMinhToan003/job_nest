@@ -1,17 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
 import { Repository } from 'typeorm';
 import {
-  ApplyJobWithNewCvDto,
   CreateApplyJobDto,
   GetApplyByStatusDto,
   GetApplyJobByJobIdDto,
 } from './dto/create-apply-job.dto';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/modules/job/job.service';
-import { CvService } from 'src/modules/cv/cv.service';
-import { ApplyJobValidatorService } from './validate-apply.service';
+import { ResumeVersionService } from 'src/modules/resume-version/resume-version.service';
 
 @Injectable()
 export class ApplyJobService {
@@ -19,53 +21,67 @@ export class ApplyJobService {
     @InjectRepository(ApplyJob)
     private applyJobRepository: Repository<ApplyJob>,
     private jobService: JobService,
-    private cvService: CvService,
-    private readonly applyJobValidatorService: ApplyJobValidatorService,
+    private readonly resumeVersionService: ResumeVersionService,
   ) {}
 
-  async applyJob(jobId: number, userId: number, body: CreateApplyJobDto) {
-    await this.applyJobValidatorService.validateApplyPermission(
-      jobId,
-      userId,
-      body.cvId,
+  async applyoJb(jobId: number, candidateId: number, body: CreateApplyJobDto) {
+    const checkPer = await this.resumeVersionService.validateMe(
+      candidateId,
+      body.resumeVersionId,
     );
-    const applyJob = this.applyJobRepository.create({
+    if (!checkPer) {
+      throw new UnauthorizedException('Bạn không có quyền sử dụng Hồ sơ này');
+    }
+    const getApply = await this.getApply(candidateId, jobId);
+
+    if (getApply) {
+      throw new BadRequestException({
+        message: 'Bạn đã ứng tuyển công việc này trước đó',
+        applyId: getApply.id,
+      });
+    }
+
+    return this.applyJobRepository.save({
       job: { id: jobId },
-      cv: { id: body.cvId },
+      resumeVersion: { id: body.resumeVersionId },
       status: APPLY_JOB_STATUS.PENDING,
       applyTime: new Date(),
       viewStatus: 0,
       note: body.note,
     });
-    return this.applyJobRepository.save(applyJob);
   }
 
-  async applyJobWithNewCv(
-    cv: Express.Multer.File,
-    jobId: number,
-    userId: number,
-    body: ApplyJobWithNewCvDto,
-  ) {
-    await this.applyJobValidatorService.validateApplyJobExistence(
-      jobId,
-      userId,
-    );
-    const cvNew = await this.cvService.create(cv, userId);
-    const applyJob = this.applyJobRepository.create({
-      job: { id: jobId },
-      cv: { id: cvNew.id },
-      status: APPLY_JOB_STATUS.PENDING,
-      applyTime: new Date(),
-      viewStatus: 0,
-      note: body.note,
+  async getApply(candidateId: number, jobId: number) {
+    return await this.applyJobRepository.findOne({
+      where: {
+        job: { id: +jobId },
+        resumeVersion: {
+          resume: {
+            candidate: {
+              id: +candidateId,
+            },
+          },
+        },
+      },
     });
-    return this.applyJobRepository.save(applyJob);
   }
 
-  async getMe(userId: number) {
+  async unApply(candidateId: number, jobId: number) {
+    const getApply = await this.getApply(candidateId, jobId);
+    if (!getApply) {
+      throw new BadRequestException('Công việc chưa ứng tuyển');
+    }
+    return this.applyJobRepository.remove(getApply);
+  }
+
+  async getMe(candidateId: number) {
     return this.applyJobRepository.find({
       where: {
-        cv: { candidate: { id: userId } },
+        resumeVersion: {
+          resume: {
+            candidate: { id: candidateId },
+          },
+        },
       },
       relations: {
         job: {
@@ -79,7 +95,7 @@ export class ApplyJobService {
           levels: true,
           typeJobs: true,
         },
-        cv: true,
+        resumeVersion: true,
       },
       order: {
         applyTime: 'DESC',
@@ -110,15 +126,19 @@ export class ApplyJobService {
           levels: true,
           typeJobs: true,
         },
-        cv: true,
+        resumeVersion: true,
       },
     });
   }
 
-  async getMeByStatus(userId: number, param: GetApplyByStatusDto) {
+  async getMeByStatus(candidateId: number, param: GetApplyByStatusDto) {
     return this.applyJobRepository.find({
       where: {
-        cv: { candidate: { id: userId } },
+        resumeVersion: {
+          resume: {
+            candidate: { id: candidateId },
+          },
+        },
         status: param.status,
       },
       relations: {
@@ -133,7 +153,7 @@ export class ApplyJobService {
           levels: true,
           typeJobs: true,
         },
-        cv: true,
+        resumeVersion: true,
       },
     });
   }
@@ -149,9 +169,17 @@ export class ApplyJobService {
         job: { id: +param.jobId },
       },
       relations: {
-        job: true,
-        cv: {
-          candidate: true,
+        resumeVersion: {
+          level: true,
+          district: {
+            city: true,
+          },
+          languageResumes: true,
+          education: true,
+          skills: true,
+          resume: {
+            candidate: true,
+          },
         },
       },
     });

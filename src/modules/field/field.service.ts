@@ -14,15 +14,12 @@ export class FieldService {
     const defaultFields = [
       {
         name: 'Công nghệ thông tin',
-        description: 'Lĩnh vực liên quan đến phát triển phần mềm, phần cứng',
       },
       {
         name: 'Kinh doanh',
-        description: 'Quản trị, tài chính, kế toán và các hoạt động thương mại',
       },
       {
         name: 'Giáo dục',
-        description: 'Đào tạo, giảng dạy và quản lý giáo dục',
       },
     ];
 

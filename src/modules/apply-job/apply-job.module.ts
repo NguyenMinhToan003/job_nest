@@ -4,12 +4,15 @@ import { ApplyJobController } from './apply-job.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
 import { JobModule } from 'src/modules/job/job.module';
-import { CvModule } from 'src/modules/cv/cv.module';
-import { ApplyJobValidatorService } from './validate-apply.service';
+import { ResumeVersionModule } from 'src/modules/resume-version/resume-version.module';
 
 @Module({
-  imports: [CvModule, JobModule, TypeOrmModule.forFeature([ApplyJob])],
+  imports: [
+    ResumeVersionModule,
+    JobModule,
+    TypeOrmModule.forFeature([ApplyJob]),
+  ],
   controllers: [ApplyJobController],
-  providers: [ApplyJobService, ApplyJobValidatorService],
+  providers: [ApplyJobService],
 })
 export class ApplyJobModule {}

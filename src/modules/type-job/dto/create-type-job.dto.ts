@@ -4,8 +4,4 @@ export class CreateTypeJobDto {
   @IsNotEmpty()
   @IsString()
   name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  description: string;
 }

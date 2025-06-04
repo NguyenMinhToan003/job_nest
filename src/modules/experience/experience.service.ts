@@ -19,12 +19,12 @@ export class ExperienceService {
 
   async createDefaultExperience() {
     const defaultExperience = [
-      { name: '1 năm', description: '1 năm', id: 1 },
-      { name: '3 năm', description: '3 năm', id: 2 },
-      { name: '5 năm', description: '5 năm', id: 3 },
-      { name: '7 năm', description: '7 năm', id: 4 },
-      { name: '10 năm', description: '10 năm', id: 5 },
-      { name: 'Trên 10 năm', description: 'Trên 10 năm', id: 6 },
+      { name: '1 năm', id: 1 },
+      { name: '3 năm', id: 2 },
+      { name: '5 năm', id: 3 },
+      { name: '7 năm', id: 4 },
+      { name: '10 năm', id: 5 },
+      { name: 'Trên 10 năm', id: 6 },
     ];
     await this.experienceRepository.save(defaultExperience);
   }
@@ -33,11 +33,10 @@ export class ExperienceService {
       name: dto.name,
     });
     if (existingExperience) {
-      throw new Error('Kinh nghiệm đã tồn tại');
+      throw new BadRequestException('Kinh nghiệm đã tồn tại');
     }
     const experience = this.experienceRepository.create({
       name: dto.name,
-      description: dto.description,
     });
     return this.experienceRepository.save(experience);
   }
@@ -62,9 +61,6 @@ export class ExperienceService {
     }
     if (dto.name !== undefined) {
       experience.name = dto.name;
-    }
-    if (dto.description !== undefined) {
-      experience.description = dto.description;
     }
     if (dto.status !== undefined) {
       experience.status = dto.status;

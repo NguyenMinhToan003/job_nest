@@ -32,8 +32,13 @@ import { NotiAccountModule } from './modules/noti-account/noti-account.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { FieldModule } from './modules/field/field.module';
-import { ResumeModule } from './modules/resume/resume.module';
 import { SeedModule } from './seed/seed.module';
+import { EducationModule } from './modules/education/education.module';
+import { ResumeModule } from './modules/resume/resume.module';
+import { ResumeVersionModule } from './modules/resume-version/resume-version.module';
+import { LanguageResumeModule } from './modules/language-resume/language-resume.module';
+import { LanguageModule } from './modules/language/language.module';
+import { LanguageJobModule } from './language-job/language-job.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -103,8 +108,13 @@ import { SeedModule } from './seed/seed.module';
     BenefitModule,
     AuthModule,
     NotiAccountModule,
-    ResumeModule,
     FieldModule,
+    EducationModule,
+    ResumeModule,
+    ResumeVersionModule,
+    LanguageResumeModule,
+    LanguageModule,
+    LanguageJobModule,
   ],
   controllers: [AppController],
   providers: [

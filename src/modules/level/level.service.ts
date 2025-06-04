@@ -20,29 +20,24 @@ export class LevelService {
     const defaultLevel = [
       {
         name: 'Intern',
-        description: 'Sinh viên thực tập, chưa có kinh nghiệm',
         status: 1,
       },
       {
         name: 'Fresher',
-        description: 'Mới tốt nghiệp, kinh nghiệm < 1 năm',
         status: 1,
       },
-      { name: 'Junior', description: 'Kinh nghiệm từ 1 đến 2 năm', status: 1 },
-      { name: 'Middle', description: 'Kinh nghiệm từ 2 đến 4 năm', status: 1 },
+      { name: 'Junior', status: 1 },
+      { name: 'Middle', status: 1 },
       {
         name: 'Senior',
-        description: 'Kinh nghiệm trên 4 năm, làm việc độc lập',
         status: 1,
       },
       {
         name: 'Lead',
-        description: 'Dẫn dắt nhóm nhỏ, hỗ trợ định hướng kỹ thuật',
         status: 1,
       },
       {
         name: 'Manager',
-        description: 'Quản lý dự án hoặc đội nhóm',
         status: 1,
       },
     ];
@@ -51,8 +46,9 @@ export class LevelService {
   }
 
   async create(dto: CreateLevelDto) {
-    const level = this.levelRepository.create(dto);
-    return this.levelRepository.save(level);
+    return this.levelRepository.save({
+      name: dto.name,
+    });
   }
 
   async findAll() {
@@ -72,14 +68,11 @@ export class LevelService {
     const existingLevel = await this.levelRepository.findOneBy({
       name: dto.name,
     });
-    if (existingLevel && existingLevel.id !== id) {
+    if (existingLevel && existingLevel.id !== +id) {
       throw new BadRequestException('Cấp bậc đã tồn tại');
     }
     if (dto.name !== undefined) {
       level.name = dto.name;
-    }
-    if (dto.description !== undefined) {
-      level.description = dto.description;
     }
     if (dto.status !== undefined) {
       level.status = dto.status;

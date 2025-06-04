@@ -1,5 +1,5 @@
 import { Job } from 'src/modules/job/entities/job.entity';
-import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'phuc_loi' })
 export class Benefit {
@@ -12,13 +12,5 @@ export class Benefit {
   @Column({ name: 'icon', length: 255 })
   icon: string;
   @ManyToMany(() => Job, (job) => job.benefits)
-  @JoinTable({
-    name: 'phuc_loi_cong_viec',
-    joinColumn: { name: 'ma_phuc_loi', referencedColumnName: 'id' },
-    inverseJoinColumn: {
-      name: 'ma_cong_viec',
-      referencedColumnName: 'id',
-    },
-  })
   jobs: Job[];
 }

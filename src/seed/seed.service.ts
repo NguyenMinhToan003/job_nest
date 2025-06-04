@@ -9,6 +9,8 @@ import { TypeJobService } from '../modules/type-job/type-job.service';
 import { AdminService } from '../modules/admin/admin.service';
 import { CityService } from '../modules/city/city.service';
 import { DistrictService } from '../modules/district/district.service';
+import { EducationService } from 'src/modules/education/education.service';
+import { LanguageService } from 'src/modules/language/language.service';
 
 @Injectable()
 export class SeedService {
@@ -23,6 +25,8 @@ export class SeedService {
     private readonly adminService: AdminService,
     private readonly cityService: CityService,
     private readonly districtService: DistrictService,
+    private readonly educationService: EducationService,
+    private readonly languageService: LanguageService,
   ) {}
 
   private readonly logger = new Logger(SeedService.name);
@@ -59,6 +63,12 @@ export class SeedService {
       this.logger.log(`✅ Đã seed city`);
       await this.districtService.fetchAll();
       this.logger.log(`✅ Đã seed district`);
+
+      await this.educationService.createDefaultEducation();
+      this.logger.log(`✅ Đã seed education`);
+
+      await this.languageService.createDefaultLanguages();
+      this.logger.log(`✅ Đã seed language`);
 
       this.logger.log('🌿 Hoàn tất seed dữ liệu!');
     } catch (error) {

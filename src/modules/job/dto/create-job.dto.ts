@@ -1,5 +1,6 @@
 import {
   ArrayMinSize,
+  IsArray,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -62,6 +63,13 @@ export class CreateJobDto {
 
   @IsNotEmpty()
   description: string;
+
+  @IsOptional()
+  education?: number;
+
+  @IsOptional()
+  @IsArray()
+  languages?: { languageId: number; level: number }[];
 }
 
 export class JobFilterDto {

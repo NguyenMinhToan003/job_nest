@@ -1,7 +1,18 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { ResumeService } from './resume.service';
+import { RolesGuard } from 'src/auth/passport/role.guard';
+import { Roles } from 'src/decorators/customize';
+import { ROLE_LIST } from 'src/types/enum';
 
 @Controller('resume')
 export class ResumeController {
-  constructor(private readonly hobbyService: ResumeService) {}
+  constructor(private readonly resumeService: ResumeService) {}
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Get('me')
+  getAll(@Req() req) {
+    const candidateId = req.user.id;
+    return this.resumeService.getAll(candidateId);
+  }
 }

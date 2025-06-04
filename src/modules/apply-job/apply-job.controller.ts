@@ -5,19 +5,15 @@ import {
   Param,
   Post,
   Req,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApplyJobService } from './apply-job.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import {
-  ApplyJobWithNewCvDto,
   CreateApplyJobDto,
   GetApplyByStatusDto,
   GetApplyJobByJobIdDto,
 } from './dto/create-apply-job.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ROLE_LIST } from 'src/types/enum';
 import { Roles } from 'src/decorators/customize';
 
@@ -34,28 +30,36 @@ export class ApplyJobController {
     @Body() body: CreateApplyJobDto,
   ) {
     const candidateId = req.user.id;
-    return this.applyJobService.applyJob(+jobId, +candidateId, body);
+    return this.applyJobService.applyoJb(+jobId, +candidateId, body);
   }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)
-  @UseInterceptors(FileInterceptor('cv'))
-  @Post('apply-new-cv/:jobId')
-  applyJobWithNewCv(
-    @UploadedFile()
-    cv: Express.Multer.File,
-    @Param('jobId') jobId: string,
-    @Req() req,
-    @Body() body: ApplyJobWithNewCvDto,
-  ) {
+  @Post('un-apply/:jobId')
+  unApply(@Req() req, @Param('jobId') jobId: number) {
     const candidateId = req.user.id;
-    return this.applyJobService.applyJobWithNewCv(
-      cv,
-      +jobId,
-      +candidateId,
-      body,
-    );
+    return this.applyJobService.unApply(candidateId, jobId);
   }
+
+  // @UseGuards(RolesGuard)
+  // @Roles(ROLE_LIST.CANDIDATE)
+  // @UseInterceptors(FileInterceptor('cv'))
+  // @Post('apply-new-cv/:jobId')
+  // applyJobWithNewCv(
+  //   @UploadedFile()
+  //   cv: Express.Multer.File,
+  //   @Param('jobId') jobId: string,
+  //   @Req() req,
+  //   @Body() body: ApplyJobWithNewCvDto,
+  // ) {
+  //   const candidateId = req.user.id;
+  //   return this.applyJobService.applyJobWithNewCv(
+  //     cv,
+  //     +jobId,
+  //     +candidateId,
+  //     body,
+  //   );
+  // }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)

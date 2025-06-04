@@ -1,11 +1,4 @@
-import { Resume } from 'src/modules/resume/entities/resume.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'cv' })
 export class Cv {
@@ -31,8 +24,4 @@ export class Cv {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
-
-  @OneToOne(() => Resume, (resume) => resume.cv)
-  @JoinColumn({ name: 'ma_cv' })
-  resume: Resume;
 }
