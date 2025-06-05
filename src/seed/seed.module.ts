@@ -13,6 +13,7 @@ import { DistrictModule } from '../modules/district/district.module';
 import { SeedController } from './seed.controller';
 import { EducationModule } from 'src/modules/education/education.module';
 import { LanguageModule } from 'src/modules/language/language.module';
+import { MatchingKeyModule } from 'src/modules/matching-key/matching-key.module';
 @Module({
   imports: [
     FieldModule,
@@ -20,6 +21,7 @@ import { LanguageModule } from 'src/modules/language/language.module';
     LevelModule,
     SkillModule,
     BenefitModule,
+    MatchingKeyModule,
     ExperienceModule,
     EducationModule,
     TypeJobModule,

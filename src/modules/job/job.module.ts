@@ -5,10 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Job } from './entities/job.entity';
 import { AccountModule } from '../account/account.module';
 import { FollowModule } from '../follow/follow.module';
-import { LanguageJobModule } from 'src/language-job/language-job.module';
+import { LanguageJobModule } from 'src/modules/language-job/language-job.module';
+import { MatchingWeightModule } from 'src/modules/matching-weight/matching-weight.module';
 
 @Module({
   imports: [
+    MatchingWeightModule,
     LanguageJobModule,
     FollowModule,
     AccountModule,

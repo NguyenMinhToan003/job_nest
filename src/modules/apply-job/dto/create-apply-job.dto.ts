@@ -19,7 +19,7 @@ export class CreateApplyJobDto {
   phone: string;
 
   @IsNotEmpty()
-  resumeVersionId: number;
+  resumeId: number;
 }
 export class ApplyJobWithNewCvDto {
   @IsOptional()

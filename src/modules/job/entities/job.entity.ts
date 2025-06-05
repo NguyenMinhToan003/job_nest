@@ -19,7 +19,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { LanguageJob } from 'src/language-job/entities/language-job.entity';
+import { LanguageJob } from 'src/modules/language-job/entities/language-job.entity';
+import { MatchingWeight } from 'src/modules/matching-weight/entities/matching-weight.entity';
 
 @Entity({ name: 'cong_viec' })
 export class Job {
@@ -184,4 +185,7 @@ export class Job {
     nullable: true,
   })
   languageJobs: LanguageJob[];
+
+  @OneToMany(() => MatchingWeight, (matchingWeight) => matchingWeight.job)
+  matchingWeights: MatchingWeight[];
 }

@@ -30,7 +30,7 @@ export class ApplyJobController {
     @Body() body: CreateApplyJobDto,
   ) {
     const candidateId = req.user.id;
-    return this.applyJobService.applyoJb(+jobId, +candidateId, body);
+    return this.applyJobService.applyJob(+jobId, +candidateId, body);
   }
 
   @UseGuards(RolesGuard)
@@ -40,26 +40,6 @@ export class ApplyJobController {
     const candidateId = req.user.id;
     return this.applyJobService.unApply(candidateId, jobId);
   }
-
-  // @UseGuards(RolesGuard)
-  // @Roles(ROLE_LIST.CANDIDATE)
-  // @UseInterceptors(FileInterceptor('cv'))
-  // @Post('apply-new-cv/:jobId')
-  // applyJobWithNewCv(
-  //   @UploadedFile()
-  //   cv: Express.Multer.File,
-  //   @Param('jobId') jobId: string,
-  //   @Req() req,
-  //   @Body() body: ApplyJobWithNewCvDto,
-  // ) {
-  //   const candidateId = req.user.id;
-  //   return this.applyJobService.applyJobWithNewCv(
-  //     cv,
-  //     +jobId,
-  //     +candidateId,
-  //     body,
-  //   );
-  // }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)

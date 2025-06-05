@@ -18,7 +18,8 @@ import {
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { JOB_STATUS } from 'src/types/enum';
 import { AccountService } from '../account/account.service';
-import { LanguageJobService } from 'src/language-job/language-job.service';
+import { LanguageJobService } from 'src/modules/language-job/language-job.service';
+import { MatchingWeightService } from 'src/modules/matching-weight/matching-weight.service';
 
 @Injectable()
 export class JobService {
@@ -27,6 +28,7 @@ export class JobService {
     private jobRepository: Repository<Job>,
     private accountService: AccountService,
     private languageJobService: LanguageJobService,
+    private matchingWeightService: MatchingWeightService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
     if (createJobDto.minSalary > createJobDto.maxSalary) {
@@ -67,7 +69,6 @@ export class JobService {
 
     if (createJobDto.languages && createJobDto.languages.length > 0) {
       for (const language of createJobDto.languages) {
-        console.log('check', job.id, language.languageId, language.level);
         await this.languageJobService.create({
           jobId: job.id,
           languageId: language.languageId,
@@ -75,6 +76,7 @@ export class JobService {
         });
       }
     }
+    this.matchingWeightService.triggerJobCreate(job.id);
     return job;
   }
 
@@ -208,6 +210,9 @@ export class JobService {
         education: true,
         languageJobs: {
           language: true,
+        },
+        matchingWeights: {
+          matchingKey: true,
         },
         applyJobs: {
           resumeVersion: {

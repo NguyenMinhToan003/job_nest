@@ -25,4 +25,7 @@ export class CreateResumeVersionDto {
   level: number;
   @IsNotEmpty()
   district: string;
+
+  @IsOptional()
+  name: string;
 }

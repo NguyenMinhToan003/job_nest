@@ -1,6 +1,7 @@
 import { Candidate } from 'src/modules/candidate/entities/candidate.entity';
 import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
 import {
+  Column,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -13,6 +14,9 @@ export class Resume {
   @PrimaryGeneratedColumn({ name: 'ma_ho_so' })
   id: number;
 
+  @Column({ name: 'ten_ho_so', length: 255, nullable: true })
+  name: string;
+
   @ManyToOne(() => Candidate, (candidate) => candidate.resumes, {
     nullable: false,
   })
@@ -21,4 +25,12 @@ export class Resume {
 
   @OneToMany(() => ResumeVersion, (resumeVersion) => resumeVersion.resume)
   resumeVersions: ResumeVersion[];
+
+  @Column({
+    name: 'cap_nhat_lan_cuoi',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updatedAt: Date;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ResumeVersion } from './entities/resume-version.entity';
 import { Repository } from 'typeorm';
@@ -17,13 +17,12 @@ export class ResumeVersionService {
     private readonly languageResumeService: LanguageResumeService,
   ) {}
 
-  async init(
-    candidateId: number,
+  async create(
     dto: CreateResumeVersionDto,
     avatar: Express.Multer.File,
+    resumeId: number,
   ) {
     const uploadImage = await this.uploadService.uploadFile([avatar]);
-    const resume = await this.resumeService.create(candidateId);
     const resumeVersion = await this.resumeVersionRepository.save({
       about: dto.about,
       avatar: uploadImage[0].secure_url,
@@ -33,7 +32,7 @@ export class ResumeVersionService {
       location: dto.location,
       phone: dto.phone,
       district: { id: dto.district },
-      resume: { id: +resume.id },
+      resume: { id: +resumeId },
       username: dto.username,
       level: { id: +dto.level },
       skills: dto.skills ? dto.skills.map((id) => ({ id: +id })) : [],
@@ -47,7 +46,12 @@ export class ResumeVersionService {
         });
       }
     }
-    return resumeVersion;
+    return {
+      resumeVersion: resumeVersion.id,
+      resume: resumeId,
+      message: 'Tạo phiên bản Hồ sơ thành công',
+      status: HttpStatus.CREATED,
+    };
   }
 
   async getMe(candidateId: number) {
@@ -82,9 +86,50 @@ export class ResumeVersionService {
     return this.resumeVersionRepository.findOne({
       where: {
         resume: {
+          id: +resumeId,
           candidate: { id: +candidateId },
         },
-        id: +resumeId,
+      },
+      relations: {
+        level: true,
+        district: {
+          city: true,
+        },
+        languageResumes: true,
+        education: true,
+        skills: true,
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+  }
+
+  async update(
+    candidateId: number,
+    dto: CreateResumeVersionDto,
+    avatar: Express.Multer.File,
+    resumeId: number,
+  ) {
+    const resume = await this.resumeService.validateMe(candidateId, resumeId);
+    if (!resume) {
+      throw new BadRequestException('Bạn không có quyền sửa đổi Hồ sơ này');
+    }
+    this.resumeService.update(candidateId, resumeId, dto.name);
+    return await this.create(dto, avatar, resumeId);
+  }
+
+  async viewResume(candidateId: number, resumeId: number) {
+    console.log('candidateId', candidateId, 'resumeId', resumeId);
+    const resume = await this.getOne(candidateId, +resumeId);
+    if (!resume) {
+      throw new BadRequestException('Hồ sơ không tồn tại');
+    }
+    return this.resumeVersionRepository.findOne({
+      where: {
+        resume: {
+          candidate: { id: +candidateId },
+        },
       },
       relations: {
         level: true,

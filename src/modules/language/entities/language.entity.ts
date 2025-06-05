@@ -1,4 +1,4 @@
-import { LanguageJob } from 'src/language-job/entities/language-job.entity';
+import { LanguageJob } from 'src/modules/language-job/entities/language-job.entity';
 import { LanguageResume } from 'src/modules/language-resume/entities/language-resume.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 

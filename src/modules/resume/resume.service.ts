@@ -9,9 +9,10 @@ export class ResumeService {
     @InjectRepository(Resume)
     private readonly resumeRepository: Repository<Resume>,
   ) {}
-  async create(candidateId: number) {
+  async create(candidateId: number, name?: string) {
     return this.resumeRepository.save({
       candidate: { id: candidateId },
+      name: name ? name : 'Hồ sơ ' + candidateId,
     });
   }
   async getAll(candidateId: number) {
@@ -19,6 +20,24 @@ export class ResumeService {
       where: {
         candidate: { id: +candidateId },
       },
+    });
+  }
+  async validateMe(candidateId: number, resumeId: number) {
+    return this.resumeRepository.findOne({
+      where: {
+        id: +resumeId,
+        candidate: { id: +candidateId },
+      },
+    });
+  }
+  async update(candidateId: number, resumeId: number, name: string) {
+    const resume = await this.validateMe(candidateId, resumeId);
+    if (!resume) {
+      throw new Error('Hồ sơ không tồn tại hoặc bạn không có quyền truy cập');
+    }
+    return this.resumeRepository.save({
+      ...resume,
+      name,
     });
   }
 }

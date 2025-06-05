@@ -3,6 +3,7 @@ import { District } from 'src/modules/district/entities/district.entity';
 import { Education } from 'src/modules/education/entities/education.entity';
 import { LanguageResume } from 'src/modules/language-resume/entities/language-resume.entity';
 import { Level } from 'src/modules/level/entities/level.entity';
+import { Major } from 'src/modules/major/entities/major.entity';
 import { Resume } from 'src/modules/resume/entities/resume.entity';
 import { Skill } from 'src/modules/skill/entities/skill.entity';
 import {
@@ -55,6 +56,16 @@ export class ResumeVersion {
     },
   )
   languageResumes: LanguageResume[];
+
+  @ManyToMany(() => Major, (major) => major.resumeVersions, {
+    nullable: true,
+  })
+  @JoinTable({
+    name: 'phien_ban_ho_so_nganh',
+    joinColumn: { name: 'ma_phien_ban' },
+    inverseJoinColumn: { name: 'ma_nganh' },
+  })
+  majors: Major[];
 
   @ManyToMany(() => Skill, (skill) => skill.resumeVersions)
   @JoinTable({

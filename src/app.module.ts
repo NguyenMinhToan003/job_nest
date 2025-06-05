@@ -38,7 +38,9 @@ import { ResumeModule } from './modules/resume/resume.module';
 import { ResumeVersionModule } from './modules/resume-version/resume-version.module';
 import { LanguageResumeModule } from './modules/language-resume/language-resume.module';
 import { LanguageModule } from './modules/language/language.module';
-import { LanguageJobModule } from './language-job/language-job.module';
+import { LanguageJobModule } from './modules/language-job/language-job.module';
+import { MatchingWeightModule } from './modules/matching-weight/matching-weight.module';
+import { MatchingKeyModule } from './modules/matching-key/matching-key.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -115,6 +117,8 @@ import { LanguageJobModule } from './language-job/language-job.module';
     LanguageResumeModule,
     LanguageModule,
     LanguageJobModule,
+    MatchingKeyModule,
+    MatchingWeightModule,
   ],
   controllers: [AppController],
   providers: [

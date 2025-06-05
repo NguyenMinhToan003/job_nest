@@ -1,10 +1,12 @@
 import { Field } from 'src/modules/field/entities/field.entity';
+import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
 import { Skill } from 'src/modules/skill/entities/skill.entity';
 import {
   Column,
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -26,4 +28,7 @@ export class Major {
 
   @OneToMany(() => Skill, (skill) => skill.major)
   skills: Skill[];
+
+  @ManyToMany(() => ResumeVersion, (resumeVersion) => resumeVersion.majors)
+  resumeVersions: ResumeVersion[];
 }
