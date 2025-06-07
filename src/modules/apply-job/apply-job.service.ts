@@ -193,7 +193,10 @@ export class ApplyJobService {
     const resumesWithScore = await Promise.all(
       resumes.map(async (applyJob) => {
         const resumeVersion = applyJob.resumeVersion;
-        const matchingScore = await this.calculateMatchingScore(job, resumeVersion);
+        const matchingScore = await this.calculateMatchingScore(
+          job,
+          resumeVersion,
+        );
         return {
           ...applyJob,
           matchingScore, // Thêm điểm phù hợp vào kết quả
@@ -205,7 +208,10 @@ export class ApplyJobService {
     return resumesWithScore.sort((a, b) => b.matchingScore - a.matchingScore);
   }
 
-  private async calculateMatchingScore(job: any, resumeVersion: any): Promise<number> {
+  private async calculateMatchingScore(
+    job: any,
+    resumeVersion: any,
+  ): Promise<number> {
     const weights = job.matchingWeights; // Lấy MatchingWeights từ job
 
     let totalScore = 0;
@@ -220,12 +226,21 @@ export class ApplyJobService {
     return Math.round(totalScore * 100);
   }
 
-  private calculateFieldScore(fieldName: string, resumeVersion: any, job: any): number {
+  private calculateFieldScore(
+    fieldName: string,
+    resumeVersion: any,
+    job: any,
+  ): number {
     if (fieldName === 'skill') {
-      const candidateSkills = (resumeVersion.skills || []).map(s => s.name) || []; // Default to empty array if undefined
-      const jobSkills = (job.skills || []).map(s => s.name) || [];
-      const matchedSkills = candidateSkills.filter(skill => jobSkills.includes(skill));
-      return jobSkills.length > 0 ? (matchedSkills.length / jobSkills.length) : 0.5;
+      const candidateSkills =
+        (resumeVersion.skills || []).map((s) => s.name) || []; // Default to empty array if undefined
+      const jobSkills = (job.skills || []).map((s) => s.name) || [];
+      const matchedSkills = candidateSkills.filter((skill) =>
+        jobSkills.includes(skill),
+      );
+      return jobSkills.length > 0
+        ? matchedSkills.length / jobSkills.length
+        : 0.5;
     }
     if (fieldName === 'experience') {
       const candidateExp = parseInt(resumeVersion.experience?.name) || 0;
@@ -238,10 +253,13 @@ export class ApplyJobService {
       return candidateEdu >= jobEdu ? 1 : candidateEdu > 0 ? 0.5 : 0;
     }
     if (fieldName === 'language') {
-      const candidateLangs = (resumeVersion.languageResumes || []).map(l => l.name) || [];
-      const jobLangs = (job.languages || []).map(l => l.name) || [];
-      const matchedLangs = candidateLangs.filter(lang => jobLangs.includes(lang));
-      return jobLangs.length > 0 ? (matchedLangs.length / jobLangs.length) : 0.5;
+      const candidateLangs =
+        (resumeVersion.languageResumes || []).map((l) => l.name) || [];
+      const jobLangs = (job.languages || []).map((l) => l.name) || [];
+      const matchedLangs = candidateLangs.filter((lang) =>
+        jobLangs.includes(lang),
+      );
+      return jobLangs.length > 0 ? matchedLangs.length / jobLangs.length : 0.5;
     }
     return 0;
   }

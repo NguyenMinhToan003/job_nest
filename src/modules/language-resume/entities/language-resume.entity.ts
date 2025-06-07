@@ -17,6 +17,7 @@ export class LanguageResume {
 
   @ManyToOne(() => Language, (language) => language.languageResumes, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'ma_ngon_ngu' })
   language: Language;
@@ -25,6 +26,7 @@ export class LanguageResume {
     () => ResumeVersion,
     (resumeVersion) => resumeVersion.languageResumes,
     {
+      onDelete: 'CASCADE',
       nullable: false,
     },
   )

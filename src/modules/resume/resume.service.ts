@@ -40,4 +40,12 @@ export class ResumeService {
       name,
     });
   }
+
+  async delete(candidateId: number, resumeId: number) {
+    const resume = await this.validateMe(candidateId, resumeId);
+    if (!resume) {
+      throw new Error('Hồ sơ không tồn tại hoặc bạn không có quyền truy cập');
+    }
+    return this.resumeRepository.remove(resume);
+  }
 }

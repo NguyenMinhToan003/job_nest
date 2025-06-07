@@ -31,6 +31,9 @@ export class ResumeVersion {
   @Column({ name: 'so_dien_thoai', length: 11 })
   phone: string;
 
+  @Column({ name: 'email', nullable: true })
+  email: string;
+
   @Column({
     name: 'gioi_tinh',
     type: 'enum',
@@ -78,7 +81,7 @@ export class ResumeVersion {
   @ManyToOne(() => Education, (education) => education.resumeVersions, {
     nullable: true,
   })
-  @JoinColumn({ name: 'ma_bang_cap' })
+  @JoinColumn({ name: 'ma_trinh_do' })
   education: Education;
 
   @ManyToOne(() => Level, (level) => level.resumeVersions, {
@@ -100,6 +103,7 @@ export class ResumeVersion {
 
   @ManyToOne(() => Resume, (resume) => resume.resumeVersions, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'ma_ho_so' })
   resume: Resume;

@@ -33,7 +33,7 @@ export class ResumeVersionController {
     @Req() req,
     @Body() dto: CreateResumeVersionDto,
     @UploadedFile()
-    avatar: Express.Multer.File,
+    avatar: Express.Multer.File | null,
   ) {
     const candidateId = req.user.id;
     const resume = await this.resumeService.create(candidateId, dto.name);
@@ -49,7 +49,7 @@ export class ResumeVersionController {
     @Body() dto: CreateResumeVersionDto,
     @Param('resumeId') resumeId: number,
     @UploadedFile()
-    avatar: Express.Multer.File,
+    avatar: Express.Multer.File | null,
   ) {
     const candidateId = req.user.id;
     return this.resumeVersionService.update(
@@ -68,12 +68,9 @@ export class ResumeVersionController {
     return this.resumeVersionService.getMe(+candidateId);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.CANDIDATE)
   @Get(':resumeId')
-  getOne(@Req() req, @Param('resumeId') resumeId: number) {
-    const candidateId = req.user.id;
-    return this.resumeVersionService.getOne(candidateId, resumeId);
+  getOne(@Param('resumeId') resumeId: number) {
+    return this.resumeVersionService.viewVersion(resumeId);
   }
 
   @UseGuards(RolesGuard)
