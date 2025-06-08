@@ -41,6 +41,8 @@ import { LanguageModule } from './modules/language/language.module';
 import { LanguageJobModule } from './modules/language-job/language-job.module';
 import { MatchingWeightModule } from './modules/matching-weight/matching-weight.module';
 import { MatchingKeyModule } from './modules/matching-key/matching-key.module';
+import { BlacklistKeywordModule } from './blacklist-keyword/blacklist-keyword.module';
+import { ResumeversionExpModule } from './resumeversion-exp/resumeversion-exp.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -119,6 +121,8 @@ import { MatchingKeyModule } from './modules/matching-key/matching-key.module';
     LanguageJobModule,
     MatchingKeyModule,
     MatchingWeightModule,
+    BlacklistKeywordModule,
+    ResumeversionExpModule,
   ],
   controllers: [AppController],
   providers: [

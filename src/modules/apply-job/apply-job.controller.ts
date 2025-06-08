@@ -71,4 +71,11 @@ export class ApplyJobController {
     const companyId = req.user.id;
     return this.applyJobService.getApplyJobByJobId(+companyId, param);
   }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Get('mark-view/:applyId')
+  getResumeById(@Param('applyId') applyId: number) {
+    return this.applyJobService.markView(+applyId);
+  }
 }

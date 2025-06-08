@@ -131,6 +131,18 @@ export class ApplyJobService {
     });
   }
 
+  async markView(applyId: number) {
+    const applyJob = await this.applyJobRepository.findOne({
+      where: { id: applyId },
+    });
+    if (!applyJob) {
+      throw new BadRequestException('Ứng tuyển không tồn tại');
+    }
+    if (applyJob.viewStatus === 1) return;
+    applyJob.viewStatus = 1; // Đánh dấu đã xem
+    return this.applyJobRepository.save(applyJob);
+  }
+
   async getMeByStatus(candidateId: number, param: GetApplyByStatusDto) {
     return this.applyJobRepository.find({
       where: {

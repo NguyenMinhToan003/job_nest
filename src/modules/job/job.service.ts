@@ -20,6 +20,7 @@ import { JOB_STATUS } from 'src/types/enum';
 import { AccountService } from '../account/account.service';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { MatchingWeightService } from 'src/modules/matching-weight/matching-weight.service';
+import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
 
 @Injectable()
 export class JobService {
@@ -29,22 +30,12 @@ export class JobService {
     private accountService: AccountService,
     private languageJobService: LanguageJobService,
     private matchingWeightService: MatchingWeightService,
+    private blacklistKeywordService: BlacklistKeywordService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
     if (createJobDto.minSalary > createJobDto.maxSalary) {
       throw new ForbiddenException(
         'Mức lương tối thiểu không thể lớn hơn mức lương tối đa',
-      );
-    }
-    const employer = await this.accountService.findEmployerWhere({
-      id: employerId,
-    });
-    if (!employer) {
-      throw new ForbiddenException('Nhà tuyển dụng không tồn tại');
-    }
-    if (employer[0].status === 0) {
-      throw new ForbiddenException(
-        'Tài khoản nhà tuyển dụng chưa được xác minh ',
       );
     }
     const job = await this.jobRepository.save({
@@ -181,7 +172,6 @@ export class JobService {
         where.expiredAt = MoreThanOrEqual(currentDate);
       }
     }
-    console.log('where', where);
     return this.jobRepository.find({
       where,
       relations: {
@@ -234,8 +224,14 @@ export class JobService {
     if (!job) {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
-    if (job.isActive === JOB_STATUS.ACTIVE) {
-      throw new ForbiddenException('không thể sửa khi đã xét duyệt');
+    const checkContent =
+      await this.blacklistKeywordService.checkContentForBlacklist(
+        dto.name + dto.description + dto.requirement,
+      );
+    if (checkContent) {
+      throw new ForbiddenException(
+        'Công việc vi phạm từ khóa cấm. Vui lòng kiểm tra lại nội dung công việc.',
+      );
     }
     if (job.isActive === JOB_STATUS.BLOCK) {
       job.isActive = JOB_STATUS.PENDING;

@@ -14,6 +14,7 @@ import { SeedController } from './seed.controller';
 import { EducationModule } from 'src/modules/education/education.module';
 import { LanguageModule } from 'src/modules/language/language.module';
 import { MatchingKeyModule } from 'src/modules/matching-key/matching-key.module';
+import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.module';
 @Module({
   imports: [
     FieldModule,
@@ -28,6 +29,7 @@ import { MatchingKeyModule } from 'src/modules/matching-key/matching-key.module'
     LanguageModule,
     AdminModule,
     CityModule,
+    BlacklistKeywordModule,
     DistrictModule,
   ],
   controllers: [SeedController],

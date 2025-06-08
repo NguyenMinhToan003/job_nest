@@ -12,6 +12,7 @@ import { DistrictService } from '../modules/district/district.service';
 import { EducationService } from 'src/modules/education/education.service';
 import { LanguageService } from 'src/modules/language/language.service';
 import { MatchingKeyService } from 'src/modules/matching-key/matching-key.service';
+import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
 
 @Injectable()
 export class SeedService {
@@ -29,6 +30,7 @@ export class SeedService {
     private readonly educationService: EducationService,
     private readonly languageService: LanguageService,
     private readonly matchingKeyService: MatchingKeyService,
+    private readonly blacklistKeywordService: BlacklistKeywordService,
   ) {}
 
   private readonly logger = new Logger(SeedService.name);
@@ -74,6 +76,9 @@ export class SeedService {
 
       await this.matchingKeyService.createDefaultKeys();
       this.logger.log(`✅ Đã seed matching keys`);
+
+      await this.blacklistKeywordService.createDefaultKeywords();
+      this.logger.log(`✅ Đã seed blacklist keywords`);
 
       this.logger.log('🌿 Hoàn tất seed dữ liệu!');
     } catch (error) {

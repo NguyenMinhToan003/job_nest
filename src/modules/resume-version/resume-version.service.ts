@@ -6,6 +6,7 @@ import { CreateResumeVersionDto } from './dto/create-resume-version.dto';
 import { UploadService } from 'src/upload/upload.service';
 import { ResumeService } from '../resume/resume.service';
 import { LanguageResumeService } from '../language-resume/language-resume.service';
+import { ResumeversionExpService } from 'src/resumeversion-exp/resumeversion-exp.service';
 
 @Injectable()
 export class ResumeVersionService {
@@ -15,6 +16,7 @@ export class ResumeVersionService {
     private readonly uploadService: UploadService,
     private readonly resumeService: ResumeService,
     private readonly languageResumeService: LanguageResumeService,
+    private readonly resumeversionExpService: ResumeversionExpService,
   ) {}
 
   async create(
@@ -27,6 +29,7 @@ export class ResumeVersionService {
       const upload = await this.uploadService.uploadFile([avatar]);
       uploadImage = upload[0].secure_url;
     }
+    console.log(dto, 'dto');
     const resumeVersion = await this.resumeVersionRepository.save({
       about: dto.about,
       avatar: uploadImage,
@@ -52,6 +55,20 @@ export class ResumeVersionService {
         });
       }
     }
+    if (dto.resumeversionExps?.length > 0) {
+      for (const exp of dto.resumeversionExps) {
+        await this.resumeversionExpService.create({
+          companyName: exp.companyName,
+          position: exp.position,
+          startTime: exp.startTime,
+          endTime: exp.endTime,
+          jobDescription: exp.jobDescription,
+          typeJobId: exp.typeJobId,
+          resumeVersionId: resumeVersion.id,
+        });
+      }
+    }
+
     return {
       resumeVersion: resumeVersion.id,
       resume: resumeId,
@@ -72,10 +89,9 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        languageResumes: true,
-        education: true,
-        skills: true,
-        majors: true,
+        experiences: {
+          typeJob: true,
+        },
       },
     });
   }
@@ -102,10 +118,9 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        languageResumes: true,
-        education: true,
-        skills: true,
-        majors: true,
+        experiences: {
+          typeJob: true,
+        },
       },
       order: {
         id: 'DESC',
@@ -130,6 +145,9 @@ export class ResumeVersionService {
         skills: true,
         resume: true,
         majors: true,
+        experiences: {
+          typeJob: true,
+        },
       },
     });
     if (!version) {
@@ -148,6 +166,7 @@ export class ResumeVersionService {
     if (!resume) {
       throw new BadRequestException('Bạn không có quyền sửa đổi Hồ sơ này');
     }
+    console.log(dto, 'dto');
     this.resumeService.update(candidateId, resumeId, dto.name);
     const lastResumeVersion = await this.viewResume(candidateId, resumeId);
     let uploadImage = [];
@@ -179,6 +198,19 @@ export class ResumeVersionService {
         });
       }
     }
+    if (dto.resumeversionExps?.length > 0) {
+      for (const exp of dto.resumeversionExps) {
+        await this.resumeversionExpService.create({
+          companyName: exp.companyName,
+          position: exp.position,
+          startTime: exp.startTime,
+          endTime: exp.endTime,
+          jobDescription: exp.jobDescription,
+          typeJobId: exp.typeJobId,
+          resumeVersionId: resumeVersion.id,
+        });
+      }
+    }
   }
 
   async viewResume(candidateId: number, resumeId: number) {
@@ -206,6 +238,9 @@ export class ResumeVersionService {
         skills: true,
         resume: true,
         majors: true,
+        experiences: {
+          typeJob: true,
+        },
       },
       order: {
         id: 'DESC',

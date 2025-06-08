@@ -57,4 +57,16 @@ export class CreateResumeVersionDto {
 
   @IsOptional()
   avatar?: string;
+
+  @IsOptional()
+  @IsArray()
+  resumeversionExps?: {
+    companyName: string;
+    position: string;
+    startTime: Date;
+    endTime?: Date | null;
+    jobDescription: string;
+    resumeVersionId: number;
+    typeJobId?: number;
+  }[];
 }
