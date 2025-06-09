@@ -17,17 +17,17 @@ import {
 } from 'typeorm';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { JOB_STATUS } from 'src/types/enum';
-import { AccountService } from '../account/account.service';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { MatchingWeightService } from 'src/modules/matching-weight/matching-weight.service';
 import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
+import { FieldService } from '../field/field.service';
 
 @Injectable()
 export class JobService {
   constructor(
     @InjectRepository(Job)
     private jobRepository: Repository<Job>,
-    private accountService: AccountService,
+    private fieldService: FieldService,
     private languageJobService: LanguageJobService,
     private matchingWeightService: MatchingWeightService,
     private blacklistKeywordService: BlacklistKeywordService,
@@ -38,6 +38,10 @@ export class JobService {
         'Mức lương tối thiểu không thể lớn hơn mức lương tối đa',
       );
     }
+    const checkContent =
+      await this.blacklistKeywordService.checkContentForBlacklist(
+        createJobDto.name + createJobDto.description + createJobDto.requirement,
+      );
     const job = await this.jobRepository.save({
       name: createJobDto.name,
       description: createJobDto.description,
@@ -45,7 +49,7 @@ export class JobService {
       quantity: createJobDto.quantity,
       minSalary: createJobDto.minSalary,
       maxSalary: createJobDto.maxSalary,
-      isActive: JOB_STATUS.PENDING,
+      isActive: !checkContent ? JOB_STATUS.ACTIVE : JOB_STATUS.PENDING,
       createdAt: new Date(),
       expiredAt: new Date(new Date().setDate(new Date().getDate() + 28)),
       employer: { id: employerId },
@@ -318,42 +322,56 @@ export class JobService {
         },
         skills: true,
         levels: true,
+        education: true,
+        languageJobs: {
+          language: true,
+        },
         typeJobs: true,
       },
       order: {
         createdAt: 'DESC',
       },
     });
-    console.log(accountId, 'accountId');
-    if (accountId === undefined) {
-      return {
-        total: jobs.length,
-        data: jobs,
-      };
-    }
     // them isApplied va isSaved vao tung job
     const jobForAccount = [];
     for (const job of jobs) {
-      const isApplied = await this.jobRepository.findOne({
-        where: {
-          id: job.id,
-          applyJobs: {
-            resumeVersion: { resume: { candidate: { id: accountId } } },
+      let isApplied = undefined;
+      let isSaved = undefined;
+      if (accountId !== undefined) {
+        isApplied = await this.jobRepository.findOne({
+          where: {
+            id: job.id,
+            applyJobs: {
+              resumeVersion: { resume: { candidate: { id: accountId } } },
+            },
           },
-        },
-      });
-      const isSaved = await this.jobRepository.findOne({
-        where: {
-          id: job.id,
-          saveJobs: { candidate: { id: accountId } },
-        },
-      });
+        });
+        isSaved = await this.jobRepository.findOne({
+          where: {
+            id: job.id,
+            saveJobs: { candidate: { id: accountId } },
+          },
+        });
+      }
+
+      const fields = await this.fieldService.getFieldByJobId(job.id);
 
       jobForAccount.push({
         ...job,
-        isApplied: !!isApplied,
-        isSaved: !!isSaved,
+        isApplied: isApplied ? true : false,
+        isSaved: isSaved ? true : false,
+        fields: fields,
       });
+    }
+    //paginate
+    if (body.page && body.limit) {
+      const offset = (body.page - 1) * body.limit;
+      const limit = body.limit;
+      const paginatedJobs = jobForAccount.slice(offset, offset + limit);
+      return {
+        total: jobForAccount.length,
+        data: paginatedJobs,
+      };
     }
     return {
       total: jobForAccount.length,

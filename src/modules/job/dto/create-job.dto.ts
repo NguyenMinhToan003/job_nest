@@ -81,8 +81,8 @@ export class JobFilterDto {
   search?: string;
 
   @IsOptional()
-  @IsString({ each: true })
-  levels?: string[];
+  @IsInt({ each: true })
+  levels?: number[];
 
   @IsOptional()
   @IsInt({ each: true })
@@ -115,6 +115,12 @@ export class JobFilterDto {
   @IsOptional()
   @IsInt()
   employerId: number;
+
+  @IsOptional()
+  limit?: number;
+
+  @IsOptional()
+  page?: number;
 }
 export class AdminJobFilterDto {
   @IsOptional()

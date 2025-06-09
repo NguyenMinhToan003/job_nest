@@ -45,7 +45,7 @@ export class TypeJobService {
       name: dto.name,
     });
     if (existingTypeJob) {
-      throw new Error('Loại công việc đã tồn tại');
+      throw new BadRequestException('Loại công việc đã tồn tại');
     }
     const typeJob = this.typeJobRepository.create(dto);
     return this.typeJobRepository.save(typeJob);

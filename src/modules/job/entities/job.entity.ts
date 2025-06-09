@@ -21,6 +21,7 @@ import {
 } from 'typeorm';
 import { LanguageJob } from 'src/modules/language-job/entities/language-job.entity';
 import { MatchingWeight } from 'src/modules/matching-weight/entities/matching-weight.entity';
+import { ViewJob } from 'src/view-job/entities/view-job.entity';
 
 @Entity({ name: 'cong_viec' })
 export class Job {
@@ -188,4 +189,7 @@ export class Job {
 
   @OneToMany(() => MatchingWeight, (matchingWeight) => matchingWeight.job)
   matchingWeights: MatchingWeight[];
+
+  @OneToMany(() => ViewJob, (viewJob) => viewJob.job)
+  viewJobs: ViewJob[];
 }

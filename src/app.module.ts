@@ -43,6 +43,7 @@ import { MatchingWeightModule } from './modules/matching-weight/matching-weight.
 import { MatchingKeyModule } from './modules/matching-key/matching-key.module';
 import { BlacklistKeywordModule } from './blacklist-keyword/blacklist-keyword.module';
 import { ResumeversionExpModule } from './resumeversion-exp/resumeversion-exp.module';
+import { ViewJobModule } from './view-job/view-job.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -123,6 +124,7 @@ import { ResumeversionExpModule } from './resumeversion-exp/resumeversion-exp.mo
     MatchingWeightModule,
     BlacklistKeywordModule,
     ResumeversionExpModule,
+    ViewJobModule,
   ],
   controllers: [AppController],
   providers: [

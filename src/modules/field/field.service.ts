@@ -32,4 +32,17 @@ export class FieldService {
   async findAll() {
     return this.fieldRepository.find({ relations: { majors: true } });
   }
+
+  async getFieldByJobId(jobId: number) {
+    return this.fieldRepository.find({
+      where: {
+        majors: {
+          skills: {
+            jobs: { id: jobId },
+          },
+        },
+      },
+      relations: { majors: true },
+    });
+  }
 }

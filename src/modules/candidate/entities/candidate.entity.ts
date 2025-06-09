@@ -11,6 +11,7 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
+import { ViewJob } from 'src/view-job/entities/view-job.entity';
 
 @Entity({ name: 'nguoi_ung_tuyen' })
 export class Candidate {
@@ -48,6 +49,9 @@ export class Candidate {
 
   @OneToMany(() => SaveJob, (saveJob) => saveJob.candidate)
   saveJobs: SaveJob[];
+
+  @OneToMany(() => ViewJob, (viewJob) => viewJob.candidate)
+  viewJobs: ViewJob[];
 
   @OneToMany(() => NotiSetting, (notiSetting) => notiSetting.candidate)
   notiSettings: NotiSetting[];

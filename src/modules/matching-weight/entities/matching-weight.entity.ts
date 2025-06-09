@@ -14,12 +14,14 @@ export class MatchingWeight {
 
   @ManyToOne(() => MatchingKey, (matchingKey) => matchingKey.matchingWeights, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'ma_tieu_chi' })
   matchingKey: MatchingKey;
 
   @ManyToOne(() => Job, (job) => job.matchingWeights, {
     nullable: false,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'ma_cong_viec' })
   job: Job;

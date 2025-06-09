@@ -52,4 +52,10 @@ export class SkillController {
   async delete(@Param('id') id: number) {
     return this.skillService.delete(+id);
   }
+
+  @Public()
+  @Get('paginate/:page/:limit')
+  async paginate(@Param('page') page: number, @Param('limit') limit: number) {
+    return this.skillService.paginate(+page, +limit);
+  }
 }
