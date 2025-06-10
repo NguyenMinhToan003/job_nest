@@ -50,4 +50,8 @@ export class UploadService {
 
     return uploadedFiles;
   }
+
+  async deleteFile(publicId: string): Promise<CloudinaryResponse> {
+    return await this.cloudinary.uploader.destroy(publicId);
+  }
 }

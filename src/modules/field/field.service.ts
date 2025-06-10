@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Field } from './entities/field.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
+import { CreateFieldDto } from './dto/create-field.dto';
 
 @Injectable()
 export class FieldService {
@@ -44,5 +45,51 @@ export class FieldService {
       },
       relations: { majors: true },
     });
+  }
+
+  async findById(id: number) {
+    return this.fieldRepository.findOne({
+      where: { id },
+      relations: {
+        majors: {
+          skills: true,
+        },
+      },
+    });
+  }
+
+  async createFields(dto: CreateFieldDto) {
+    const existingField = await this.fieldRepository.findOne({
+      where: { name: dto.name },
+    });
+    if (existingField) {
+      throw new BadRequestException('Tên lĩnh vực đã tồn tại');
+    }
+    return this.fieldRepository.save({
+      name: dto.name,
+    });
+  }
+
+  async updateField(id: number, dto: CreateFieldDto) {
+    const field = await this.fieldRepository.findOne({ where: { id } });
+    if (!field) {
+      throw new BadRequestException('Lĩnh vực không tồn tại');
+    }
+    const existingField = await this.fieldRepository.findOne({
+      where: { name: dto.name, id: Not(id) }, // Ensure we don't match the current field
+    });
+    if (existingField) {
+      throw new BadRequestException('Tên lĩnh vực đã tồn tại');
+    }
+    field.name = dto.name;
+    return this.fieldRepository.save(field);
+  }
+
+  async deleteField(id: number) {
+    const field = await this.fieldRepository.findOne({ where: { id } });
+    if (!field) {
+      throw new BadRequestException('Lĩnh vực không tồn tại');
+    }
+    return this.fieldRepository.remove(field);
   }
 }

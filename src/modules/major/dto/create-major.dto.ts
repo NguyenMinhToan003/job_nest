@@ -1,9 +1,10 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateMajorDto {
   @IsNotEmpty()
   name: string;
-
   @IsNotEmpty()
-  status: number;
+  fieldId: number;
+  @IsOptional()
+  status?: number;
 }

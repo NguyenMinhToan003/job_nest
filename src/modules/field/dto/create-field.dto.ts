@@ -1,7 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateCountryDto {
+export class CreateFieldDto {
   @IsNotEmpty()
   name: string;
-  hideAt?: number;
 }

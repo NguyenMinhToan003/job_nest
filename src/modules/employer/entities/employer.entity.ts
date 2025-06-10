@@ -31,8 +31,8 @@ export class Employer {
   @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
   account: Account;
 
-  @ManyToOne(() => Country, (country) => country.companies)
-  @JoinColumn({ name: 'ma_quoc_gia', referencedColumnName: 'code' })
+  @ManyToOne(() => Country, (country) => country.employees)
+  @JoinColumn({ name: 'ma_quoc_gia', referencedColumnName: 'id' })
   country: Country;
 
   @OneToMany(() => Post, (post) => post.employer)

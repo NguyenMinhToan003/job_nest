@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Major } from './entities/major.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateMajorDto } from './dto/create-major.dto';
 import { FieldService } from '../field/field.service';
 
@@ -58,13 +58,52 @@ export class MajorService {
       where: { name: dto.name },
     });
     if (existingMajor) {
-      throw new Error('Chuyên ngành đã tồn tại');
+      throw new BadRequestException('Chuyên ngành đã tồn tại');
     }
-    const major = this.majorRepository.create(dto);
+    const major = this.majorRepository.create({
+      name: dto.name,
+      field: { id: dto.fieldId },
+    });
     return this.majorRepository.save(major);
   }
 
   async findAll() {
     return this.majorRepository.find({ relations: ['field'] });
+  }
+  async update(id: number, dto: CreateMajorDto) {
+    const major = await this.majorRepository.findOne({ where: { id } });
+    if (!major) {
+      throw new BadRequestException('Chuyên ngành không tồn tại');
+    }
+    const existingMajor = await this.majorRepository.findOne({
+      where: { name: dto.name, id: Not(id) },
+    });
+    if (existingMajor) {
+      throw new BadRequestException('Chuyên ngành đã tồn tại');
+    }
+    major.name = dto.name;
+    return this.majorRepository.save(major);
+  }
+
+  async remove(id: number) {
+    const major = await this.majorRepository.findOne({ where: { id } });
+    if (!major) {
+      throw new BadRequestException('Chuyên ngành không tồn tại');
+    }
+    return this.majorRepository.remove(major);
+  }
+
+  async getOne(id: number) {
+    const major = await this.majorRepository.findOne({
+      where: { id },
+      relations: {
+        field: true,
+        skills: true,
+      },
+    });
+    if (!major) {
+      throw new BadRequestException('Chuyên ngành không tồn tại');
+    }
+    return major;
   }
 }
