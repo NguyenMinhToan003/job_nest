@@ -51,7 +51,7 @@ export class JobService {
       maxSalary: createJobDto.maxSalary,
       isActive: !checkContent ? JOB_STATUS.ACTIVE : JOB_STATUS.PENDING,
       createdAt: new Date(),
-      expiredAt: new Date(new Date().setDate(new Date().getDate() + 28)),
+      expiredAt: createJobDto.expiredAt,
       employer: { id: employerId },
       benefits: createJobDto.benefits.map((id) => ({ id })),
       skills: createJobDto.skills.map((id) => ({ id })),
@@ -71,7 +71,6 @@ export class JobService {
         });
       }
     }
-    this.matchingWeightService.triggerJobCreate(job.id);
     return job;
   }
 
@@ -179,6 +178,7 @@ export class JobService {
     return this.jobRepository.find({
       where,
       relations: {
+        matchingWeights: true,
         applyJobs: {
           resumeVersion: {
             resume: {
@@ -205,9 +205,7 @@ export class JobService {
         languageJobs: {
           language: true,
         },
-        matchingWeights: {
-          matchingKey: true,
-        },
+        matchingWeights: true,
         applyJobs: {
           resumeVersion: {
             resume: {

@@ -13,7 +13,6 @@ import { DistrictModule } from '../modules/district/district.module';
 import { SeedController } from './seed.controller';
 import { EducationModule } from 'src/modules/education/education.module';
 import { LanguageModule } from 'src/modules/language/language.module';
-import { MatchingKeyModule } from 'src/modules/matching-key/matching-key.module';
 import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.module';
 @Module({
   imports: [
@@ -22,7 +21,6 @@ import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.
     LevelModule,
     SkillModule,
     BenefitModule,
-    MatchingKeyModule,
     ExperienceModule,
     EducationModule,
     TypeJobModule,

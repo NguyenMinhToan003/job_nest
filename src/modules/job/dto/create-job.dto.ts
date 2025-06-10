@@ -16,6 +16,9 @@ export class CreateJobDto {
   name: string;
 
   @IsNotEmpty()
+  expiredAt: Date;
+
+  @IsNotEmpty()
   @IsNumber()
   @Min(1)
   quantity: number;

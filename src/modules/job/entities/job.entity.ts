@@ -17,6 +17,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { LanguageJob } from 'src/modules/language-job/entities/language-job.entity';
@@ -187,7 +188,7 @@ export class Job {
   })
   languageJobs: LanguageJob[];
 
-  @OneToMany(() => MatchingWeight, (matchingWeight) => matchingWeight.job)
+  @OneToOne(() => MatchingWeight, (matchingWeight) => matchingWeight.job)
   matchingWeights: MatchingWeight[];
 
   @OneToMany(() => ViewJob, (viewJob) => viewJob.job)
