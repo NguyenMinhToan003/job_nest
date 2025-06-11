@@ -14,7 +14,7 @@ import {
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/modules/job/job.service';
 import { ResumeVersionService } from 'src/modules/resume-version/resume-version.service';
-import { Job } from '../job/entities/job.entity';
+import { MatchingWeightService } from '../matching-weight/matching-weight.service';
 
 @Injectable()
 export class ApplyJobService {
@@ -23,6 +23,7 @@ export class ApplyJobService {
     private applyJobRepository: Repository<ApplyJob>,
     private jobService: JobService,
     private readonly resumeVersionService: ResumeVersionService,
+    private readonly matchingWeightService: MatchingWeightService,
   ) {}
 
   async applyJob(jobId: number, candidateId: number, body: CreateApplyJobDto) {
@@ -33,8 +34,8 @@ export class ApplyJobService {
     if (!checkPer) {
       throw new UnauthorizedException('Bạn không có quyền sử dụng Hồ sơ này');
     }
-    const getApply = await this.getApply(candidateId, jobId);
 
+    const getApply = await this.getApply(candidateId, jobId);
     if (getApply) {
       throw new BadRequestException({
         message: 'Bạn đã ứng tuyển công việc này trước đó',
@@ -105,9 +106,7 @@ export class ApplyJobService {
   }
 
   async findOne(where: any) {
-    return this.applyJobRepository.findOne({
-      where,
-    });
+    return this.applyJobRepository.findOne({ where });
   }
 
   async getApplyJobByCompanyId(companyId: number) {
@@ -170,8 +169,8 @@ export class ApplyJobService {
       },
     });
   }
+
   async getApplyJobByJobId(companyId: number, param: GetApplyJobByJobIdDto) {
-    // Lấy thông tin công việc
     const job = await this.jobService.findOne(param.jobId);
     if (!job) {
       throw new BadRequestException('Công việc không tồn tại');
@@ -181,7 +180,6 @@ export class ApplyJobService {
 
     console.log(job.matchingWeights); // Log MatchingWeights của công việc
 
-    // Lấy danh sách ứng tuyển
     const resumes = await this.applyJobRepository.find({
       where: {
         job: { id: +param.jobId },
@@ -194,6 +192,8 @@ export class ApplyJobService {
           },
           languageResumes: true,
           education: true,
+          majors: true,
+          experiences: true,
           skills: true,
           resume: {
             candidate: true,
@@ -203,11 +203,66 @@ export class ApplyJobService {
     });
 
     const listAddScore = resumes.map((item) => {
+      let matchingScore = 0;
+      if (!job.matchingWeights) {
+        return {
+          ...item,
+          matchingScore,
+        };
+      }
+
+      if (job.matchingWeights.skillWeight) {
+        const skillScore = job.skills.filter((jobSkill) =>
+          item.resumeVersion.skills.some((skill) => skill.id === jobSkill.id),
+        ).length;
+        matchingScore += skillScore * job.matchingWeights.skillWeight;
+      }
+
+      // if (job.matchingWeights.languageWeight) {
+      //   const languageScore = item.resumeVersion.languageResumes.filter((language) =>
+      //     job.languageJobs.some((jobLanguage) => jobLanguage.language.id === language.language.id),
+      //   ).length;
+      //   matchingScore += languageScore * job.matchingWeights.languageWeight;
+      // }
+
+      if (job.matchingWeights.educationWeight) {
+        const educationScore =
+          item.resumeVersion.education.id === job.education.id ? 1 : 0;
+        matchingScore += educationScore * job.matchingWeights.educationWeight;
+      }
+
+      if (job.matchingWeights.levelWeight) {
+        const levelScore = job.levels.filter(
+          (jobLevel) => item.resumeVersion.level.id === jobLevel.id,
+        ).length;
+        matchingScore += levelScore * job.matchingWeights.levelWeight;
+      }
+
+      if (job.matchingWeights.majorWeight) {
+        const majorScore = job.skills.filter((jobSkill) =>
+          item.resumeVersion.majors.some((major) => major.id === jobSkill.id),
+        ).length;
+        matchingScore += majorScore * job.matchingWeights.majorWeight;
+      }
+
+      if (job.matchingWeights.locationWeight) {
+        const locationScore = job.locations.some(
+          (jobLocation) =>
+            item.resumeVersion.district.city.id === jobLocation.district.city.id,
+        )
+          ? 1
+          : 0;
+        matchingScore += locationScore * job.matchingWeights.locationWeight;
+      }
+
+      console.log('Matching Score:', matchingScore);
+
       return {
         ...item,
-        matchingScore: 0,
+        matchingScore,
       };
     });
+
     return listAddScore;
   }
 }

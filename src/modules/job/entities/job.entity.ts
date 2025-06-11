@@ -189,7 +189,7 @@ export class Job {
   languageJobs: LanguageJob[];
 
   @OneToOne(() => MatchingWeight, (matchingWeight) => matchingWeight.job)
-  matchingWeights: MatchingWeight[];
+  matchingWeights: MatchingWeight;
 
   @OneToMany(() => ViewJob, (viewJob) => viewJob.job)
   viewJobs: ViewJob[];

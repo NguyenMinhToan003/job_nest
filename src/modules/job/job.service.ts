@@ -197,8 +197,16 @@ export class JobService {
         experience: true,
         benefits: true,
         employer: true,
-        locations: true,
-        skills: true,
+        locations: {
+          district: {
+            city: true,
+          },
+        },
+        skills: {
+          major: {
+            field: true,
+          },
+        },
         levels: true,
         typeJobs: true,
         education: true,
@@ -253,6 +261,7 @@ export class JobService {
       typeJobs: dto.types.map((id) => ({ id })),
       levels: dto.levels.map((id) => ({ id })),
       education: { id: dto.education },
+      expiredAt: dto.expiredAt,
     });
     return this.jobRepository.save(updatedJob);
   }
