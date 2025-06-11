@@ -1,4 +1,11 @@
-import { Body, Controller, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { MatchingWeightService } from './matching-weight.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { Roles } from 'src/decorators/customize';
@@ -29,5 +36,4 @@ export class MatchingWeightController {
   ) {
     return this.matchingWeightService.updateMatchingWeight(jobId, dto);
   }
-
 }

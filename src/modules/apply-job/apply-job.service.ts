@@ -14,7 +14,6 @@ import {
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/modules/job/job.service';
 import { ResumeVersionService } from 'src/modules/resume-version/resume-version.service';
-import { MatchingWeightService } from '../matching-weight/matching-weight.service';
 
 @Injectable()
 export class ApplyJobService {
@@ -23,7 +22,6 @@ export class ApplyJobService {
     private applyJobRepository: Repository<ApplyJob>,
     private jobService: JobService,
     private readonly resumeVersionService: ResumeVersionService,
-    private readonly matchingWeightService: MatchingWeightService,
   ) {}
 
   async applyJob(jobId: number, candidateId: number, body: CreateApplyJobDto) {
@@ -218,13 +216,6 @@ export class ApplyJobService {
         matchingScore += skillScore * job.matchingWeights.skillWeight;
       }
 
-      // if (job.matchingWeights.languageWeight) {
-      //   const languageScore = item.resumeVersion.languageResumes.filter((language) =>
-      //     job.languageJobs.some((jobLanguage) => jobLanguage.language.id === language.language.id),
-      //   ).length;
-      //   matchingScore += languageScore * job.matchingWeights.languageWeight;
-      // }
-
       if (job.matchingWeights.educationWeight) {
         const educationScore =
           item.resumeVersion.education.id === job.education.id ? 1 : 0;
@@ -248,7 +239,8 @@ export class ApplyJobService {
       if (job.matchingWeights.locationWeight) {
         const locationScore = job.locations.some(
           (jobLocation) =>
-            item.resumeVersion.district.city.id === jobLocation.district.city.id,
+            item.resumeVersion.district.city.id ===
+            jobLocation.district.city.id,
         )
           ? 1
           : 0;
@@ -263,6 +255,6 @@ export class ApplyJobService {
       };
     });
 
-    return listAddScore;
+    return listAddScore.sort((a, b) => b.matchingScore - a.matchingScore);
   }
 }
