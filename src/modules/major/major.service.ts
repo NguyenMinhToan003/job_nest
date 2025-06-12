@@ -106,4 +106,16 @@ export class MajorService {
     }
     return major;
   }
+
+  async getByJobId(jobId: number) {
+    return this.majorRepository.find({
+      where: {
+        skills: {
+          jobs: {
+            id: jobId,
+          },
+        },
+      },
+    });
+  }
 }

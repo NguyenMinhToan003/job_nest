@@ -18,7 +18,6 @@ import {
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { JOB_STATUS } from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
-import { MatchingWeightService } from 'src/modules/matching-weight/matching-weight.service';
 import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
 import { FieldService } from '../field/field.service';
 
@@ -29,7 +28,6 @@ export class JobService {
     private jobRepository: Repository<Job>,
     private fieldService: FieldService,
     private languageJobService: LanguageJobService,
-    private matchingWeightService: MatchingWeightService,
     private blacklistKeywordService: BlacklistKeywordService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
@@ -186,6 +184,9 @@ export class JobService {
             },
           },
         },
+      },
+      order: {
+        createdAt: 'DESC',
       },
     });
   }

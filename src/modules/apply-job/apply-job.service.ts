@@ -14,6 +14,7 @@ import {
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/modules/job/job.service';
 import { ResumeVersionService } from 'src/modules/resume-version/resume-version.service';
+import { MajorService } from '../major/major.service';
 
 @Injectable()
 export class ApplyJobService {
@@ -22,6 +23,7 @@ export class ApplyJobService {
     private applyJobRepository: Repository<ApplyJob>,
     private jobService: JobService,
     private readonly resumeVersionService: ResumeVersionService,
+    private readonly majorService: MajorService,
   ) {}
 
   async applyJob(jobId: number, candidateId: number, body: CreateApplyJobDto) {
@@ -231,20 +233,28 @@ export class ApplyJobService {
 
       if (job.matchingWeights.majorWeight) {
         const majorScore = job.skills.filter((jobSkill) =>
-          item.resumeVersion.majors.some((major) => major.id === jobSkill.id),
+          item.resumeVersion.majors.some(
+            (major) => major.id === jobSkill.major.id,
+          ),
         ).length;
         matchingScore += majorScore * job.matchingWeights.majorWeight;
       }
 
       if (job.matchingWeights.locationWeight) {
-        const locationScore = job.locations.some(
+        const locationScore = job.locations.filter(
           (jobLocation) =>
             item.resumeVersion.district.city.id ===
             jobLocation.district.city.id,
-        )
-          ? 1
-          : 0;
+        ).length;
         matchingScore += locationScore * job.matchingWeights.locationWeight;
+      }
+      if (job.matchingWeights.languageWeight) {
+        const languageScore = job.languageJobs.filter((jobLanguage) =>
+          item.resumeVersion.languageResumes.some(
+            (language) => language.languageId === jobLanguage.language.id,
+          ),
+        ).length;
+        matchingScore += languageScore * job.matchingWeights.languageWeight;
       }
 
       console.log('Matching Score:', matchingScore);
@@ -256,5 +266,153 @@ export class ApplyJobService {
     });
 
     return listAddScore.sort((a, b) => b.matchingScore - a.matchingScore);
+  }
+  async getResumeVersionForJob(companyId: number, applyId: number) {
+    const resumeVersion = await this.applyJobRepository.findOne({
+      where: { id: applyId },
+      relations: {
+        job: {
+          employer: true,
+          locations: {
+            district: {
+              city: true,
+            },
+          },
+          skills: true,
+          levels: true,
+          typeJobs: true,
+          matchingWeights: true,
+          education: true,
+          languageJobs: {
+            language: true,
+          },
+        },
+        resumeVersion: {
+          level: true,
+          district: {
+            city: true,
+          },
+          languageResumes: {
+            language: true,
+          },
+          education: true,
+          majors: true,
+          experiences: true,
+          skills: true,
+          resume: {
+            candidate: true,
+          },
+        },
+      },
+    });
+    if (!resumeVersion) {
+      throw new BadRequestException('Hồ sơ không tồn tại');
+    }
+    const job = await this.jobService.findOne(resumeVersion.job.id);
+    if (!job) {
+      throw new BadRequestException('Công việc không tồn tại');
+    } else if (job.employer.id !== companyId) {
+      throw new UnauthorizedException('Bạn không có quyền xem ứng tuyển này');
+    }
+
+    const matchingWeights = job.matchingWeights;
+    const majors = await this.majorService.getByJobId(job.id);
+    if (!matchingWeights) {
+      return {
+        ...resumeVersion,
+        majors,
+      };
+    }
+    const score = {
+      skillScore: 0,
+      educationScore: 0,
+      levelScore: 0,
+      majorScore: 0,
+      locationScore: 0,
+      languageScore: 0,
+      total: 0,
+    };
+    const matchingFields = {
+      skill: [],
+      education: [],
+      level: [],
+      major: [],
+      location: [],
+      language: [],
+    };
+    if (matchingWeights.skillWeight) {
+      const skillScore = job.skills.filter((jobSkill) =>
+        resumeVersion.resumeVersion.skills.some(
+          (skill) => skill.id === jobSkill.id,
+        ),
+      );
+      matchingFields.skill = skillScore;
+      score.skillScore = skillScore.length * matchingWeights.skillWeight;
+    }
+    if (matchingWeights.educationWeight) {
+      const educationScore =
+        resumeVersion.resumeVersion.education.id === job.education.id ? 1 : 0;
+      matchingFields.education = [resumeVersion.resumeVersion.education];
+      score.educationScore = educationScore * matchingWeights.educationWeight;
+    }
+    if (matchingWeights.levelWeight) {
+      const levelScore = job.levels.filter(
+        (jobLevel) => resumeVersion.resumeVersion.level.id === jobLevel.id,
+      );
+      matchingFields.level = levelScore;
+      score.levelScore = levelScore.length * matchingWeights.levelWeight;
+    }
+    if (matchingWeights.majorWeight) {
+      const majorScore = job.skills.filter((jobSkill) =>
+        resumeVersion.resumeVersion.majors.some(
+          (major) => major.id === jobSkill.major.id,
+        ),
+      );
+      matchingFields.major = majorScore;
+      score.majorScore = majorScore.length * matchingWeights.majorWeight;
+    }
+    if (matchingWeights.locationWeight) {
+      const locationScore = job.locations.filter(
+        (jobLocation) =>
+          resumeVersion.resumeVersion.district.city.id ===
+          jobLocation.district.city.id,
+      );
+      matchingFields.location = locationScore;
+      score.locationScore =
+        locationScore.length * matchingWeights.locationWeight;
+    }
+    if (matchingWeights.languageWeight) {
+      const languageScore = job.languageJobs.filter((jobLanguage) =>
+        resumeVersion.resumeVersion.languageResumes.some(
+          (language) => language.languageId === jobLanguage.language.id,
+        ),
+      );
+      matchingFields.language = languageScore;
+      score.languageScore =
+        languageScore.length * matchingWeights.languageWeight;
+    }
+    score.total =
+      score.skillScore +
+      score.educationScore +
+      score.levelScore +
+      score.majorScore +
+      score.locationScore +
+      score.languageScore;
+
+    const allResume = await this.getApplyJobByJobId(companyId, {
+      jobId: job.id,
+    });
+    // find Rank of this resumeVersion
+    const rank =
+      allResume.findIndex(
+        (item) => item.resumeVersion.id === resumeVersion.resumeVersion.id,
+      ) + 1;
+    return {
+      ...resumeVersion,
+      majors,
+      score,
+      matchingFields,
+      rank,
+    };
   }
 }
