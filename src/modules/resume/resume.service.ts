@@ -17,6 +17,9 @@ export class ResumeService {
   }
   async getAll(candidateId: number) {
     return this.resumeRepository.find({
+      relations: {
+        resumeVersions: true,
+      },
       where: {
         candidate: { id: +candidateId },
       },

@@ -322,7 +322,9 @@ export class JobService {
       relations: {
         experience: true,
         benefits: true,
-        employer: true,
+        employer: {
+          country: true,
+        },
         locations: {
           district: {
             city: true,
@@ -330,6 +332,9 @@ export class JobService {
         },
         skills: true,
         levels: true,
+        employerSubscription: {
+          package: true,
+        },
         education: true,
         languageJobs: {
           language: true,

@@ -33,12 +33,12 @@ export class Candidate {
     nullable: true,
   })
   gender: string;
-  @Column({ name: 'cap_bac_id', nullable: true })
-  employmentRankId: number;
-  @Column({ name: 'kinh_nghiem_id', nullable: true })
-  employmentExperienceId: number;
-  @Column({ name: 'hinh_thuc_lam_viec_id', nullable: true })
-  employmentTypeId: number;
+
+  @Column({ name: 'ngay_sinh', type: 'date', nullable: true })
+  birthday: Date;
+
+  @Column({ name: 'dia_chi', length: 255, nullable: true })
+  location: string;
 
   @OneToOne(() => Account, (account) => account.candidate)
   @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })

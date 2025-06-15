@@ -52,6 +52,12 @@ export class ResumeVersion {
   @Column({ name: 'gioi_thieu', type: 'text', nullable: true })
   about: string;
 
+  @Column({ name: 'public_id_pdf', nullable: false })
+  publicIdPdf: string;
+
+  @Column({ name: 'url_pdf', nullable: false })
+  urlPdf: string;
+
   @OneToMany(
     () => LanguageResume,
     (languageResume) => languageResume.resumeVersion,

@@ -21,15 +21,19 @@ export class ResumeVersionService {
 
   async create(
     dto: CreateResumeVersionDto,
-    avatar: Express.Multer.File,
+    files: {
+      avatar?: Express.Multer.File[] | null;
+      cv?: Express.Multer.File[] | null;
+    },
     resumeId: number,
   ) {
     let uploadImage = dto.avatar;
     if (dto.avatar === undefined) {
-      const upload = await this.uploadService.uploadFile([avatar]);
+      const upload = await this.uploadService.uploadFile(files.avatar);
       uploadImage = upload[0].secure_url;
     }
-    console.log(dto, 'dto');
+    const cv = await this.uploadService.uploadFile(files.cv);
+
     const resumeVersion = await this.resumeVersionRepository.save({
       about: dto.about,
       avatar: uploadImage,
@@ -45,6 +49,8 @@ export class ResumeVersionService {
       majors: dto.majors ? dto.majors.map((id) => ({ id: +id })) : [],
       level: { id: +dto.level },
       skills: dto.skills ? dto.skills.map((id) => ({ id: +id })) : [],
+      publicIdPdf: cv[0].display_name,
+      urlPdf: cv[0].secure_url,
     });
     if (dto?.languageResumes?.length > 0) {
       for (const languageResume of dto.languageResumes) {
@@ -159,7 +165,10 @@ export class ResumeVersionService {
   async update(
     candidateId: number,
     dto: CreateResumeVersionDto,
-    avatar: Express.Multer.File,
+    files: {
+      avatar?: Express.Multer.File[] | null;
+      cv?: Express.Multer.File[] | null;
+    },
     resumeId: number,
   ) {
     const resume = await this.resumeService.validateMe(candidateId, resumeId);
@@ -170,7 +179,16 @@ export class ResumeVersionService {
     this.resumeService.update(candidateId, resumeId, dto.name);
     const lastResumeVersion = await this.viewResume(candidateId, resumeId);
     let uploadImage = [];
-    if (avatar) uploadImage = await this.uploadService.uploadFile([avatar]);
+    if (files?.avatar?.length > 0)
+      uploadImage = await this.uploadService.uploadFile(files.avatar);
+    if (files?.cv?.length > 0) {
+      const cv = await this.uploadService.uploadFile(files.cv);
+      dto.publicIdPdf = cv[0].display_name;
+      dto.urlPdf = cv[0].secure_url;
+    } else {
+      dto.publicIdPdf = lastResumeVersion.publicIdPdf;
+      dto.urlPdf = lastResumeVersion.urlPdf;
+    }
     const resumeVersion = await this.resumeVersionRepository.save({
       about: dto.about ?? lastResumeVersion.about,
       avatar: uploadImage[0]?.secure_url ?? lastResumeVersion.avatar,
@@ -188,6 +206,8 @@ export class ResumeVersionService {
       username: dto.username ?? lastResumeVersion.username,
       level: { id: dto.level ?? lastResumeVersion.level.id },
       skills: dto.skills ? dto.skills.map((id) => ({ id: +id })) : [],
+      publicIdPdf: dto.publicIdPdf ?? lastResumeVersion.publicIdPdf,
+      urlPdf: dto.urlPdf ?? lastResumeVersion.urlPdf,
     });
     if (dto?.languageResumes?.length > 0) {
       for (const languageResume of dto.languageResumes) {

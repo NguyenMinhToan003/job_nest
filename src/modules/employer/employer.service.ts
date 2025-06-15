@@ -7,6 +7,7 @@ import { Employer } from './entities/employer.entity';
 import { LocationService } from '../location/location.service';
 import { FollowService } from '../follow/follow.service';
 import { JobService } from '../job/job.service';
+import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 
 @Injectable()
 export class EmployerService {
@@ -16,14 +17,25 @@ export class EmployerService {
     private locationService: LocationService,
     private followService: FollowService,
     private jobService: JobService,
+    private readonly employerSubscriptionService: EmployerSubscriptionsService,
   ) {}
 
   async create(accountId: number, dto: CreateCompanyDto): Promise<Employer> {
-    return this.employerRepo.save({
+    const create = await this.employerRepo.save({
       id: accountId,
       name: dto.name,
       logo: dto.logo,
+      introduction: dto.introduction,
+      taxCode: dto.taxCode,
+      employeeScale: dto.employeeScale,
+      businessType: dto.businessType,
+      country: { id: dto.countryId },
+      phone: dto.phone,
+      website: dto.website,
     });
+
+    await this.employerSubscriptionService.triggerEmployerRegister(accountId);
+    return create;
   }
   async findAll() {
     return this.employerRepo.find({

@@ -1,8 +1,8 @@
 import {
   IsEmail,
+  IsMobilePhone,
   IsNotEmpty,
   IsOptional,
-  IsPhoneNumber,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -20,14 +20,20 @@ export class CreateUserDto {
   name: string;
 
   @IsOptional()
-  avatar: string;
-
-  @IsOptional()
   gender: string;
 
   @IsOptional()
-  @IsPhoneNumber('VN')
+  @IsMobilePhone('vi-VN')
   phone: string;
+
+  @IsOptional()
+  birthday: Date;
+
+  @IsOptional()
+  location: string;
+
+  @IsOptional()
+  avatar?: string;
 }
 export class LoginUserDto {
   @IsNotEmpty()

@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Candidate } from './entities/candidate.entity';
 import { UpdateUserDto } from './dto/update-candidate.dto';
 import { UploadService } from 'src/upload/upload.service';
+import { CreateUserDto } from './dto/create-candidate.dto';
 
 @Injectable()
 export class CandidateService {
@@ -13,7 +14,7 @@ export class CandidateService {
     private uploadService: UploadService,
   ) {}
 
-  async create(accountId, dto) {
+  async create(accountId, dto: CreateUserDto) {
     return this.candidateRepo.save({
       id: accountId,
       name: dto.name,
@@ -59,7 +60,6 @@ export class CandidateService {
     }
     if (avatar) {
       const uploadAvatar = await this.uploadService.uploadFile([avatar]);
-      console.log('uploadAvatar', uploadAvatar);
       if (uploadAvatar && uploadAvatar.length > 0) {
         candidate.avatar = uploadAvatar[0].secure_url;
       }

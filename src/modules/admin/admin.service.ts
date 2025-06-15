@@ -24,7 +24,6 @@ export class AdminService {
       email: 'admin@gmail.com',
       password: '$2b$10$8nmRti0gi08ra0ZxjzTXMOKJ/S3oS2FhaL6ryVwnEVcMxKxI2/xRS',
       role: ROLE_LIST.ADMIN,
-      googleId: null,
     });
     const admin = this.adminRepository.create({
       id: account.id,

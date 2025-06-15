@@ -6,7 +6,7 @@ import {
   Patch,
   Post,
   Req,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,7 +15,7 @@ import { RolesGuard } from 'src/auth/passport/role.guard';
 import { Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 import { CreateResumeVersionDto } from './dto/create-resume-version.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResumeService } from '../resume/resume.service';
 
 @Controller('resume-version')
@@ -26,38 +26,49 @@ export class ResumeVersionController {
   ) {}
 
   @UseGuards(RolesGuard)
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'cv', maxCount: 1 },
+    ]),
+  )
   @Roles(ROLE_LIST.CANDIDATE)
   @Post('init')
   async init(
     @Req() req,
     @Body() dto: CreateResumeVersionDto,
-    @UploadedFile()
-    avatar: Express.Multer.File | null,
+    @UploadedFiles()
+    files: {
+      avatar?: Express.Multer.File[] | null;
+      cv?: Express.Multer.File[] | null;
+    },
   ) {
     const candidateId = req.user.id;
     const resume = await this.resumeService.create(candidateId, dto.name);
-    return this.resumeVersionService.create(dto, avatar, +resume.id);
+    return this.resumeVersionService.create(dto, files, +resume.id);
   }
 
   @UseGuards(RolesGuard)
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'avatar', maxCount: 1 },
+      { name: 'cv', maxCount: 1 },
+    ]),
+  )
   @Roles(ROLE_LIST.CANDIDATE)
   @Patch(':resumeId')
   update(
     @Req() req,
     @Body() dto: CreateResumeVersionDto,
     @Param('resumeId') resumeId: number,
-    @UploadedFile()
-    avatar: Express.Multer.File | null,
+    @UploadedFiles()
+    files: {
+      avatar?: Express.Multer.File[] | null;
+      cv?: Express.Multer.File[] | null;
+    },
   ) {
     const candidateId = req.user.id;
-    return this.resumeVersionService.update(
-      candidateId,
-      dto,
-      avatar,
-      +resumeId,
-    );
+    return this.resumeVersionService.update(candidateId, dto, files, +resumeId);
   }
 
   @UseGuards(RolesGuard)

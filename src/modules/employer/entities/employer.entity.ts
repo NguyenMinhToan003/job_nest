@@ -4,6 +4,7 @@ import { Follow } from 'src/modules/follow/entities/follow.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
 import { Post } from 'src/modules/post/entities/post.entity';
+import { Transaction } from 'src/transaction/entities/transaction.entity';
 import {
   Column,
   Entity,
@@ -27,6 +28,18 @@ export class Employer {
   @Column({ name: 'ma_so_thue', length: 255, nullable: true })
   taxCode: string;
 
+  @Column({ name: 'website', nullable: true })
+  website: string;
+
+  @Column({ name: 'quy-mo-nhan-su', length: 255, nullable: true })
+  employeeScale: string;
+
+  @Column({ name: 'loai_hinh_hoat_dong', length: 255, nullable: true })
+  businessType: string;
+
+  @Column({ name: 'so_dien_thoai', length: 11, nullable: true })
+  phone: string;
+
   @OneToOne(() => Account, (account) => account.employer)
   @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
   account: Account;
@@ -46,4 +59,7 @@ export class Employer {
 
   @OneToMany(() => Job, (job) => job.employer)
   jobs: Job[];
+
+  @OneToMany(() => Transaction, (transaction) => transaction.employer)
+  transactions: Transaction[];
 }

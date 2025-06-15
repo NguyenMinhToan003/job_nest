@@ -9,6 +9,7 @@ import { CandidateService } from 'src/modules/candidate/candidate.service';
 import { EmployerService } from 'src/modules/employer/employer.service';
 import { CreateUserDto } from 'src/modules/candidate/dto/create-candidate.dto';
 import { CreateCompanyDto } from 'src/modules/employer/dto/create-employer.dto';
+import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private accountService: AccountService,
     private candidateService: CandidateService,
     private employerService: EmployerService,
+    private readonly uploadService: UploadService,
   ) {}
 
   async signIn(res, dto: AuthDto) {
@@ -99,6 +101,7 @@ export class AuthService {
           avatar: profile._json.picture || null,
           gender: null,
         } as CreateUserDto,
+        null,
         true,
       );
       const accessToken = await this.jwtService.signAsync({
@@ -119,36 +122,12 @@ export class AuthService {
       );
       return;
     }
-    if (role === ROLE_LIST.EMPLOYER) {
-      const employer = await this.registerEmployer(
-        {
-          email: profile.email,
-          password: null,
-          googleId: profile.id,
-          name: profile.displayName,
-          logo: profile.photos?.[0]?.value || null,
-        } as CreateCompanyDto,
-        true,
-      );
-      const accessToken = await this.jwtService.signAsync({
-        sub: employer.id,
-      });
-      res.cookie(
-        this.configService.get<string>('JWT_COOKIE_NAME'),
-        accessToken,
-        {
-          httpOnly: true,
-          secure: false,
-          sameSite: 'strict',
-          maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
-        },
-      );
-      res.redirect(
-        `${this.configService.get<string>('FRONTEND_URL')}/login-success`,
-      );
-    }
   }
-  async registerCandidate(dto: CreateUserDto, isGoogle?: boolean) {
+  async registerCandidate(
+    dto: CreateUserDto,
+    avatarFile: Express.Multer.File,
+    isGoogle?: boolean,
+  ) {
     const hashPassword = !isGoogle
       ? await this.hashPassword(dto.password)
       : null;
@@ -156,21 +135,33 @@ export class AuthService {
       email: dto.email,
       password: hashPassword,
       role: ROLE_LIST.CANDIDATE,
-      googleId: dto.googleId,
     });
+    if (avatarFile) {
+      const uploadAvatar = await this.uploadService.uploadFile([avatarFile]);
+      if (uploadAvatar && uploadAvatar.length > 0) {
+        dto.avatar = uploadAvatar[0].secure_url;
+      }
+    } else {
+      dto.avatar = null;
+    }
     const candidate = this.candidateService.create(account.id, dto);
     return candidate;
   }
-  async registerEmployer(dto: CreateCompanyDto, isGoogle?: boolean) {
-    const hashPassword = !isGoogle
-      ? await this.hashPassword(dto.password)
-      : null;
+  async registerEmployer(dto: CreateCompanyDto, logoFile: Express.Multer.File) {
+    const hashPassword = await this.hashPassword(dto.password);
     const account = await this.accountService.create({
       email: dto.email,
       password: hashPassword,
       role: ROLE_LIST.EMPLOYER,
-      googleId: dto.googleId,
     });
+    if (logoFile) {
+      const uploadLogo = await this.uploadService.uploadFile([logoFile]);
+      if (uploadLogo && uploadLogo.length > 0) {
+        dto.logo = uploadLogo[0].secure_url;
+      }
+    } else {
+      dto.logo = null;
+    }
     const employer = this.employerService.create(account.id, dto);
     return employer;
   }

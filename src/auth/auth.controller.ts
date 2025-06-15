@@ -5,7 +5,9 @@ import {
   Post,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/dto';
@@ -14,6 +16,7 @@ import { GoogleOAuthGuard } from './passport/google-oauth.guard';
 import { CreateUserDto } from 'src/modules/candidate/dto/create-candidate.dto';
 import { CreateCompanyDto } from 'src/modules/employer/dto/create-employer.dto';
 import { ROLE_LIST } from 'src/types/enum';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
@@ -42,13 +45,21 @@ export class AuthController {
   }
 
   @Public()
+  @UseInterceptors(FileInterceptor('avatar'))
   @Post('register/candidate')
-  async registerCandidate(@Body() dto: CreateUserDto) {
-    return this.authService.registerCandidate(dto);
+  async registerCandidate(
+    @Body() dto: CreateUserDto,
+    @UploadedFile() avatarFile: Express.Multer.File,
+  ) {
+    return this.authService.registerCandidate(dto, avatarFile);
   }
   @Public()
+  @UseInterceptors(FileInterceptor('logo'))
   @Post('register/employer')
-  async registerEmployer(@Body() dto: CreateCompanyDto) {
-    return this.authService.registerEmployer(dto);
+  async registerEmployer(
+    @Body() dto: CreateCompanyDto,
+    @UploadedFile() logoFile: Express.Multer.File,
+  ) {
+    return this.authService.registerEmployer(dto, logoFile);
   }
 }

@@ -10,8 +10,10 @@ export class AccountService {
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
   ) {}
-  create(createAccountDto: CreateAccountDto) {
-    return this.accountRepository.save(createAccountDto);
+  async create(createAccountDto: CreateAccountDto) {
+    const create = await this.accountRepository.create(createAccountDto);
+    console.log('create', create);
+    return this.accountRepository.save(create);
   }
   findAll() {
     return this.accountRepository.find();

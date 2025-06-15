@@ -70,4 +70,10 @@ export class CreateResumeVersionDto {
     resumeVersionId: number;
     typeJobId?: number;
   }[];
+
+  @IsOptional()
+  publicIdPdf?: string;
+
+  @IsOptional()
+  urlPdf?: string;
 }

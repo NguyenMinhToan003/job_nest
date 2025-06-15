@@ -1,9 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateAccountDto {
-  @IsOptional()
-  googleId: string;
-
   @IsNotEmpty()
   email: string;
 

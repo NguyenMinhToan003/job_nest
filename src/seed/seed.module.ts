@@ -14,6 +14,7 @@ import { SeedController } from './seed.controller';
 import { EducationModule } from 'src/modules/education/education.module';
 import { LanguageModule } from 'src/modules/language/language.module';
 import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.module';
+import { PackagesModule } from 'src/packages/packages.module';
 @Module({
   imports: [
     FieldModule,
@@ -24,6 +25,7 @@ import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.
     ExperienceModule,
     EducationModule,
     TypeJobModule,
+    PackagesModule,
     LanguageModule,
     AdminModule,
     CityModule,

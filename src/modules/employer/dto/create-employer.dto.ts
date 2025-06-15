@@ -1,23 +1,46 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsMobilePhone,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateCompanyDto {
   @IsNotEmpty()
   name: string;
 
-  @IsNotEmpty()
-  logo: string;
-
   @IsOptional()
-  googleId: string;
+  logo?: string;
 
   @IsNotEmpty()
+  @IsEmail()
   email: string;
 
   @IsNotEmpty()
   password: string;
 
   @IsOptional()
-  role: string;
+  role?: string;
+
+  @IsOptional()
+  introduction?: string;
+
+  @IsNotEmpty()
+  taxCode: string;
+  @IsNotEmpty()
+  employeeScale: string;
+  @IsNotEmpty()
+  businessType: string;
+
+  @IsNotEmpty()
+  countryId: number;
+
+  @IsNotEmpty()
+  @IsMobilePhone('vi-VN')
+  phone: string;
+
+  @IsOptional()
+  website?: string;
 }
 export class LoginCompanyDto {
   @IsNotEmpty()

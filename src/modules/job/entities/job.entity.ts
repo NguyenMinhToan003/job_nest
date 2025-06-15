@@ -23,6 +23,7 @@ import {
 import { LanguageJob } from 'src/modules/language-job/entities/language-job.entity';
 import { MatchingWeight } from 'src/modules/matching-weight/entities/matching-weight.entity';
 import { ViewJob } from 'src/view-job/entities/view-job.entity';
+import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
 
 @Entity({ name: 'cong_viec' })
 export class Job {
@@ -193,4 +194,13 @@ export class Job {
 
   @OneToMany(() => ViewJob, (viewJob) => viewJob.job)
   viewJobs: ViewJob[];
+
+  @OneToMany(
+    () => EmployerSubscription,
+    (employerSubscription) => employerSubscription.job,
+    {
+      nullable: true,
+    },
+  )
+  employerSubscription: EmployerSubscription;
 }

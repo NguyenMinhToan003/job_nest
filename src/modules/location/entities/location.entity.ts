@@ -53,7 +53,7 @@ export class Location {
   @ManyToOne(() => Employer, (employer) => employer.locations, {
     nullable: false,
   })
-  @JoinColumn({ name: 'ma_doanh_nghiep', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
   employer: Employer;
 
   @ManyToMany(() => Job, (job) => job.locations)

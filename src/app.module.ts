@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { AccountModule } from './modules/account/account.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { EmployerModule } from './modules/employer/employer.module';
-import { CvModule } from './modules/cv/cv.module';
 import { JobModule } from './modules/job/job.module';
 import { SkillModule } from './modules/skill/skill.module';
 import { DistrictModule } from './modules/district/district.module';
@@ -43,6 +42,9 @@ import { MatchingWeightModule } from './modules/matching-weight/matching-weight.
 import { BlacklistKeywordModule } from './blacklist-keyword/blacklist-keyword.module';
 import { ResumeversionExpModule } from './resumeversion-exp/resumeversion-exp.module';
 import { ViewJobModule } from './view-job/view-job.module';
+import { PackagesModule } from './packages/packages.module';
+import { EmployerSubscriptionsModule } from './employer_subscriptions/employer_subscriptions.module';
+import { TransactionModule } from './transaction/transaction.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -91,7 +93,6 @@ import { ViewJobModule } from './view-job/view-job.module';
     CandidateModule,
     AdminModule,
     EmployerModule,
-    CvModule,
     SeedModule,
     JobModule,
     SkillModule,
@@ -123,6 +124,9 @@ import { ViewJobModule } from './view-job/view-job.module';
     BlacklistKeywordModule,
     ResumeversionExpModule,
     ViewJobModule,
+    PackagesModule,
+    EmployerSubscriptionsModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [
