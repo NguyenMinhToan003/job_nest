@@ -1,3 +1,4 @@
+import { Interview } from 'src/interview/entities/interview.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
@@ -7,6 +8,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 @Entity({ name: 'ung_tuyen' })
 export class ApplyJob {

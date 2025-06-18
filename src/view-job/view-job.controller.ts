@@ -17,9 +17,21 @@ export class ViewJobController {
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)
-  @Get()
-  async getAllViewJobs(@Req() req) {
+  @Get('me/:page/:limit')
+  async getAllViewJobs(
+    @Req() req,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
     const userId = req.user.id;
-    return this.viewJobService.getAllViewJobs(userId);
+    return this.viewJobService.paginateViewJob(userId, page, limit);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Get('recommended')
+  async getRecommendedViewJobs(@Req() req) {
+    const userId = req.user.id;
+    return this.viewJobService.recommendedViewJob(userId);
   }
 }

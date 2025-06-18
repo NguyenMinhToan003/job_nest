@@ -16,11 +16,23 @@ export class FollowController {
     return this.followService.followEmployer(employerId, candidateId);
   }
 
-  @Get('candidate/me')
+  @Get('candidate/me/:page/:limit')
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)
-  candidateGetAllFollows(@Req() req) {
+  candidateGetAllFollows(
+    @Req() req,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
     const candidateId = req.user.id;
-    return this.followService.candidateGetAllFollows(candidateId);
+    return this.followService.candidateGetAllFollows(candidateId, page, limit);
+  }
+
+  @Get('recommended')
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  getRecommendedFollows(@Req() req) {
+    const candidateId = req.user.id;
+    return this.followService.getRecommendedFollows(candidateId);
   }
 }

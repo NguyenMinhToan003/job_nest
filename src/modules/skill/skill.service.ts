@@ -24,38 +24,70 @@ export class SkillService {
     const majors = await this.majorService.createDefaultMajors();
     const majorMap = Object.fromEntries(majors.map((m) => [m.name, m]));
 
-    const defaultSkills = [
-      { name: 'ReactJS', major: majorMap['Lập trình Web'], id: 1 },
-      { name: 'NodeJS', major: majorMap['Phát triển Backend'], id: 2 },
-      { name: 'TypeScript', major: majorMap['Lập trình Web'], id: 3 },
-      { name: 'JavaScript', major: majorMap['Lập trình Web'], id: 4 },
-      { name: 'Java', major: majorMap['Lập trình Mobile'], id: 5 },
-      { name: 'Python', major: majorMap['Khoa học Dữ liệu'], id: 6 },
-      { name: 'Ruby', major: majorMap['Phát triển Backend'], id: 7 },
-      { name: 'PHP', major: majorMap['Lập trình Web'], id: 8 },
-      { name: 'C#', major: majorMap['Phát triển Backend'], id: 9 },
-      { name: 'C++', major: majorMap['Phát triển Backend'], id: 10 },
-      { name: 'Go', major: majorMap['DevOps'], id: 11 },
-      { name: 'Swift', major: majorMap['Lập trình Mobile'], id: 12 },
-      { name: 'Kotlin', major: majorMap['Lập trình Mobile'], id: 13 },
-      { name: 'HTML', major: majorMap['Lập trình Web'], id: 14 },
-      { name: 'CSS', major: majorMap['Lập trình Web'], id: 15 },
-      { name: 'SQL', major: majorMap['Cơ sở dữ liệu'], id: 16 },
-      { name: 'NoSQL', major: majorMap['Cơ sở dữ liệu'], id: 17 },
-      { name: 'MongoDB', major: majorMap['Cơ sở dữ liệu'], id: 18 },
-      { name: 'MySQL', major: majorMap['Cơ sở dữ liệu'], id: 19 },
-      { name: 'PostgreSQL', major: majorMap['Cơ sở dữ liệu'], id: 20 },
-      { name: 'Oracle', major: majorMap['Cơ sở dữ liệu'], id: 21 },
-      { name: 'Redis', major: majorMap['DevOps'], id: 22 },
-      { name: 'Elasticsearch', major: majorMap['DevOps'], id: 23 },
-    ].map((skill) => ({
-      name: skill.name,
+    const skillMap: Record<string, string[]> = {
+      'Lập trình Web': ['HTML', 'CSS', 'JavaScript', 'React', 'Vue'],
+      'Lập trình Mobile': ['Flutter', 'React Native', 'Swift', 'Kotlin'],
+      'Phát triển Backend': ['Node.js', 'Java', 'NestJS', 'MySQL'],
+      'Cơ sở dữ liệu': ['SQL', 'MongoDB', 'PostgreSQL'],
+      'Khoa học Dữ liệu': ['Python', 'Pandas', 'Machine Learning'],
+      DevOps: ['Docker', 'Kubernetes', 'CI/CD', 'AWS'],
+      'AI/Machine Learning': ['TensorFlow', 'Scikit-Learn', 'PyTorch'],
+      'An toàn thông tin': ['PenTest', 'Network Security', 'Firewall'],
 
-      status: JOB_STATUS.ACTIVE,
-      major: skill.major,
-    }));
+      'Bán hàng': ['Kỹ năng giao tiếp', 'Chốt sale', 'CRM'],
+      Marketing: ['SEO', 'Google Ads', 'Content marketing'],
+      'Quản trị kinh doanh': ['Phân tích thị trường', 'Chiến lược kinh doanh'],
+      'Tài chính doanh nghiệp': ['Dự báo tài chính', 'Phân tích tài chính'],
 
-    await this.skillRepository.save(defaultSkills);
+      'Thư ký văn phòng': ['Tin học văn phòng', 'Lên lịch', 'Quản lý tài liệu'],
+      'Trợ lý điều hành': ['Lập kế hoạch', 'Tổ chức họp', 'Giao tiếp'],
+
+      'Kế toán tổng hợp': ['Excel', 'Báo cáo tài chính'],
+      'Kế toán thuế': ['Luật thuế', 'Kê khai thuế'],
+
+      'Tuyển dụng': ['Phỏng vấn', 'Đánh giá ứng viên'],
+      'Đào tạo nhân sự': ['Kỹ năng giảng dạy', 'Soạn giáo trình'],
+
+      'Kỹ thuật cơ khí': ['AutoCAD', 'SolidWorks'],
+      'Kỹ thuật điện': ['Điện tử cơ bản', 'Mạch điện'],
+
+      'Tư vấn khách hàng': ['Giao tiếp', 'Xử lý tình huống'],
+      'Tổng đài viên': ['Kỹ năng lắng nghe', 'Phần mềm tổng đài'],
+
+      'Nhân viên bán hàng': ['Bán hàng POS', 'Chăm sóc khách'],
+      'Quản lý cửa hàng': ['Quản lý nhân viên', 'Báo cáo doanh số'],
+
+      'Giáo viên tiểu học': ['Soạn giáo án', 'Quản lý lớp học'],
+      'Giáo viên tiếng Anh': ['Phát âm', 'Ngữ pháp tiếng Anh'],
+
+      'Thu mua nội địa': ['Tìm nhà cung cấp', 'Đàm phán'],
+      'Thu mua quốc tế': ['Incoterms', 'Tiếng Anh chuyên ngành'],
+    };
+
+    const skillsMap = new Map<string, { name: string; majors: Major[] }>();
+
+    for (const [majorName, skills] of Object.entries(skillMap)) {
+      const major = majorMap[majorName];
+      if (!major) continue;
+
+      for (const skillName of skills) {
+        if (!skillsMap.has(skillName)) {
+          skillsMap.set(skillName, { name: skillName, majors: [major] });
+        } else {
+          skillsMap.get(skillName)!.majors.push(major);
+        }
+      }
+    }
+
+    const skillEntities = Array.from(skillsMap.values()).map((s) =>
+      this.skillRepository.create({
+        name: s.name,
+        status: JOB_STATUS.ACTIVE,
+        major: s.majors[0],
+      }),
+    );
+
+    await this.skillRepository.save(skillEntities);
   }
 
   async create(dto: CreateSkillDto) {

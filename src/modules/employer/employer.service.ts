@@ -94,9 +94,8 @@ export class EmployerService {
     const locations = await this.locationService.findByCompany(companyId, 1);
     employer.locations = locations;
     const jobIsNotExpired = await this.jobService.filter({
-      employerId: +companyId,
+      employerIds: [+companyId],
     });
-    console.log('jobIsNotExpired', jobIsNotExpired);
     return {
       ...employer,
       isFollowed: !!isFollowed,

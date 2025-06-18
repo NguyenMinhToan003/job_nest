@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Param,
+  Get,
+} from '@nestjs/common';
 import { SaveJobService } from './save-job.service';
 import { CreateSaveJobDto } from './dto/create-save-job.dto';
 import { RolesGuard } from 'src/auth/passport/role.guard';
@@ -19,9 +27,21 @@ export class SaveJobController {
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)
-  @Post('me')
-  getMe(@Req() req) {
+  @Post('me/:page/:limit')
+  getMe(
+    @Req() req,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
     const candidateId = req.user.id;
-    return this.saveJobService.getMe(candidateId);
+    return this.saveJobService.getMe(candidateId, page, limit);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Get('recommended')
+  getRecomended(@Req() req) {
+    const candidateId = req.user.id;
+    return this.saveJobService.getRecomended(candidateId);
   }
 }

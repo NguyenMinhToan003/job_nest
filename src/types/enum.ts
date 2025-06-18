@@ -31,3 +31,8 @@ export enum NOTI_TYPE {
   REJECTED = 'REJECTED',
   DEFAULT = 'DEFAULT',
 }
+export enum PackageType {
+  JOB = 'JOB',
+  RESUME = 'RESUME',
+  BANNER = 'BANNER',
+}

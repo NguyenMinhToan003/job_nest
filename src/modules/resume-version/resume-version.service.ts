@@ -1,8 +1,11 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ResumeVersion } from './entities/resume-version.entity';
-import { Repository } from 'typeorm';
-import { CreateResumeVersionDto } from './dto/create-resume-version.dto';
+import { In, Like, Repository } from 'typeorm';
+import {
+  CreateResumeVersionDto,
+  QueryDto,
+} from './dto/create-resume-version.dto';
 import { UploadService } from 'src/upload/upload.service';
 import { ResumeService } from '../resume/resume.service';
 import { LanguageResumeService } from '../language-resume/language-resume.service';
@@ -266,5 +269,75 @@ export class ResumeVersionService {
         id: 'DESC',
       },
     });
+  }
+
+  async getActiveDefaultResume(candidateId: number) {
+    return this.resumeVersionRepository.findOne({
+      where: {
+        resume: {
+          candidate: { id: +candidateId },
+          isDefault: true,
+        },
+      },
+      relations: {
+        skills: true,
+        languageResumes: {
+          language: true,
+        },
+        education: true,
+        majors: true,
+        level: true,
+        district: {
+          city: true,
+        },
+        experiences: {
+          typeJob: true,
+        },
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+  }
+
+  async search(query: QueryDto) {
+    if (!query.page) query.page = 1;
+    if (!query.limit) query.limit = 10;
+    const [items, total] = await this.resumeVersionRepository.findAndCount({
+      where: {
+        resume: {
+          name: query?.search ? Like(`%${query?.search}%`) : undefined,
+          isDefault: true,
+        },
+        skills: query?.skills ? { id: In(query?.skills) } : undefined,
+        level: query?.levels ? { id: In(query?.levels) } : undefined,
+      },
+      relations: {
+        resume: true,
+        skills: true,
+        languageResumes: {
+          language: true,
+        },
+        education: true,
+        majors: true,
+        level: true,
+        district: {
+          city: true,
+        },
+        experiences: {
+          typeJob: true,
+        },
+      },
+      skip: (query?.page - 1) * query?.limit,
+      take: query?.limit,
+    });
+    const totalPages = Math.ceil(total / query?.limit);
+    return {
+      items,
+      total,
+      totalPages,
+      limit: query.limit,
+      page: query.page,
+    };
   }
 }

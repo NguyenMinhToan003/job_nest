@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ResumeService } from './resume.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { Roles } from 'src/decorators/customize';
@@ -22,5 +30,13 @@ export class ResumeController {
   delete(@Req() req, @Param('resumeId') resumeId: number) {
     const candidateId = req.user.id;
     return this.resumeService.delete(candidateId, +resumeId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Post('toggle-default/:resumeId')
+  toggleDefault(@Req() req, @Param('resumeId') resumeId: number) {
+    const candidateId = req.user.id;
+    return this.resumeService.toggleDefault(candidateId, +resumeId);
   }
 }

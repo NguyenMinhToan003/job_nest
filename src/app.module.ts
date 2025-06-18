@@ -45,6 +45,7 @@ import { ViewJobModule } from './view-job/view-job.module';
 import { PackagesModule } from './packages/packages.module';
 import { EmployerSubscriptionsModule } from './employer_subscriptions/employer_subscriptions.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { InterviewModule } from './interview/interview.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -127,6 +128,7 @@ import { TransactionModule } from './transaction/transaction.module';
     PackagesModule,
     EmployerSubscriptionsModule,
     TransactionModule,
+    InterviewModule,
   ],
   controllers: [AppController],
   providers: [

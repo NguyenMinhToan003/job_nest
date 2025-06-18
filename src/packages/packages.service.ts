@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Package } from './entities/package.entity';
 import { Not, Repository } from 'typeorm';
+import { PackageType } from 'src/types/enum';
 
 @Injectable()
 export class PackagesService {
@@ -15,6 +16,7 @@ export class PackagesService {
       {
         id: 'FREE_PACKAGE',
         name: 'Gói miễn phí',
+        type: PackageType.RESUME,
         features: 'Đăng tuyển 1 việc làm miễn phí',
         price: 0,
         image:
@@ -24,6 +26,7 @@ export class PackagesService {
       {
         id: 'BASIC_PACKAGE',
         name: 'Gói cơ bản',
+        type: PackageType.JOB,
         features: 'Đăng tuyển 5 việc làm, xem 100 hồ sơ ứng viên',
         price: 50000,
         image:
@@ -35,6 +38,7 @@ export class PackagesService {
         name: 'Gói chuyên nghiệp',
         features: 'Đăng tuyển 10 việc làm, xem 200 hồ sơ ứng viên',
         price: 100000,
+        type: PackageType.JOB,
         image:
           'https://cdn1.vieclam24h.vn/images/public/2023/12/27/refresh_hourly-min_170364713622.png',
         dayValue: 30,
@@ -44,6 +48,7 @@ export class PackagesService {
         name: 'Gói cao cấp',
         features: 'Đăng tuyển 20 việc làm, xem 500 hồ sơ ứng viên',
         price: 200000,
+        type: PackageType.BANNER,
         image:
           'https://cdn1.vieclam24h.vn/images/public/2023/12/27/points-min_170364712744.png',
         dayValue: 30,

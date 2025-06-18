@@ -2,7 +2,6 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
-  IsInt,
   IsMobilePhone,
   IsNotEmpty,
   IsOptional,
@@ -76,4 +75,12 @@ export class CreateResumeVersionDto {
 
   @IsOptional()
   urlPdf?: string;
+}
+
+export class QueryDto {
+  search?: string;
+  page?: number;
+  limit?: number;
+  skills?: number[];
+  levels?: string[];
 }

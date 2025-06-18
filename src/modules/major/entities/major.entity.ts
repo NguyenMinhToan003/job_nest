@@ -12,11 +12,11 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'chuyen_mon' })
+@Entity({ name: 'chuyen_nganh' })
 export class Major {
-  @PrimaryGeneratedColumn({ name: 'ma_chuyen_mon' })
+  @PrimaryGeneratedColumn({ name: 'ma_chuyen_nganh' })
   id: number;
-  @Column({ name: 'ten_chuyen_mon', length: 255 })
+  @Column({ name: 'ten_chuyen_nganh', length: 255 })
   name: string;
 
   @DeleteDateColumn({ name: 'ngay_an' })

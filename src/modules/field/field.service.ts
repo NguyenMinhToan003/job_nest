@@ -13,17 +13,17 @@ export class FieldService {
 
   async createDefaultFields() {
     const defaultFields = [
-      {
-        name: 'Công nghệ thông tin',
-      },
-      {
-        name: 'Kinh doanh',
-      },
-      {
-        name: 'Giáo dục',
-      },
+      { name: 'Công nghệ thông tin' },
+      { name: 'Kinh doanh' },
+      { name: 'Hành chính' },
+      { name: 'Kế toán' },
+      { name: 'Nhân sự' },
+      { name: 'Kỹ thuật' },
+      { name: 'Chăm sóc khách hàng' },
+      { name: 'Bán lẻ' },
+      { name: 'Giáo dục' },
+      { name: 'Thu mua' },
     ];
-
     const existing = await this.fieldRepository.find();
     if (existing.length === 0) {
       await this.fieldRepository.save(defaultFields);

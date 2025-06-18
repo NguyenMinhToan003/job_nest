@@ -23,6 +23,9 @@ export class Resume {
   @JoinColumn({ name: 'ma_ung_vien' })
   candidate: Candidate;
 
+  @Column({ name: 'ho_so_mac_dinh', type: 'boolean', default: false })
+  isDefault: boolean;
+
   @OneToMany(() => ResumeVersion, (resumeVersion) => resumeVersion.resume)
   resumeVersions: ResumeVersion[];
 

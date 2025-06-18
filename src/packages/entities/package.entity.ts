@@ -1,4 +1,5 @@
 import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
+import { PackageType } from 'src/types/enum';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'goi_dich_vu' })
@@ -24,8 +25,13 @@ export class Package {
   @Column({ name: 'so_ngay_hieu_luc', type: 'int', nullable: false })
   dayValue: number;
 
-  @Column({ name: 'diem_xep_hang', type: 'int', nullable: false })
-  rankPoints: number;
+  @Column({
+    name: 'kieu_goi',
+    type: 'enum',
+    enum: PackageType,
+    nullable: false,
+  })
+  type: PackageType;
 
   @OneToMany(
     () => EmployerSubscription,

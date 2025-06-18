@@ -18,32 +18,56 @@ export class MajorService {
     if (existing.length > 0) return existing;
 
     const fields = await this.fieldService.findAll();
+    const fieldMap = Object.fromEntries(fields.map((f) => [f.name, f]));
 
     const defaultMajors = [
-      {
-        name: 'Lập trình Web',
-        field: fields.find((f) => f.name === 'Công nghệ thông tin'),
-      },
-      {
-        name: 'Lập trình Mobile',
-        field: fields.find((f) => f.name === 'Công nghệ thông tin'),
-      },
-      {
-        name: 'Phát triển Backend',
-        field: fields.find((f) => f.name === 'Công nghệ thông tin'),
-      },
-      {
-        name: 'Cơ sở dữ liệu',
-        field: fields.find((f) => f.name === 'Công nghệ thông tin'),
-      },
-      {
-        name: 'Khoa học Dữ liệu',
-        field: fields.find((f) => f.name === 'Công nghệ thông tin'),
-      },
-      {
-        name: 'DevOps',
-        field: fields.find((f) => f.name === 'Công nghệ thông tin'),
-      },
+      // IT
+      { name: 'Lập trình Web', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'Lập trình Mobile', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'Phát triển Backend', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'Cơ sở dữ liệu', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'Khoa học Dữ liệu', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'DevOps', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'AI/Machine Learning', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'An toàn thông tin', field: fieldMap['Công nghệ thông tin'] },
+
+      // Kinh doanh
+      { name: 'Bán hàng', field: fieldMap['Kinh doanh'] },
+      { name: 'Marketing', field: fieldMap['Kinh doanh'] },
+      { name: 'Quản trị kinh doanh', field: fieldMap['Kinh doanh'] },
+      { name: 'Tài chính doanh nghiệp', field: fieldMap['Kinh doanh'] },
+
+      // Giáo dục / Hành chính
+      { name: 'Thư ký văn phòng', field: fieldMap['Giáo dục'] },
+      { name: 'Trợ lý điều hành', field: fieldMap['Giáo dục'] },
+
+      // Kế toán
+      { name: 'Kế toán tổng hợp', field: fieldMap['Giáo dục'] },
+      { name: 'Kế toán thuế', field: fieldMap['Giáo dục'] },
+
+      // Nhân sự
+      { name: 'Tuyển dụng', field: fieldMap['Giáo dục'] },
+      { name: 'Đào tạo nhân sự', field: fieldMap['Giáo dục'] },
+
+      // Kỹ thuật
+      { name: 'Kỹ thuật cơ khí', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'Kỹ thuật điện', field: fieldMap['Công nghệ thông tin'] },
+
+      // Chăm sóc khách hàng
+      { name: 'Tư vấn khách hàng', field: fieldMap['Kinh doanh'] },
+      { name: 'Tổng đài viên', field: fieldMap['Kinh doanh'] },
+
+      // Bán lẻ
+      { name: 'Nhân viên bán hàng', field: fieldMap['Kinh doanh'] },
+      { name: 'Quản lý cửa hàng', field: fieldMap['Kinh doanh'] },
+
+      // Giáo viên
+      { name: 'Giáo viên tiểu học', field: fieldMap['Giáo dục'] },
+      { name: 'Giáo viên tiếng Anh', field: fieldMap['Giáo dục'] },
+
+      // Thu mua
+      { name: 'Thu mua nội địa', field: fieldMap['Kinh doanh'] },
+      { name: 'Thu mua quốc tế', field: fieldMap['Kinh doanh'] },
     ];
 
     return this.majorRepository.save(defaultMajors);

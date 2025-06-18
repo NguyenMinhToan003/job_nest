@@ -4,11 +4,13 @@ import {
   CompanyFilterJobDto,
   CreateJobDto,
   JobFilterDto,
+  MapDto,
 } from './dto/create-job.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from './entities/job.entity';
 import {
   Between,
+  In,
   LessThan,
   LessThanOrEqual,
   Like,
@@ -16,10 +18,11 @@ import {
   Repository,
 } from 'typeorm';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { JOB_STATUS } from 'src/types/enum';
+import { JOB_STATUS, PackageType } from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
 import { FieldService } from '../field/field.service';
+import { getDistance } from 'geolib';
 
 @Injectable()
 export class JobService {
@@ -313,8 +316,8 @@ export class JobService {
     } else if (body.maxSalary) {
       where.maxSalary = LessThanOrEqual(body.maxSalary);
     }
-    if (body.employerId) {
-      where.employer = { id: body.employerId };
+    if (body.employerIds !== undefined && body.employerIds.length > 0) {
+      where.employer = { id: In(body.employerIds) };
     }
 
     const jobs = await this.jobRepository.find({
@@ -332,9 +335,6 @@ export class JobService {
         },
         skills: true,
         levels: true,
-        employerSubscription: {
-          package: true,
-        },
         education: true,
         languageJobs: {
           language: true,
@@ -423,5 +423,78 @@ export class JobService {
       job.isShow = 1;
     }
     return this.jobRepository.save(job);
+  }
+
+  async getJobInBanner() {
+    return this.jobRepository.find({
+      where: {
+        isActive: JOB_STATUS.ACTIVE,
+        isShow: 1,
+        expiredAt: MoreThanOrEqual(new Date()),
+        employerSubscription: {
+          endDate: MoreThanOrEqual(new Date()),
+          package: {
+            type: In([PackageType.BANNER, PackageType.JOB]),
+          },
+        },
+      },
+      relations: {
+        employer: true,
+        locations: {
+          district: {
+            city: true,
+          },
+        },
+        skills: true,
+        levels: true,
+        typeJobs: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 10,
+    });
+  }
+
+  async getJobInMap(map: MapDto) {
+    const { latitude, longitude, radius = 5000 } = map;
+    const allJobs = await this.jobRepository.find({
+      relations: {
+        experience: true,
+        benefits: true,
+        employer: {
+          country: true,
+        },
+        locations: {
+          district: {
+            city: true,
+          },
+        },
+        skills: true,
+        levels: true,
+        education: true,
+        languageJobs: {
+          language: true,
+        },
+        typeJobs: true,
+      },
+    });
+    const nearbyJobs = [];
+    for (const job of allJobs) {
+      for (const location of job.locations) {
+        const distanceMeters = getDistance(
+          { latitude, longitude },
+          { latitude: Number(location.lat), longitude: Number(location.lng) },
+        );
+        if (distanceMeters <= radius) {
+          nearbyJobs.push({
+            ...job,
+            distanceKm: (distanceMeters / 1000).toFixed(2),
+          });
+          break;
+        }
+      }
+    }
+    return nearbyJobs;
   }
 }

@@ -12,9 +12,12 @@ import {
 } from '@nestjs/common';
 import { ResumeVersionService } from './resume-version.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
-import { Roles } from 'src/decorators/customize';
+import { Public, Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
-import { CreateResumeVersionDto } from './dto/create-resume-version.dto';
+import {
+  CreateResumeVersionDto,
+  QueryDto,
+} from './dto/create-resume-version.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResumeService } from '../resume/resume.service';
 
@@ -90,5 +93,18 @@ export class ResumeVersionController {
   viewResume(@Req() req, @Param('resumeId') resumeId: number) {
     const candidateId = req.user.id;
     return this.resumeVersionService.viewResume(candidateId, resumeId);
+  }
+
+  @Public()
+  @Get('active-default/:candidateId')
+  getActiveDefaultResume(@Param('candidateId') candidateId: number) {
+    return this.resumeVersionService.getActiveDefaultResume(+candidateId);
+  }
+
+  @Public()
+  @Post('search')
+  async search(@Body() query: QueryDto) {
+    console.log('Search query:', query);
+    return this.resumeVersionService.search(query);
   }
 }

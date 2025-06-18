@@ -31,7 +31,34 @@ export class SaveJobService {
       savedDate: new Date(),
     });
   }
-  getMe(userId: number) {
+  async getMe(userId: number, page?: number, limit?: number) {
+    if (page && limit) {
+      const [items, total] = await this.saveJobRepository.findAndCount({
+        where: { id: userId },
+        relations: {
+          job: {
+            employer: true,
+            locations: {
+              district: {
+                city: true,
+              },
+            },
+          },
+        },
+        order: {
+          savedDate: 'DESC',
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+      const totalPage = Math.ceil(total / limit);
+      return {
+        items,
+        totalPage,
+        page,
+        limit,
+      };
+    }
     return this.saveJobRepository.find({
       where: { id: userId },
       relations: {
@@ -48,5 +75,49 @@ export class SaveJobService {
         savedDate: 'DESC',
       },
     });
+  }
+  async getRecomended(userId: number) {
+    const [items, total] = await this.saveJobRepository.findAndCount({
+      where: { id: userId },
+      relations: {
+        job: {
+          employer: true,
+          locations: {
+            district: {
+              city: true,
+            },
+          },
+          skills: true,
+          benefits: true,
+        },
+      },
+      order: {
+        savedDate: 'DESC',
+      },
+      take: 10,
+    });
+
+    if (items.length === 0) {
+      return [];
+    }
+    const listSkills = [];
+    items.forEach((item) => {
+      item.job.skills.forEach((skill) => {
+        if (!listSkills.includes(skill.id)) {
+          listSkills.push(skill.id);
+        }
+      });
+    });
+    const listJobsInSaveJob = items.map((item) => item.job.id);
+    const recomendedJobs = await this.jobService.filter(
+      {
+        skills: listSkills,
+      } as any,
+      userId,
+    );
+    const filteredJobs = recomendedJobs.data.filter(
+      (job) => !listJobsInSaveJob.includes(job.id),
+    );
+    return filteredJobs;
   }
 }

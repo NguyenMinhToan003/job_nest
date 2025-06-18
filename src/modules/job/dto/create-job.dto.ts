@@ -116,8 +116,8 @@ export class JobFilterDto {
   skills?: number[];
 
   @IsOptional()
-  @IsInt()
-  employerId: number;
+  @IsInt({ each: true })
+  employerIds: number[];
 
   @IsOptional()
   limit?: number;
@@ -222,4 +222,18 @@ export class CompanyFilterJobDto {
 
   @IsOptional()
   isExpired?: number;
+}
+
+export class MapDto {
+  @IsNotEmpty()
+  @IsNumber()
+  latitude: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  longitude: number;
+
+  @IsOptional()
+  @IsInt()
+  radius?: number; // in meters, default is 5000m
 }

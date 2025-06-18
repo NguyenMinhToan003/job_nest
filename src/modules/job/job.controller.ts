@@ -15,9 +15,10 @@ import {
   CompanyFilterJobDto,
   CreateJobDto,
   JobFilterDto,
+  MapDto,
 } from './dto/create-job.dto';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { GetToken, Roles } from 'src/decorators/customize';
+import { GetToken, Public, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { ROLE_LIST } from 'src/types/enum';
 
@@ -96,5 +97,17 @@ export class JobController {
   toggleViewStatus(@Req() req, @Param('jobId') jobId: number) {
     const employerId = req.user.id;
     return this.jobService.toggleIsShow(+employerId, jobId);
+  }
+
+  @Public()
+  @Post('banner')
+  getJobInBanner() {
+    return this.jobService.getJobInBanner();
+  }
+
+  @Public()
+  @Post('job-map')
+  getJobInMap(@Body() map: MapDto) {
+    return this.jobService.getJobInMap(map);
   }
 }
