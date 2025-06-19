@@ -1,3 +1,5 @@
+import { BusinessType } from 'src/business-type/entities/business-type.entity';
+import { EmployerScale } from 'src/employer-scales/entities/employer-scale.entity';
 import { Account } from 'src/modules/account/entities/account.entity';
 import { Country } from 'src/modules/country/entities/country.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
@@ -21,7 +23,7 @@ export class Employer {
   id: number;
   @Column({ name: 'ten_doanh_nghiep', length: 255, nullable: true })
   name: string;
-  @Column({ name: 'gioi_thieu', length: 255, nullable: true })
+  @Column({ name: 'gioi_thieu', type: 'text', nullable: true })
   introduction: string;
   @Column({ name: 'logo', type: 'text', nullable: true })
   logo: string;
@@ -30,12 +32,6 @@ export class Employer {
 
   @Column({ name: 'website', nullable: true })
   website: string;
-
-  @Column({ name: 'quy-mo-nhan-su', length: 255, nullable: true })
-  employeeScale: string;
-
-  @Column({ name: 'loai_hinh_hoat_dong', length: 255, nullable: true })
-  businessType: string;
 
   @Column({ name: 'so_dien_thoai', length: 11, nullable: true })
   phone: string;
@@ -47,6 +43,18 @@ export class Employer {
   @ManyToOne(() => Country, (country) => country.employees)
   @JoinColumn({ name: 'ma_quoc_gia', referencedColumnName: 'id' })
   country: Country;
+
+  @ManyToOne(() => BusinessType, (businessType) => businessType.employers, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'ma_loai_hinh_kinh_doanh', referencedColumnName: 'id' })
+  businessType: BusinessType;
+
+  @ManyToOne(() => EmployerScale, (employerScale) => employerScale.employers, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'ma_quy_mo_nhan_su', referencedColumnName: 'id' })
+  employeeScale: EmployerScale;
 
   @OneToMany(() => Post, (post) => post.employer)
   posts: Post[];

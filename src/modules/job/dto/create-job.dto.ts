@@ -27,9 +27,8 @@ export class CreateJobDto {
   @IsString({ each: true })
   benefits: string[];
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsInt({ each: true })
-  @ArrayMinSize(1)
   skills: number[];
 
   @IsNotEmpty()
@@ -73,6 +72,9 @@ export class CreateJobDto {
   @IsOptional()
   @IsArray()
   languages?: { languageId: number; level: number }[];
+
+  @IsNotEmpty()
+  fieldId: number;
 }
 
 export class JobFilterDto {
@@ -82,6 +84,9 @@ export class JobFilterDto {
 
   @IsOptional()
   search?: string;
+
+  @IsOptional()
+  fieldId?: number;
 
   @IsOptional()
   @IsInt({ each: true })
@@ -132,6 +137,9 @@ export class AdminJobFilterDto {
 
   @IsOptional()
   isExpired?: number;
+
+  @IsOptional()
+  fieldId?: number;
 
   @IsOptional()
   @IsInt()

@@ -1,5 +1,4 @@
 import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
-import { TypeJob } from 'src/modules/type-job/entities/type-job.entity';
 import {
   Column,
   Entity,
@@ -33,8 +32,4 @@ export class ResumeversionExp {
   )
   @JoinColumn({ name: 'ma_ho_so' })
   resumeVersion: ResumeVersion;
-
-  @ManyToOne(() => TypeJob, (typeJob) => typeJob.experiences)
-  @JoinColumn({ name: 'ma_loai_cong_viec' })
-  typeJob: TypeJob;
 }

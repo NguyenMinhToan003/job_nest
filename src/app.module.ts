@@ -46,6 +46,8 @@ import { PackagesModule } from './packages/packages.module';
 import { EmployerSubscriptionsModule } from './employer_subscriptions/employer_subscriptions.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { InterviewModule } from './interview/interview.module';
+import { EmployerScalesModule } from './employer-scales/employer-scales.module';
+import { BusinessTypeModule } from './business-type/business-type.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -129,6 +131,8 @@ import { InterviewModule } from './interview/interview.module';
     EmployerSubscriptionsModule,
     TransactionModule,
     InterviewModule,
+    EmployerScalesModule,
+    BusinessTypeModule,
   ],
   controllers: [AppController],
   providers: [

@@ -72,7 +72,6 @@ export class ResumeVersionService {
           startTime: exp.startTime,
           endTime: exp.endTime,
           jobDescription: exp.jobDescription,
-          typeJobId: exp.typeJobId,
           resumeVersionId: resumeVersion.id,
         });
       }
@@ -98,9 +97,7 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: {
-          typeJob: true,
-        },
+        experiences: true,
       },
     });
   }
@@ -127,9 +124,7 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: {
-          typeJob: true,
-        },
+        experiences: true,
       },
       order: {
         id: 'DESC',
@@ -154,9 +149,7 @@ export class ResumeVersionService {
         skills: true,
         resume: true,
         majors: true,
-        experiences: {
-          typeJob: true,
-        },
+        experiences: true,
       },
     });
     if (!version) {
@@ -229,7 +222,6 @@ export class ResumeVersionService {
           startTime: exp.startTime,
           endTime: exp.endTime,
           jobDescription: exp.jobDescription,
-          typeJobId: exp.typeJobId,
           resumeVersionId: resumeVersion.id,
         });
       }
@@ -261,9 +253,7 @@ export class ResumeVersionService {
         skills: true,
         resume: true,
         majors: true,
-        experiences: {
-          typeJob: true,
-        },
+        experiences: true,
       },
       order: {
         id: 'DESC',
@@ -290,9 +280,7 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: {
-          typeJob: true,
-        },
+        experiences: true,
       },
       order: {
         id: 'DESC',
@@ -324,9 +312,7 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: {
-          typeJob: true,
-        },
+        experiences: true,
       },
       skip: (query?.page - 1) * query?.limit,
       take: query?.limit,

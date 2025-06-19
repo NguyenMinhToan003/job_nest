@@ -13,6 +13,4 @@ export class CreateResumeversionExpDto {
   jobDescription: string;
   @IsNotEmpty()
   resumeVersionId: number;
-  @IsOptional()
-  typeJobId?: number;
 }

@@ -52,10 +52,11 @@ export class JobService {
       maxSalary: createJobDto.maxSalary,
       isActive: !checkContent ? JOB_STATUS.ACTIVE : JOB_STATUS.PENDING,
       createdAt: new Date(),
+      field: { id: createJobDto.fieldId },
       expiredAt: createJobDto.expiredAt,
       employer: { id: employerId },
       benefits: createJobDto.benefits.map((id) => ({ id })),
-      skills: createJobDto.skills.map((id) => ({ id })),
+      skills: createJobDto?.skills?.map((id) => ({ id })),
       locations: createJobDto.locations.map((id) => ({ id })),
       experience: { id: createJobDto.experience },
       typeJobs: createJobDto.types.map((id) => ({ id })),
@@ -88,6 +89,9 @@ export class JobService {
       where.expiredAt = filter.isExpired
         ? LessThan(new Date())
         : MoreThanOrEqual(new Date());
+    }
+    if (filter.fieldId) {
+      where.field = { id: filter.fieldId };
     }
     if (filter.levels) {
       where.levels = filter.levels.map((level) => ({ id: level }));
@@ -136,6 +140,7 @@ export class JobService {
           },
         },
         skills: true,
+        field: true,
         levels: true,
         typeJobs: true,
         education: true,
@@ -200,6 +205,7 @@ export class JobService {
       relations: {
         experience: true,
         benefits: true,
+        field: true,
         employer: true,
         locations: {
           district: {
@@ -250,11 +256,11 @@ export class JobService {
     if (job.isActive === JOB_STATUS.BLOCK) {
       job.isActive = JOB_STATUS.PENDING;
     }
-    console.log(dto);
     const updatedJob = this.jobRepository.merge(job, {
       name: dto.name,
       description: dto.description,
       requirement: dto.requirement,
+      field: { id: dto.fieldId },
       quantity: dto.quantity,
       minSalary: dto.minSalary,
       maxSalary: dto.maxSalary,
@@ -319,12 +325,16 @@ export class JobService {
     if (body.employerIds !== undefined && body.employerIds.length > 0) {
       where.employer = { id: In(body.employerIds) };
     }
+    if (body.fieldId) {
+      where.field = { id: body.fieldId };
+    }
 
     const jobs = await this.jobRepository.find({
       where,
       relations: {
         experience: true,
         benefits: true,
+        field: true,
         employer: {
           country: true,
         },
@@ -367,13 +377,10 @@ export class JobService {
         });
       }
 
-      const fields = await this.fieldService.getFieldByJobId(job.id);
-
       jobForAccount.push({
         ...job,
         isApplied: isApplied ? true : false,
         isSaved: isSaved ? true : false,
-        fields: fields,
       });
     }
     //paginate
@@ -472,6 +479,7 @@ export class JobService {
         },
         skills: true,
         levels: true,
+        field: true,
         education: true,
         languageJobs: {
           language: true,

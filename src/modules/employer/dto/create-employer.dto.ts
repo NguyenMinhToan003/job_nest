@@ -27,10 +27,12 @@ export class CreateCompanyDto {
 
   @IsNotEmpty()
   taxCode: string;
+
   @IsNotEmpty()
-  employeeScale: string;
+  employeeScaleId: number;
+
   @IsNotEmpty()
-  businessType: string;
+  businessTypeId: number;
 
   @IsNotEmpty()
   countryId: number;

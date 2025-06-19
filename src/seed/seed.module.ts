@@ -15,9 +15,12 @@ import { EducationModule } from 'src/modules/education/education.module';
 import { LanguageModule } from 'src/modules/language/language.module';
 import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.module';
 import { PackagesModule } from 'src/packages/packages.module';
+import { BusinessTypeModule } from 'src/business-type/business-type.module';
+import { EmployerScalesModule } from 'src/employer-scales/employer-scales.module';
 @Module({
   imports: [
     FieldModule,
+    BusinessTypeModule,
     MajorModule,
     LevelModule,
     SkillModule,
@@ -31,6 +34,7 @@ import { PackagesModule } from 'src/packages/packages.module';
     CityModule,
     BlacklistKeywordModule,
     DistrictModule,
+    EmployerScalesModule,
   ],
   controllers: [SeedController],
   providers: [SeedService],

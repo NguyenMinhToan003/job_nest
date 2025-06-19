@@ -7,9 +7,11 @@ import { LocationModule } from '../location/location.module';
 import { FollowModule } from '../follow/follow.module';
 import { JobModule } from '../job/job.module';
 import { EmployerSubscriptionsModule } from 'src/employer_subscriptions/employer_subscriptions.module';
+import { UploadModule } from 'src/upload/upload.module';
 
 @Module({
   imports: [
+    UploadModule,
     EmployerSubscriptionsModule,
     JobModule,
     FollowModule,

@@ -18,7 +18,6 @@ export class ResumeversionExpService {
       startTime: dto.startTime,
       endTime: dto.endTime,
       jobDescription: dto.jobDescription,
-      typeJob: { id: dto.typeJobId },
       resumeVersion: { id: dto.resumeVersionId },
     });
   }
