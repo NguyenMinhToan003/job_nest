@@ -7,7 +7,7 @@ import {
   CreateEmployerSubscriptionDto,
   UseSubscriptionDto,
 } from './dto/create-employer_subscription.dto';
-import { TransactionService } from 'src/transaction/transaction.service';
+import { PAYMENT_STATUS } from 'src/types/enum';
 
 @Injectable()
 export class EmployerSubscriptionsService {
@@ -15,32 +15,7 @@ export class EmployerSubscriptionsService {
     @InjectRepository(EmployerSubscription)
     private readonly employerSubscriptionRepository: Repository<EmployerSubscription>,
     private readonly packageService: PackagesService,
-    private readonly transactionService: TransactionService,
   ) {}
-
-  async triggerEmployerRegister(employerId: number) {
-    const freePackage = await this.packageService.findOneById('FREE_PACKAGE');
-    if (!freePackage) {
-      throw new BadRequestException('Free package not found');
-    }
-    const transaction = await this.transactionService.createTransaction({
-      amount: freePackage.price,
-      employerId: employerId,
-      transactionType: 'SUBSCRIPTION',
-    });
-    const endDate = freePackage.dayValue
-      ? new Date(Date.now() + freePackage.dayValue * 24 * 60 * 60 * 1000)
-      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const create = this.employerSubscriptionRepository.create({
-      transaction: transaction,
-      package: freePackage,
-      startDate: new Date(),
-      endDate: endDate,
-      note: 'Gói miễn phí do hệ thống cấp khi đăng ký nhà tuyển dụng',
-      status: 'ACTIVE',
-    });
-    return this.employerSubscriptionRepository.save(create);
-  }
 
   async getMySubscription(employerId: number) {
     return this.employerSubscriptionRepository.find({
@@ -59,7 +34,10 @@ export class EmployerSubscriptionsService {
   async getMySubscriptionNonJobStatusActive(employerId: number) {
     return this.employerSubscriptionRepository.find({
       where: {
-        transaction: { employer: { id: employerId } },
+        transaction: {
+          employer: { id: employerId },
+          status: PAYMENT_STATUS.SUCCESS,
+        },
         job: { id: IsNull() },
         endDate: MoreThanOrEqual(new Date()),
         status: 'ACTIVE',
@@ -74,24 +52,18 @@ export class EmployerSubscriptionsService {
   }
 
   async createEmployerSubscriptions(
-    employerId: number,
     body: CreateEmployerSubscriptionDto[],
-    amount: number,
+    transactionId: number,
   ) {
     const dataSubs: EmployerSubscription[] = [];
-    const transaction = await this.transactionService.createTransaction({
-      amount,
-      employerId: employerId,
-      transactionType: 'SUBSCRIPTION',
-    });
-    console.log(body);
     for (const item of body) {
       const packageData = await this.packageService.findOneById(item.packageId);
       if (!packageData) {
         throw new BadRequestException('Package not found');
       }
       const dataSub = {
-        transaction: transaction,
+        transaction: { id: transactionId },
+        job: null,
         package: packageData,
         startDate: new Date(),
         endDate: new Date(
@@ -106,47 +78,33 @@ export class EmployerSubscriptionsService {
     }
     return await this.employerSubscriptionRepository.save(dataSubs);
   }
+
   async useSubscription(employerId: number, body: UseSubscriptionDto) {
-    const isExist = await this.employerSubscriptionRepository.findOne({
+    const validate = await this.employerSubscriptionRepository.findOne({
       where: {
-        job: { id: body.jobId },
+        transaction: {
+          employer: { id: employerId },
+          status: PAYMENT_STATUS.SUCCESS,
+        },
+        job: { id: IsNull() },
+        package: { id: body.packageId },
+        status: 'ACTIVE',
+      },
+      order: {
+        createdAt: 'ASC',
       },
     });
-    if (isExist) {
-      throw new BadRequestException(
-        'Công việc đang được sử dụng 1 gói đăng ký nào đó',
-      );
+    if (!validate) {
+      throw new BadRequestException('Sử dụng gói dịch vụ không hợp lệ');
     }
-    const employerSubscription =
-      await this.employerSubscriptionRepository.findOne({
-        where: {
-          id: body.subscriptionId,
-          transaction: { employer: { id: employerId } },
-          job: { id: IsNull() },
-          endDate: MoreThanOrEqual(new Date()),
-          status: 'ACTIVE',
-        },
-        relations: {
-          package: true,
-          job: true,
-        },
-      });
-    if (!employerSubscription) {
-      throw new BadRequestException(
-        'Không tìm thấy gói đăng ký hoặc gói đã được sử dụng',
-      );
-    }
-    if (employerSubscription.endDate < new Date()) {
-      throw new BadRequestException('Gói đăng ký đã hết hạn');
-    }
-    if (employerSubscription?.job?.id) {
-      throw new BadRequestException(
-        'Gói đăng ký đã được sử dụng cho công việc khác',
-      );
-    }
-    return this.employerSubscriptionRepository.save({
-      ...employerSubscription,
+    await this.employerSubscriptionRepository.save({
+      ...validate,
       job: { id: body.jobId },
+      status: 'USED',
     });
+    return {
+      message: 'Sử dụng gói dịch vụ thành công',
+      data: validate,
+    };
   }
 }

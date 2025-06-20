@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Package } from './entities/package.entity';
 import { Not, Repository } from 'typeorm';
-import { PackageType } from 'src/types/enum';
+import { PackageType, PAYMENT_STATUS } from 'src/types/enum';
 
 @Injectable()
 export class PackagesService {
@@ -76,9 +76,51 @@ export class PackagesService {
         },
       },
       relations: {
-        employerSubscriptions: true,
+        employerSubscriptions: {
+          job: true,
+        },
       },
     });
     return packageDetail;
+  }
+
+  async findAvailablePackages(employerId: number) {
+    const packages = await this.packageRepository.find({
+      where: {
+        id: Not('FREE_PACKAGE'),
+        employerSubscriptions: {
+          transaction: {
+            employer: { id: employerId },
+            status: PAYMENT_STATUS.SUCCESS,
+          },
+        },
+      },
+      relations: {
+        employerSubscriptions: {
+          transaction: true,
+          job: true,
+        },
+      },
+    });
+
+    const convertPackagesResult = packages
+      .map((pkg) => {
+        const sub_used = pkg.employerSubscriptions.filter(
+          (sub) => sub.job !== null,
+        );
+        return {
+          id: pkg.id,
+          name: pkg.name,
+          type: pkg.type,
+          features: pkg.features,
+          price: pkg.price,
+          image: pkg.image,
+          dayValue: pkg.dayValue,
+          sub_used: sub_used.length,
+          sub_total: pkg.employerSubscriptions.length,
+        };
+      })
+      .filter((pkg) => pkg.sub_total > pkg.sub_used);
+    return convertPackagesResult;
   }
 }

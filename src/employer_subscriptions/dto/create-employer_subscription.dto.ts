@@ -11,7 +11,7 @@ export class UseSubscriptionDto {
   @IsNotEmpty()
   jobId: number;
   @IsNotEmpty()
-  subscriptionId: number;
+  packageId: string;
 }
 
 export class CreateEmployerSubscriptionDtoWrapper {

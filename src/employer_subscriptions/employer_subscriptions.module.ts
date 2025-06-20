@@ -4,14 +4,9 @@ import { EmployerSubscriptionsController } from './employer_subscriptions.contro
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmployerSubscription } from './entities/employer_subscription.entity';
 import { PackagesModule } from 'src/packages/packages.module';
-import { TransactionModule } from 'src/transaction/transaction.module';
 
 @Module({
-  imports: [
-    TransactionModule,
-    PackagesModule,
-    TypeOrmModule.forFeature([EmployerSubscription]),
-  ],
+  imports: [PackagesModule, TypeOrmModule.forFeature([EmployerSubscription])],
   controllers: [EmployerSubscriptionsController],
   providers: [EmployerSubscriptionsService],
   exports: [EmployerSubscriptionsService],

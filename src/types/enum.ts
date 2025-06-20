@@ -36,3 +36,8 @@ export enum PackageType {
   RESUME = 'RESUME',
   BANNER = 'BANNER',
 }
+export enum PAYMENT_STATUS {
+  PENDING = 'PENDING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+}

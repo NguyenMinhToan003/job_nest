@@ -39,9 +39,7 @@ export class EmployerSubscriptionsController {
     @Req() req,
     @Body() body: CreateEmployerSubscriptionDtoWrapper,
   ) {
-    const employerId = req.user.id;
     return this.employerSubscriptionsService.createEmployerSubscriptions(
-      employerId,
       body.subscriptions,
       body.amount,
     );

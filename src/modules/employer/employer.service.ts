@@ -36,7 +36,7 @@ export class EmployerService {
       website: dto.website,
     });
 
-    await this.employerSubscriptionService.triggerEmployerRegister(accountId);
+    // await this.employerSubscriptionService.triggerEmployerRegister(accountId);
     return create;
   }
   async findAll() {

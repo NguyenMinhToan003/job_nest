@@ -1,5 +1,6 @@
 import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
 import { Employer } from 'src/modules/employer/entities/employer.entity';
+import { PAYMENT_STATUS } from 'src/types/enum';
 import {
   Column,
   Entity,
@@ -20,6 +21,15 @@ export class Transaction {
   })
   createdAt: Date;
 
+  @Column({
+    name: 'ma_giao_dich',
+    type: 'varchar',
+    length: 50,
+    unique: true,
+    nullable: false,
+  })
+  vnp_TxnRef: string;
+
   @Column({ name: 'so_tien', type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
@@ -31,8 +41,15 @@ export class Transaction {
   })
   transactionType: string;
 
-  @Column({ name: 'trang_thai', type: 'varchar', length: 50, nullable: false })
-  status: string;
+  @Column({
+    name: 'trang_thai',
+    enum: PAYMENT_STATUS,
+    default: PAYMENT_STATUS.PENDING,
+    nullable: false,
+    type: 'enum',
+    enumName: 'transaction_status_enum',
+  })
+  status: PAYMENT_STATUS;
 
   @Column({ name: 'ngay_ghi_nhan', type: 'timestamp', nullable: true })
   recordedAt: Date;
