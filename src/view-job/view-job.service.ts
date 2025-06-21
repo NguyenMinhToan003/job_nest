@@ -61,6 +61,7 @@ export class ViewJobService {
       total,
       totalPage,
       page,
+      limit,
     };
   }
   async recommendedViewJob(userId: number) {

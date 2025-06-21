@@ -63,4 +63,10 @@ export class NotiAccountService {
       where: { receiverAccount: { id: accountId }, isRead: 0 },
     });
   }
+  async markAsRead(accountId: number, id: number) {
+    return this.notiAccountRepository.update(
+      { id, receiverAccount: { id: accountId } },
+      { isRead: 1 },
+    );
+  }
 }

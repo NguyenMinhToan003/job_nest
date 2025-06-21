@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { NotiAccountService } from './noti-account.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { Roles } from 'src/decorators/customize';
@@ -30,6 +38,15 @@ export class NotiAccountController {
     const employerId = req.user.id;
     return this.notiAccountService.markAllAsRead(employerId);
   }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Get('me/mark-read/:id')
+  markAsRead(@Req() req, @Param('id') id: string) {
+    const employerId = req.user.id;
+    return this.notiAccountService.markAsRead(employerId, +id);
+  }
+
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER)
   @Get('count-unread')

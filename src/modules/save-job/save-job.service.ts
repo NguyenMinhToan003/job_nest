@@ -57,6 +57,7 @@ export class SaveJobService {
         totalPage,
         page,
         limit,
+        total,
       };
     }
     return this.saveJobRepository.find({
@@ -94,7 +95,6 @@ export class SaveJobService {
       order: {
         savedDate: 'DESC',
       },
-      take: 10,
     });
 
     if (items.length === 0) {

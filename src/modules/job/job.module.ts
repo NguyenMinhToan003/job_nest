@@ -8,12 +8,14 @@ import { FollowModule } from '../follow/follow.module';
 import { LanguageJobModule } from 'src/modules/language-job/language-job.module';
 import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.module';
 import { FieldModule } from '../field/field.module';
+import { EmployerSubscriptionsModule } from 'src/employer_subscriptions/employer_subscriptions.module';
 
 @Module({
   imports: [
     BlacklistKeywordModule,
     LanguageJobModule,
     FollowModule,
+    EmployerSubscriptionsModule,
     FieldModule,
     AccountModule,
     TypeOrmModule.forFeature([Job]),

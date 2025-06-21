@@ -34,13 +34,13 @@ export class Job {
   @Column({ name: 'ten_cong_viec', length: 255 })
   name: string;
 
-  @Column({ name: 'mo_ta', length: 255 })
+  @Column({ name: 'mo_ta', type: 'text' })
   description: string;
 
   @Column({ name: 'so_luong_tuyen', type: 'int' })
   quantity: number;
 
-  @Column({ name: 'yeu_cau', length: 255 })
+  @Column({ name: 'yeu_cau', type: 'text' })
   requirement: string;
 
   @Column({

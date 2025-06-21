@@ -21,17 +21,17 @@ import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { JOB_STATUS, PackageType } from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
-import { FieldService } from '../field/field.service';
 import { getDistance } from 'geolib';
+import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 
 @Injectable()
 export class JobService {
   constructor(
     @InjectRepository(Job)
     private jobRepository: Repository<Job>,
-    private fieldService: FieldService,
     private languageJobService: LanguageJobService,
     private blacklistKeywordService: BlacklistKeywordService,
+    private readonly employerSubscriptionService: EmployerSubscriptionsService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
     if (createJobDto.minSalary > createJobDto.maxSalary) {
@@ -279,7 +279,13 @@ export class JobService {
   async filter(
     body: JobFilterDto,
     accountId?: number,
-  ): Promise<{ total: number; data: Job[] }> {
+  ): Promise<{
+    total: number;
+    data: Job[];
+    page?: number;
+    limit?: number;
+    totalPage?: number;
+  }> {
     const where: any = {
       isActive: JOB_STATUS.ACTIVE,
       isShow: 1,
@@ -329,7 +335,7 @@ export class JobService {
       where.field = { id: body.fieldId };
     }
 
-    const jobs = await this.jobRepository.find({
+    const [items, total] = await this.jobRepository.findAndCount({
       where,
       relations: {
         experience: true,
@@ -350,16 +356,30 @@ export class JobService {
           language: true,
         },
         typeJobs: true,
+        employerSubscription: true,
       },
       order: {
+        employerSubscription: {
+          endDate: 'DESC',
+        },
         createdAt: 'DESC',
       },
+      skip: body?.page ? (body?.page - 1) * body?.limit : undefined,
+      take: body?.limit ? body?.limit : undefined,
+
     });
+    console.log('items', items);
     // them isApplied va isSaved vao tung job
     const jobForAccount = [];
-    for (const job of jobs) {
+    for (const job of items) {
       let isApplied = undefined;
       let isSaved = undefined;
+      let isActiveSubscription = false;
+      const employerSubscriptions =
+        await this.employerSubscriptionService.getSubscriptionByJobId(job.id);
+      if (employerSubscriptions) {
+        isActiveSubscription = true;
+      }
       if (accountId !== undefined) {
         isApplied = await this.jobRepository.findOne({
           where: {
@@ -381,21 +401,17 @@ export class JobService {
         ...job,
         isApplied: isApplied ? true : false,
         isSaved: isSaved ? true : false,
+        isActiveSubscription: isActiveSubscription,
       });
     }
-    //paginate
-    if (body.page && body.limit) {
-      const offset = (body.page - 1) * body.limit;
-      const limit = body.limit;
-      const paginatedJobs = jobForAccount.slice(offset, offset + limit);
-      return {
-        total: jobForAccount.length,
-        data: paginatedJobs,
-      };
-    }
+    const totalPage = body?.limit ? Math.ceil(total / body?.limit) : 1;
+
     return {
-      total: jobForAccount.length,
+      total: total,
       data: jobForAccount,
+      page: body?.page ? body?.page : 1,
+      limit: body?.limit ? body?.limit : total,
+      totalPage: totalPage,
     };
   }
 
@@ -459,7 +475,6 @@ export class JobService {
       order: {
         createdAt: 'DESC',
       },
-      take: 10,
     });
   }
 

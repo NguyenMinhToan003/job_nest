@@ -107,4 +107,15 @@ export class EmployerSubscriptionsService {
       data: validate,
     };
   }
+  async getSubscriptionByJobId(jobId: number) {
+    return this.employerSubscriptionRepository.findOne({
+      where: {
+        job: { id: jobId },
+        endDate: MoreThanOrEqual(new Date()),
+      },
+      relations: {
+        package: true,
+      },
+    });
+  }
 }

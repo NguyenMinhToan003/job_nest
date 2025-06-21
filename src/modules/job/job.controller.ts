@@ -8,6 +8,7 @@ import {
   Patch,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { JobService } from './job.service';
 import {
@@ -78,8 +79,8 @@ export class JobController {
   }
 
   @GetToken()
-  @Post('filter')
-  filter(@Req() req, @Body() filterJobDto: JobFilterDto) {
+  @Get('filter/search')
+  filter(@Req() req, @Query() filterJobDto: JobFilterDto) {
     const accountId = req.user?.id;
     return this.jobService.filter(filterJobDto, accountId);
   }

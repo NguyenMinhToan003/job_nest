@@ -19,7 +19,6 @@ export class CreateJobDto {
   expiredAt: Date;
 
   @IsNotEmpty()
-  @IsNumber()
   @Min(1)
   quantity: number;
 
@@ -28,11 +27,9 @@ export class CreateJobDto {
   benefits: string[];
 
   @IsOptional()
-  @IsInt({ each: true })
   skills: number[];
 
   @IsNotEmpty()
-  @IsInt({ each: true })
   @ArrayMinSize(1)
   locations: number[];
 
@@ -41,12 +38,10 @@ export class CreateJobDto {
   experience: number;
 
   @IsNotEmpty()
-  @IsInt({ each: true })
   @ArrayMinSize(1)
   levels: number[];
 
   @IsNotEmpty()
-  @IsInt({ each: true })
   @ArrayMinSize(1)
   types: number[];
 
@@ -54,12 +49,10 @@ export class CreateJobDto {
   requirement: string;
 
   @ValidateIf((o) => o.minSalary !== null)
-  @IsNumber()
   @Min(0)
   minSalary: number | null;
 
   @ValidateIf((o) => o.maxSalary !== null)
-  @IsNumber()
   @Min(0)
   maxSalary: number | null;
 
@@ -89,23 +82,18 @@ export class JobFilterDto {
   fieldId?: number;
 
   @IsOptional()
-  @IsInt({ each: true })
   levels?: number[];
 
   @IsOptional()
-  @IsInt({ each: true })
   experience?: string[];
 
   @IsOptional()
-  @IsInt({ each: true })
   typeJobs?: number[];
 
   @IsOptional()
-  @IsNumber()
   minSalary?: number;
 
   @IsOptional()
-  @IsNumber()
   maxSalary?: number;
 
   @IsOptional()
@@ -117,11 +105,9 @@ export class JobFilterDto {
   benefits?: string[];
 
   @IsOptional()
-  @IsInt({ each: true })
   skills?: number[];
 
   @IsOptional()
-  @IsInt({ each: true })
   employerIds: number[];
 
   @IsOptional()
@@ -153,19 +139,15 @@ export class AdminJobFilterDto {
   levels?: string[];
 
   @IsOptional()
-  @IsInt({ each: true })
   experience?: string[];
 
   @IsOptional()
-  @IsInt({ each: true })
   typeJobs?: number[];
 
   @IsOptional()
-  @IsNumber()
   minSalary?: number;
 
   @IsOptional()
-  @IsNumber()
   maxSalary?: number;
 
   @IsOptional()
@@ -177,7 +159,6 @@ export class AdminJobFilterDto {
   benefits?: string[];
 
   @IsOptional()
-  @IsInt({ each: true })
   skills?: number[];
 
   @IsOptional()
@@ -204,11 +185,9 @@ export class CompanyFilterJobDto {
   typeJobs?: number[];
 
   @IsOptional()
-  @IsNumber()
   minSalary?: number;
 
   @IsOptional()
-  @IsNumber()
   maxSalary?: number;
 
   @IsOptional()
@@ -234,11 +213,9 @@ export class CompanyFilterJobDto {
 
 export class MapDto {
   @IsNotEmpty()
-  @IsNumber()
   latitude: number;
 
   @IsNotEmpty()
-  @IsNumber()
   longitude: number;
 
   @IsOptional()
