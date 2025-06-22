@@ -40,7 +40,6 @@ import { LanguageModule } from './modules/language/language.module';
 import { LanguageJobModule } from './modules/language-job/language-job.module';
 import { MatchingWeightModule } from './modules/matching-weight/matching-weight.module';
 import { BlacklistKeywordModule } from './blacklist-keyword/blacklist-keyword.module';
-import { ResumeversionExpModule } from './resumeversion-exp/resumeversion-exp.module';
 import { ViewJobModule } from './view-job/view-job.module';
 import { PackagesModule } from './packages/packages.module';
 import { EmployerSubscriptionsModule } from './employer_subscriptions/employer_subscriptions.module';
@@ -126,7 +125,6 @@ import { PaymentModule } from './payment/payment.module';
     LanguageJobModule,
     MatchingWeightModule,
     BlacklistKeywordModule,
-    ResumeversionExpModule,
     ViewJobModule,
     PackagesModule,
     EmployerSubscriptionsModule,

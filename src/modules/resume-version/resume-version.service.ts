@@ -9,7 +9,6 @@ import {
 import { UploadService } from 'src/upload/upload.service';
 import { ResumeService } from '../resume/resume.service';
 import { LanguageResumeService } from '../language-resume/language-resume.service';
-import { ResumeversionExpService } from 'src/resumeversion-exp/resumeversion-exp.service';
 
 @Injectable()
 export class ResumeVersionService {
@@ -19,7 +18,6 @@ export class ResumeVersionService {
     private readonly uploadService: UploadService,
     private readonly resumeService: ResumeService,
     private readonly languageResumeService: LanguageResumeService,
-    private readonly resumeversionExpService: ResumeversionExpService,
   ) {}
 
   async create(
@@ -44,6 +42,7 @@ export class ResumeVersionService {
       gender: dto.gender,
       location: dto.location,
       phone: dto.phone,
+      expectedSalary: dto.expectedSalary,
       district: { id: dto.district },
       education: { id: dto.education },
       email: dto.email,
@@ -60,18 +59,6 @@ export class ResumeVersionService {
         await this.languageResumeService.create({
           languageId: languageResume.languageId,
           level: languageResume.level,
-          resumeVersionId: resumeVersion.id,
-        });
-      }
-    }
-    if (dto.resumeversionExps?.length > 0) {
-      for (const exp of dto.resumeversionExps) {
-        await this.resumeversionExpService.create({
-          companyName: exp.companyName,
-          position: exp.position,
-          startTime: exp.startTime,
-          endTime: exp.endTime,
-          jobDescription: exp.jobDescription,
           resumeVersionId: resumeVersion.id,
         });
       }
@@ -97,7 +84,6 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: true,
       },
     });
   }
@@ -124,7 +110,6 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: true,
       },
       order: {
         id: 'DESC',
@@ -149,7 +134,6 @@ export class ResumeVersionService {
         skills: true,
         resume: true,
         majors: true,
-        experiences: true,
       },
     });
     if (!version) {
@@ -214,18 +198,6 @@ export class ResumeVersionService {
         });
       }
     }
-    if (dto.resumeversionExps?.length > 0) {
-      for (const exp of dto.resumeversionExps) {
-        await this.resumeversionExpService.create({
-          companyName: exp.companyName,
-          position: exp.position,
-          startTime: exp.startTime,
-          endTime: exp.endTime,
-          jobDescription: exp.jobDescription,
-          resumeVersionId: resumeVersion.id,
-        });
-      }
-    }
   }
 
   async viewResume(candidateId: number, resumeId: number) {
@@ -253,7 +225,6 @@ export class ResumeVersionService {
         skills: true,
         resume: true,
         majors: true,
-        experiences: true,
       },
       order: {
         id: 'DESC',
@@ -280,7 +251,6 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: true,
       },
       order: {
         id: 'DESC',
@@ -312,7 +282,6 @@ export class ResumeVersionService {
         district: {
           city: true,
         },
-        experiences: true,
       },
       skip: (query?.page - 1) * query?.limit,
       take: query?.limit,

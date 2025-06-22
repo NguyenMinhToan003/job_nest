@@ -1,4 +1,5 @@
 import { Field } from 'src/modules/field/entities/field.entity';
+import { Job } from 'src/modules/job/entities/job.entity';
 import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
 import { Skill } from 'src/modules/skill/entities/skill.entity';
 import {
@@ -28,6 +29,9 @@ export class Major {
 
   @OneToMany(() => Skill, (skill) => skill.major)
   skills: Skill[];
+
+  @ManyToMany(() => Job, (job) => job.majors)
+  jobs: Job[];
 
   @ManyToMany(() => ResumeVersion, (resumeVersion) => resumeVersion.majors)
   resumeVersions: ResumeVersion[];

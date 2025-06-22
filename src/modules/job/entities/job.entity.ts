@@ -24,7 +24,7 @@ import { LanguageJob } from 'src/modules/language-job/entities/language-job.enti
 import { MatchingWeight } from 'src/modules/matching-weight/entities/matching-weight.entity';
 import { ViewJob } from 'src/view-job/entities/view-job.entity';
 import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
-import { Field } from 'src/modules/field/entities/field.entity';
+import { Major } from 'src/modules/major/entities/major.entity';
 
 @Entity({ name: 'cong_viec' })
 export class Job {
@@ -163,6 +163,16 @@ export class Job {
   @OneToMany(() => ApplyJob, (applyJob) => applyJob.job)
   applyJobs: ApplyJob[];
 
+  @ManyToMany(() => Major, (major) => major.jobs, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'chuyen_nganh_cong_viec',
+    joinColumn: { name: 'ma_cong_viec' },
+    inverseJoinColumn: { name: 'ma_chuyen_nganh' },
+  })
+  majors: Major[];
+
   @ManyToOne(() => Experience, (experience) => experience.jobs)
   @JoinColumn({ name: 'ma_khinh_nghiem' })
   experience: Experience;
@@ -192,10 +202,6 @@ export class Job {
 
   @OneToOne(() => MatchingWeight, (matchingWeight) => matchingWeight.job)
   matchingWeights: MatchingWeight;
-
-  @ManyToOne(() => Field, (field) => field.jobs)
-  @JoinColumn({ name: 'ma_linh_vuc' })
-  field: Field;
 
   @OneToMany(() => ViewJob, (viewJob) => viewJob.job)
   viewJobs: ViewJob[];

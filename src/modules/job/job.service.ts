@@ -52,7 +52,7 @@ export class JobService {
       maxSalary: createJobDto.maxSalary,
       isActive: !checkContent ? JOB_STATUS.ACTIVE : JOB_STATUS.PENDING,
       createdAt: new Date(),
-      field: { id: createJobDto.fieldId },
+      majors: createJobDto?.majors?.map((id) => ({ id })),
       expiredAt: createJobDto.expiredAt,
       employer: { id: employerId },
       benefits: createJobDto.benefits.map((id) => ({ id })),
@@ -140,13 +140,13 @@ export class JobService {
           },
         },
         skills: true,
-        field: true,
         levels: true,
         typeJobs: true,
         education: true,
         languageJobs: {
           language: true,
         },
+        majors: true,
       },
     });
   }
@@ -205,24 +205,20 @@ export class JobService {
       relations: {
         experience: true,
         benefits: true,
-        field: true,
         employer: true,
         locations: {
           district: {
             city: true,
           },
         },
-        skills: {
-          major: {
-            field: true,
-          },
-        },
+        skills: true,
         levels: true,
         typeJobs: true,
         education: true,
         languageJobs: {
           language: true,
         },
+        majors: true,
         matchingWeights: true,
         applyJobs: {
           resumeVersion: {
@@ -235,6 +231,11 @@ export class JobService {
     });
   }
   async update(id: number, employerId: number, dto: UpdateJobDto) {
+    if (dto.minSalary > dto.maxSalary) {
+      throw new ForbiddenException(
+        'Mức lương tối thiểu không thể lớn hơn mức lương tối đa',
+      );
+    }
     const job = await this.jobRepository.findOne({
       where: {
         id,
@@ -260,7 +261,6 @@ export class JobService {
       name: dto.name,
       description: dto.description,
       requirement: dto.requirement,
-      field: { id: dto.fieldId },
       quantity: dto.quantity,
       minSalary: dto.minSalary,
       maxSalary: dto.maxSalary,
@@ -332,7 +332,10 @@ export class JobService {
       where.employer = { id: In(body.employerIds) };
     }
     if (body.fieldId) {
-      where.field = { id: body.fieldId };
+      where.majors = { field: { id: body.fieldId } };
+    }
+    if (body.majorId) {
+      where.majors = { id: body.majorId };
     }
 
     const [items, total] = await this.jobRepository.findAndCount({
@@ -340,7 +343,6 @@ export class JobService {
       relations: {
         experience: true,
         benefits: true,
-        field: true,
         employer: {
           country: true,
         },
@@ -352,6 +354,9 @@ export class JobService {
         skills: true,
         levels: true,
         education: true,
+        majors: {
+          field: true,
+        },
         languageJobs: {
           language: true,
         },
@@ -366,7 +371,6 @@ export class JobService {
       },
       skip: body?.page ? (body?.page - 1) * body?.limit : undefined,
       take: body?.limit ? body?.limit : undefined,
-
     });
     console.log('items', items);
     // them isApplied va isSaved vao tung job
@@ -494,7 +498,6 @@ export class JobService {
         },
         skills: true,
         levels: true,
-        field: true,
         education: true,
         languageJobs: {
           language: true,

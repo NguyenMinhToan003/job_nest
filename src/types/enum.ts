@@ -1,8 +1,9 @@
+// dang xu ly, dang phong van, phu hop , khong phu hop
 export enum APPLY_JOB_STATUS {
   PENDING = 'DANG_XU_LY',
-  INTERVIEW = 'PHONG_VAN',
-  ACCEPTED = 'NHAN',
-  REJECTED = 'HUY',
+  INTERVIEW = 'DANG_PHONG_VAN',
+  ACCEPTED = 'PHU_HOP',
+  REJECTED = 'KHONG_PHU_HOP',
 }
 
 export enum ROLE_LIST {

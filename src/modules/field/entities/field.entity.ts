@@ -1,4 +1,3 @@
-import { Job } from 'src/modules/job/entities/job.entity';
 import { Major } from 'src/modules/major/entities/major.entity';
 import {
   Column,
@@ -19,7 +18,4 @@ export class Field {
 
   @OneToMany(() => Major, (major) => major.field)
   majors: Major[];
-
-  @OneToMany(() => Job, (job) => job.field)
-  jobs: Job[];
 }

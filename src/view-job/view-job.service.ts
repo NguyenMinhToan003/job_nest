@@ -106,4 +106,10 @@ export class ViewJobService {
     );
     return filteredJobs;
   }
+  async countViewJob(jobId: number) {
+    const count = await this.viewJobRepository.count({
+      where: { job: { id: jobId } },
+    });
+    return count;
+  }
 }

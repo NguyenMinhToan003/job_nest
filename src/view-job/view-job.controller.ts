@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ViewJobService } from './view-job.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
-import { Roles } from 'src/decorators/customize';
+import { Public, Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 
 @Controller('view-job')
@@ -33,5 +33,10 @@ export class ViewJobController {
   async getRecommendedViewJobs(@Req() req) {
     const userId = req.user.id;
     return this.viewJobService.recommendedViewJob(userId);
+  }
+  @Public()
+  @Get('getViews/:id')
+  async getViewJobById(@Param('id') id: number) {
+    return this.viewJobService.countViewJob(id);
   }
 }

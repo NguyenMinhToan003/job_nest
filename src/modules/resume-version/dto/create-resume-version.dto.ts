@@ -59,22 +59,13 @@ export class CreateResumeVersionDto {
   avatar?: string;
 
   @IsOptional()
-  @IsArray()
-  resumeversionExps?: {
-    companyName: string;
-    position: string;
-    startTime: Date;
-    endTime?: Date | null;
-    jobDescription: string;
-    resumeVersionId: number;
-    typeJobId?: number;
-  }[];
-
-  @IsOptional()
   publicIdPdf?: string;
 
   @IsOptional()
   urlPdf?: string;
+
+  @IsOptional()
+  expectedSalary?: number;
 }
 
 export class QueryDto {

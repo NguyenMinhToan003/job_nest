@@ -15,6 +15,7 @@ import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/modules/job/job.service';
 import { ResumeVersionService } from 'src/modules/resume-version/resume-version.service';
 import { MajorService } from '../major/major.service';
+import { Job } from '../job/entities/job.entity';
 
 @Injectable()
 export class ApplyJobService {
@@ -25,6 +26,128 @@ export class ApplyJobService {
     private readonly resumeVersionService: ResumeVersionService,
     private readonly majorService: MajorService,
   ) {}
+
+  // Hàm tính điểm khớp chung
+  private calculateMatchingScore(
+    applyJob: ApplyJob,
+    job: Job,
+    normalize: boolean = false,
+    detailed: boolean = false,
+  ) {
+    let matchingScore = 0;
+    const score = {
+      skillScore: 0,
+      educationScore: 0,
+      levelScore: 0,
+      majorScore: 0,
+      locationScore: 0,
+      languageScore: 0,
+      total: 0,
+    };
+    const matchingFields = detailed
+      ? {
+          skill: [],
+          education: [],
+          level: [],
+          major: [],
+          location: [],
+          language: [],
+        }
+      : null;
+
+    if (!job.matchingWeights) {
+      return detailed
+        ? { matchingScore, score, matchingFields }
+        : { matchingScore };
+    }
+
+    const { matchingWeights } = job;
+
+    // Tính điểm kỹ năng
+    if (matchingWeights.skillWeight) {
+      const skillScore = job.skills.filter((jobSkill) =>
+        applyJob.resumeVersion.skills.some((skill) => skill.id === jobSkill.id),
+      );
+      if (detailed) matchingFields.skill = skillScore;
+      const skillValue = normalize
+        ? (skillScore.length / job.skills.length) * matchingWeights.skillWeight
+        : skillScore.length * matchingWeights.skillWeight;
+      matchingScore += skillValue;
+      if (detailed) score.skillScore = skillValue;
+    }
+
+    // Tính điểm học vấn
+    if (matchingWeights.educationWeight) {
+      const educationScore =
+        applyJob.resumeVersion.education.id === job?.education?.id ? 1 : 0;
+      if (detailed)
+        matchingFields.education = [applyJob.resumeVersion.education];
+      const educationValue = educationScore * matchingWeights.educationWeight;
+      matchingScore += educationValue;
+      if (detailed) score.educationScore = educationValue;
+    }
+
+    // Tính điểm cấp bậc
+    if (matchingWeights.levelWeight) {
+      const levelScore = job.levels.filter(
+        (jobLevel) => applyJob.resumeVersion.level.id === jobLevel.id,
+      );
+      if (detailed) matchingFields.level = levelScore;
+      const levelValue = levelScore.length * matchingWeights.levelWeight;
+      matchingScore += levelValue;
+      if (detailed) score.levelScore = levelValue;
+    }
+
+    // Tính điểm chuyên ngành
+    if (matchingWeights.majorWeight) {
+      const majorScore = job.majors.filter((jobMajor) =>
+        applyJob.resumeVersion.majors.some((major) => major.id === jobMajor.id),
+      );
+      if (detailed) matchingFields.major = majorScore;
+      const majorValue = normalize
+        ? (majorScore.length / job.majors.length || 0) *
+          matchingWeights.majorWeight
+        : majorScore.length * matchingWeights.majorWeight;
+      matchingScore += majorValue;
+      if (detailed) score.majorScore = majorValue;
+    }
+
+    // Tính điểm địa điểm
+    if (matchingWeights.locationWeight) {
+      const locationScore = job.locations.filter(
+        (jobLocation) =>
+          applyJob.resumeVersion.district.city.id ===
+          jobLocation.district.city.id,
+      );
+      if (detailed) matchingFields.location = locationScore;
+      const locationValue =
+        locationScore.length * matchingWeights.locationWeight;
+      matchingScore += locationValue;
+      if (detailed) score.locationScore = locationValue;
+    }
+
+    // Tính điểm ngôn ngữ
+    if (matchingWeights.languageWeight) {
+      const languageScore = job.languageJobs.filter((jobLanguage) =>
+        applyJob.resumeVersion.languageResumes.some(
+          (language) => language.languageId === jobLanguage.language.id,
+        ),
+      );
+      if (detailed) matchingFields.language = languageScore;
+      const languageValue = normalize
+        ? (languageScore.length / job.languageJobs.length) *
+          matchingWeights.languageWeight
+        : languageScore.length * matchingWeights.languageWeight;
+      matchingScore += languageValue;
+      if (detailed) score.languageScore = languageValue;
+    }
+
+    if (detailed) score.total = matchingScore;
+
+    return detailed
+      ? { matchingScore, score, matchingFields }
+      : { matchingScore };
+  }
 
   async applyJob(jobId: number, candidateId: number, body: CreateApplyJobDto) {
     const checkPer = await this.resumeVersionService.viewResume(
@@ -139,7 +262,7 @@ export class ApplyJobService {
       throw new BadRequestException('Ứng tuyển không tồn tại');
     }
     if (applyJob.viewStatus === 1) return;
-    applyJob.viewStatus = 1; // Đánh dấu đã xem
+    applyJob.viewStatus = 1;
     return this.applyJobRepository.save(applyJob);
   }
 
@@ -178,8 +301,6 @@ export class ApplyJobService {
       throw new BadRequestException('Bạn không có quyền xem ứng tuyển này');
     }
 
-    console.log(job.matchingWeights); // Log MatchingWeights của công việc
-
     const resumes = await this.applyJobRepository.find({
       where: {
         job: { id: +param.jobId },
@@ -193,80 +314,31 @@ export class ApplyJobService {
           languageResumes: true,
           education: true,
           majors: true,
-          experiences: true,
           skills: true,
           resume: {
             candidate: true,
           },
         },
+        job: {
+          skills: true,
+          levels: true,
+          education: true,
+          majors: true,
+          locations: { district: { city: true } },
+          languageJobs: { language: true },
+          matchingWeights: true,
+        },
       },
     });
 
-    const listAddScore = resumes.map((item) => {
-      let matchingScore = 0;
-      if (!job.matchingWeights) {
-        return {
-          ...item,
-          matchingScore,
-        };
-      }
-
-      if (job.matchingWeights.skillWeight) {
-        const skillScore = job.skills.filter((jobSkill) =>
-          item.resumeVersion.skills.some((skill) => skill.id === jobSkill.id),
-        ).length;
-        matchingScore += skillScore * job.matchingWeights.skillWeight;
-      }
-
-      if (job.matchingWeights.educationWeight) {
-        const educationScore =
-          item.resumeVersion.education.id === job.education.id ? 1 : 0;
-        matchingScore += educationScore * job.matchingWeights.educationWeight;
-      }
-
-      if (job.matchingWeights.levelWeight) {
-        const levelScore = job.levels.filter(
-          (jobLevel) => item.resumeVersion.level.id === jobLevel.id,
-        ).length;
-        matchingScore += levelScore * job.matchingWeights.levelWeight;
-      }
-
-      if (job.matchingWeights.majorWeight) {
-        const majorScore = job.skills.filter((jobSkill) =>
-          item.resumeVersion.majors.some(
-            (major) => major.id === jobSkill.major.id,
-          ),
-        ).length;
-        matchingScore += majorScore * job.matchingWeights.majorWeight;
-      }
-
-      if (job.matchingWeights.locationWeight) {
-        const locationScore = job.locations.filter(
-          (jobLocation) =>
-            item.resumeVersion.district.city.id ===
-            jobLocation.district.city.id,
-        ).length;
-        matchingScore += locationScore * job.matchingWeights.locationWeight;
-      }
-      if (job.matchingWeights.languageWeight) {
-        const languageScore = job.languageJobs.filter((jobLanguage) =>
-          item.resumeVersion.languageResumes.some(
-            (language) => language.languageId === jobLanguage.language.id,
-          ),
-        ).length;
-        matchingScore += languageScore * job.matchingWeights.languageWeight;
-      }
-
-      console.log('Matching Score:', matchingScore);
-
-      return {
-        ...item,
-        matchingScore,
-      };
+    const listWithScores = resumes.map((item) => {
+      const { matchingScore } = this.calculateMatchingScore(item, job, true);
+      return { ...item, matchingScore };
     });
 
-    return listAddScore.sort((a, b) => b.matchingScore - a.matchingScore);
+    return listWithScores.sort((a, b) => b.matchingScore - a.matchingScore);
   }
+
   async getResumeVersionForJob(companyId: number, applyId: number) {
     const resumeVersion = await this.applyJobRepository.findOne({
       where: { id: applyId },
@@ -274,9 +346,7 @@ export class ApplyJobService {
         job: {
           employer: true,
           locations: {
-            district: {
-              city: true,
-            },
+            district: { city: true },
           },
           skills: true,
           levels: true,
@@ -286,6 +356,7 @@ export class ApplyJobService {
           languageJobs: {
             language: true,
           },
+          majors: true,
         },
         resumeVersion: {
           level: true,
@@ -297,7 +368,6 @@ export class ApplyJobService {
           },
           education: true,
           majors: true,
-          experiences: true,
           skills: true,
           resume: {
             candidate: true,
@@ -305,108 +375,28 @@ export class ApplyJobService {
         },
       },
     });
+
     if (!resumeVersion) {
       throw new BadRequestException('Hồ sơ không tồn tại');
     }
-    const job = await this.jobService.findOne(resumeVersion.job.id);
-    if (!job) {
-      throw new BadRequestException('Công việc không tồn tại');
-    } else if (job.employer.id !== companyId) {
+    const job = resumeVersion.job;
+    if (job.employer.id !== companyId) {
       throw new UnauthorizedException('Bạn không có quyền xem ứng tuyển này');
     }
 
-    const matchingWeights = job.matchingWeights;
     const majors = await this.majorService.getByJobId(job.id);
-    if (!matchingWeights) {
-      return {
-        ...resumeVersion,
-        majors,
-      };
-    }
-    const score = {
-      skillScore: 0,
-      educationScore: 0,
-      levelScore: 0,
-      majorScore: 0,
-      locationScore: 0,
-      languageScore: 0,
-      total: 0,
-    };
-    const matchingFields = {
-      skill: [],
-      education: [],
-      level: [],
-      major: [],
-      location: [],
-      language: [],
-    };
-    if (matchingWeights.skillWeight) {
-      const skillScore = job.skills.filter((jobSkill) =>
-        resumeVersion.resumeVersion.skills.some(
-          (skill) => skill.id === jobSkill.id,
-        ),
-      );
-      matchingFields.skill = skillScore;
-      score.skillScore = skillScore.length * matchingWeights.skillWeight;
-    }
-    if (matchingWeights.educationWeight) {
-      const educationScore =
-        resumeVersion.resumeVersion.education.id === job.education.id ? 1 : 0;
-      matchingFields.education = [resumeVersion.resumeVersion.education];
-      score.educationScore = educationScore * matchingWeights.educationWeight;
-    }
-    if (matchingWeights.levelWeight) {
-      const levelScore = job.levels.filter(
-        (jobLevel) => resumeVersion.resumeVersion.level.id === jobLevel.id,
-      );
-      matchingFields.level = levelScore;
-      score.levelScore = levelScore.length * matchingWeights.levelWeight;
-    }
-    if (matchingWeights.majorWeight) {
-      const majorScore = job.skills.filter((jobSkill) =>
-        resumeVersion.resumeVersion.majors.some(
-          (major) => major.id === jobSkill.major.id,
-        ),
-      );
-      matchingFields.major = majorScore;
-      score.majorScore = majorScore.length * matchingWeights.majorWeight;
-    }
-    if (matchingWeights.locationWeight) {
-      const locationScore = job.locations.filter(
-        (jobLocation) =>
-          resumeVersion.resumeVersion.district.city.id ===
-          jobLocation.district.city.id,
-      );
-      matchingFields.location = locationScore;
-      score.locationScore =
-        locationScore.length * matchingWeights.locationWeight;
-    }
-    if (matchingWeights.languageWeight) {
-      const languageScore = job.languageJobs.filter((jobLanguage) =>
-        resumeVersion.resumeVersion.languageResumes.some(
-          (language) => language.languageId === jobLanguage.language.id,
-        ),
-      );
-      matchingFields.language = languageScore;
-      score.languageScore =
-        languageScore.length * matchingWeights.languageWeight;
-    }
-    score.total =
-      score.skillScore +
-      score.educationScore +
-      score.levelScore +
-      score.majorScore +
-      score.locationScore +
-      score.languageScore;
+    const { matchingScore, score, matchingFields } =
+      this.calculateMatchingScore(resumeVersion, job, true, true);
 
-    const allResume = await this.getApplyJobByJobId(companyId, {
+    // Lấy danh sách để tính xếp hạng
+    const allResumes = await this.getApplyJobByJobId(companyId, {
       jobId: job.id,
     });
-    // find Rank of this resumeVersion
     const rank =
-      allResume.findIndex(
+      allResumes.findIndex(
         (item) => item.resumeVersion.id === resumeVersion.resumeVersion.id,
       ) + 1;
+
     return {
       ...resumeVersion,
       majors,

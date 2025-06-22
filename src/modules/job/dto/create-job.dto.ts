@@ -1,4 +1,6 @@
+import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   ArrayMinSize,
   IsArray,
   IsEnum,
@@ -18,8 +20,10 @@ export class CreateJobDto {
   @IsNotEmpty()
   expiredAt: Date;
 
+  @Type(() => Number)
   @IsNotEmpty()
   @Min(1)
+  @IsInt()
   quantity: number;
 
   @IsNotEmpty()
@@ -34,7 +38,6 @@ export class CreateJobDto {
   locations: number[];
 
   @IsNotEmpty()
-  @IsInt()
   experience: number;
 
   @IsNotEmpty()
@@ -48,12 +51,16 @@ export class CreateJobDto {
   @IsNotEmpty()
   requirement: string;
 
+  @Type(() => Number)
   @ValidateIf((o) => o.minSalary !== null)
   @Min(0)
+  @IsNumber()
   minSalary: number | null;
 
+  @Type(() => Number)
   @ValidateIf((o) => o.maxSalary !== null)
   @Min(0)
+  @IsNumber()
   maxSalary: number | null;
 
   @IsNotEmpty()
@@ -67,12 +74,14 @@ export class CreateJobDto {
   languages?: { languageId: number; level: number }[];
 
   @IsNotEmpty()
-  fieldId: number;
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(3)
+  majors: number[];
 }
 
 export class JobFilterDto {
   @IsOptional()
-  @IsInt()
   id?: number;
 
   @IsOptional()
@@ -80,6 +89,9 @@ export class JobFilterDto {
 
   @IsOptional()
   fieldId?: number;
+
+  @IsOptional()
+  majorId?: number;
 
   @IsOptional()
   levels?: number[];
@@ -128,7 +140,6 @@ export class AdminJobFilterDto {
   fieldId?: number;
 
   @IsOptional()
-  @IsInt()
   id?: number;
 
   @IsOptional()
@@ -162,12 +173,10 @@ export class AdminJobFilterDto {
   skills?: number[];
 
   @IsOptional()
-  @IsInt()
   employerId: number;
 }
 export class CompanyFilterJobDto {
   @IsOptional()
-  @IsInt()
   id?: number;
 
   @IsOptional()
@@ -177,11 +186,9 @@ export class CompanyFilterJobDto {
   levels?: string[];
 
   @IsOptional()
-  @IsInt()
   experience?: number;
 
   @IsOptional()
-  @IsInt()
   typeJobs?: number[];
 
   @IsOptional()
@@ -200,11 +207,9 @@ export class CompanyFilterJobDto {
   skills?: string[];
 
   @IsOptional()
-  @IsInt()
   isActive?: number;
 
   @IsOptional()
-  @IsInt()
   isShow?: number;
 
   @IsOptional()
@@ -219,6 +224,5 @@ export class MapDto {
   longitude: number;
 
   @IsOptional()
-  @IsInt()
   radius?: number; // in meters, default is 5000m
 }

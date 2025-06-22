@@ -6,7 +6,6 @@ import { Level } from 'src/modules/level/entities/level.entity';
 import { Major } from 'src/modules/major/entities/major.entity';
 import { Resume } from 'src/modules/resume/entities/resume.entity';
 import { Skill } from 'src/modules/skill/entities/skill.entity';
-import { ResumeversionExp } from 'src/resumeversion-exp/entities/resumeversion-exp.entity';
 import {
   Column,
   Entity,
@@ -51,6 +50,9 @@ export class ResumeVersion {
 
   @Column({ name: 'gioi_thieu', type: 'text', nullable: true })
   about: string;
+
+  @Column({ name: 'muc_luong_mong_muon', type: 'int', nullable: true })
+  expectedSalary: number;
 
   @Column({ name: 'public_id_pdf', nullable: false })
   publicIdPdf: string;
@@ -102,11 +104,6 @@ export class ResumeVersion {
   })
   @JoinColumn({ name: 'ma_quan_huyen' })
   district: District;
-
-  @OneToMany(() => ResumeversionExp, (exp) => exp.resumeVersion, {
-    nullable: true,
-  })
-  experiences: ResumeversionExp[];
 
   @OneToMany(() => ApplyJob, (applyJob) => applyJob.resumeVersion, {
     nullable: true,
