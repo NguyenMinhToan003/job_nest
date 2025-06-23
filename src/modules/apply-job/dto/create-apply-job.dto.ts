@@ -55,3 +55,8 @@ export class FilterApplyJobDto {
   @IsOptional()
   status?: APPLY_JOB_STATUS;
 }
+export class UpdateApplyJobStatusDto {
+  @IsEnum(APPLY_JOB_STATUS)
+  @IsNotEmpty()
+  status: APPLY_JOB_STATUS;
+}

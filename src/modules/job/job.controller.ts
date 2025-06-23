@@ -72,6 +72,14 @@ export class JobController {
     return this.jobService.findByEmployerId(+employerId, filter);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('employer/request-publish/:id')
+  publishJob(@Req() req, @Param('id') id: string) {
+    const employerId = req.user.id;
+    return this.jobService.requestPublishJob(+id, +employerId);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Req() req, @Body() dto: UpdateJobDto) {
     const employerId = req.user.id;

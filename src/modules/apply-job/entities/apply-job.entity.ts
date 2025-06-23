@@ -1,5 +1,6 @@
 import { Job } from 'src/modules/job/entities/job.entity';
 import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
+import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import {
   Column,
@@ -7,6 +8,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 @Entity({ name: 'ung_tuyen' })
 export class ApplyJob {
@@ -24,7 +27,7 @@ export class ApplyJob {
     type: 'enum',
     enum: APPLY_JOB_STATUS,
     enumName: 'trang_thai_ung_tuyen',
-    default: APPLY_JOB_STATUS.PENDING,
+    default: APPLY_JOB_STATUS.PROCESSING,
   })
   status: APPLY_JOB_STATUS;
 
@@ -43,4 +46,15 @@ export class ApplyJob {
   })
   @JoinColumn({ name: 'phien_ban_ho_so' })
   resumeVersion: ResumeVersion;
+
+  @ManyToMany(() => TagResume, (tagResume) => tagResume.applyJobs, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'ung_tuyen_gan_the',
+    joinColumn: { name: 'ma_ung_tuyen', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'ma_the', referencedColumnName: 'id' },
+  })
+  tagResumes: TagResume[];
 }

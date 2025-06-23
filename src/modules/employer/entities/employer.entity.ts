@@ -6,6 +6,7 @@ import { Follow } from 'src/modules/follow/entities/follow.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
 import { Post } from 'src/modules/post/entities/post.entity';
+import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
 import { Transaction } from 'src/transaction/entities/transaction.entity';
 import {
   Column,
@@ -70,4 +71,7 @@ export class Employer {
 
   @OneToMany(() => Transaction, (transaction) => transaction.employer)
   transactions: Transaction[];
+
+  @OneToMany(() => TagResume, (tagResume) => tagResume.employer)
+  tagResumes: TagResume[];
 }

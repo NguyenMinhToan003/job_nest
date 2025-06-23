@@ -81,10 +81,11 @@ export class Job {
 
   @Column({
     name: 'trang_thai',
-    type: 'int',
-    default: JOB_STATUS.PENDING,
+    type: 'enum',
+    default: JOB_STATUS.CREATE,
+    enum: JOB_STATUS,
   })
-  isActive: number;
+  isActive: JOB_STATUS;
 
   @Column({
     name: 'thoi_gian_het_han',

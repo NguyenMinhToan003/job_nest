@@ -11,7 +11,7 @@ import {
 import { MajorService } from './major.service';
 import { CreateMajorDto } from './dto/create-major.dto';
 import { RolesGuard } from 'src/auth/passport/role.guard';
-import { Roles } from 'src/decorators/customize';
+import { Public, Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 
 @Controller('major')
@@ -24,6 +24,8 @@ export class MajorController {
   async create(@Body() createMajorDto: CreateMajorDto) {
     return this.majorService.create(createMajorDto);
   }
+
+  @Public()
   @Get()
   async findAll() {
     return this.majorService.findAll();

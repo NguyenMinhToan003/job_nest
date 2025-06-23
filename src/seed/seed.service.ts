@@ -15,6 +15,7 @@ import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword
 import { PackagesService } from 'src/packages/packages.service';
 import { BusinessTypeService } from 'src/business-type/business-type.service';
 import { EmployerScalesService } from 'src/employer-scales/employer-scales.service';
+import { CountryService } from 'src/modules/country/country.service';
 
 @Injectable()
 export class SeedService {
@@ -35,6 +36,7 @@ export class SeedService {
     private readonly packagesService: PackagesService,
     private readonly businessTypeService: BusinessTypeService,
     private readonly employerScalesService: EmployerScalesService,
+    private readonly countryService: CountryService,
   ) {}
 
   private readonly logger = new Logger(SeedService.name);
@@ -88,6 +90,8 @@ export class SeedService {
       this.logger.log(`✅ Đã seed business types`);
       await this.employerScalesService.createDefaultEmployerScales();
       this.logger.log(`✅ Đã seed employer scales`);
+      await this.countryService.createDefaultCountries();
+      this.logger.log(`✅ Đã seed countries`);
 
       this.logger.log('🌿 Hoàn tất seed dữ liệu!');
     } catch (error) {

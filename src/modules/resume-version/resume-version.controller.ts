@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -48,7 +49,19 @@ export class ResumeVersionController {
   ) {
     const candidateId = req.user.id;
     const resume = await this.resumeService.create(candidateId, dto.name);
-    return this.resumeVersionService.create(dto, files, +resume.id);
+    try {
+      const resumeVer = await this.resumeVersionService.create(
+        dto,
+        files,
+        +resume.id,
+      );
+      return resumeVer;
+    } catch (err: any) {
+      await this.resumeService.deleteWhenError(candidateId, +resume.id);
+      throw new BadRequestException(
+        'Đã sảy ra lỗi khi khởi tạo hồ sơ công việc',
+      );
+    }
   }
 
   @UseGuards(RolesGuard)

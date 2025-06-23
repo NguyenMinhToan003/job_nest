@@ -8,7 +8,6 @@ import { Experience } from './entities/experience.entity';
 import { Repository } from 'typeorm';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
-import { JOB_STATUS } from 'src/types/enum';
 
 @Injectable()
 export class ExperienceService {
@@ -69,7 +68,7 @@ export class ExperienceService {
   }
   async delete(id: number) {
     const experience = await this.experienceRepository.findOne({
-      where: { id, status: JOB_STATUS.ACTIVE },
+      where: { id, status: 1 },
       relations: { jobs: true },
     });
     if (!experience) {

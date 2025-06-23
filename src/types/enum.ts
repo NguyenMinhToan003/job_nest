@@ -1,9 +1,10 @@
 // dang xu ly, dang phong van, phu hop , khong phu hop
 export enum APPLY_JOB_STATUS {
-  PENDING = 'DANG_XU_LY',
-  INTERVIEW = 'DANG_PHONG_VAN',
-  ACCEPTED = 'PHU_HOP',
-  REJECTED = 'KHONG_PHU_HOP',
+  PROCESSING = 'DANG_XU_LY',
+  INTERVIEWING = 'DANG_PHONG_VAN',
+  QUALIFIED = 'PHU_HOP',
+  UNQUALIFIED = 'KHONG_PHU_HOP',
+  HIRED = 'DA_TUYEN',
 }
 
 export enum ROLE_LIST {
@@ -18,25 +19,31 @@ export enum INTERVIEW_STATUS {
   COMPLETED = 'HOAN_THANH',
   CANCELLED = 'HUY',
 }
+
 export enum PROVIDER_LIST {
   GOOGLE = 'GOOGLE',
   GITHUB = 'GITHUB',
 }
+
 export enum JOB_STATUS {
-  PENDING = 0,
-  ACTIVE = 1,
-  BLOCK = -1,
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  BLOCK = 'BLOCK',
+  CREATE = 'CREATE',
 }
+
 export enum NOTI_TYPE {
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
   DEFAULT = 'DEFAULT',
 }
+
 export enum PackageType {
   JOB = 'JOB',
   RESUME = 'RESUME',
   BANNER = 'BANNER',
 }
+
 export enum PAYMENT_STATUS {
   PENDING = 'PENDING',
   SUCCESS = 'SUCCESS',

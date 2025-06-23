@@ -8,7 +8,6 @@ import { Skill } from './entities/skill.entity';
 import { Repository } from 'typeorm';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
-import { JOB_STATUS } from 'src/types/enum';
 import { MajorService } from '../major/major.service';
 import { Major } from '../major/entities/major.entity';
 
@@ -82,7 +81,7 @@ export class SkillService {
     const skillEntities = Array.from(skillsMap.values()).map((s) =>
       this.skillRepository.create({
         name: s.name,
-        status: JOB_STATUS.ACTIVE,
+        status: 1,
         major: s.majors[0],
       }),
     );
@@ -99,7 +98,7 @@ export class SkillService {
     }
     const skill = this.skillRepository.create({
       name: dto.name,
-      status: JOB_STATUS.ACTIVE,
+      status: 1,
       major: { id: dto.majorId },
     });
     return this.skillRepository.save(skill);
@@ -107,7 +106,7 @@ export class SkillService {
 
   async findAll() {
     return this.skillRepository.find({
-      where: { status: JOB_STATUS.ACTIVE },
+      where: { status: 1 },
     });
   }
 
@@ -141,7 +140,7 @@ export class SkillService {
 
   async delete(id: number) {
     const skill = await this.skillRepository.findOne({
-      where: { id, status: JOB_STATUS.ACTIVE },
+      where: { id },
       relations: {
         jobs: true,
       },

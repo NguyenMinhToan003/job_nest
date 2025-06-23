@@ -36,11 +36,11 @@ export class ResumeVersionService {
     const cv = await this.uploadService.uploadFile(files.cv);
 
     const resumeVersion = await this.resumeVersionRepository.save({
-      about: dto.about,
       avatar: uploadImage,
       dateOfBirth: dto.dateOfBirth,
       gender: dto.gender,
       location: dto.location,
+      typeJob: { id: dto.typeJobId },
       phone: dto.phone,
       expectedSalary: dto.expectedSalary,
       district: { id: dto.district },
@@ -170,7 +170,6 @@ export class ResumeVersionService {
       dto.urlPdf = lastResumeVersion.urlPdf;
     }
     const resumeVersion = await this.resumeVersionRepository.save({
-      about: dto.about ?? lastResumeVersion.about,
       avatar: uploadImage[0]?.secure_url ?? lastResumeVersion.avatar,
       dateOfBirth: dto.dateOfBirth ?? lastResumeVersion.dateOfBirth,
       gender: dto.gender ?? lastResumeVersion.gender,
@@ -180,6 +179,7 @@ export class ResumeVersionService {
       education: { id: dto.education ?? lastResumeVersion.education.id },
       location: dto.location ?? lastResumeVersion.location,
       phone: dto.phone ?? lastResumeVersion.phone,
+      typeJob: { id: dto.typeJobId ?? lastResumeVersion.typeJob.id },
       district: { id: dto.district ?? lastResumeVersion.district.id },
       email: dto.email ?? lastResumeVersion.email,
       resume: { id: +resumeId },

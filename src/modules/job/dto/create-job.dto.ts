@@ -130,8 +130,9 @@ export class JobFilterDto {
 }
 export class AdminJobFilterDto {
   @IsOptional()
-  @IsEnum(JOB_STATUS)
-  isActive?: number;
+  @IsArray()
+  @IsEnum(JOB_STATUS, { each: true })
+  isActive?: JOB_STATUS[];
 
   @IsOptional()
   isExpired?: number;
@@ -207,7 +208,9 @@ export class CompanyFilterJobDto {
   skills?: string[];
 
   @IsOptional()
-  isActive?: number;
+  @IsArray()
+  @IsEnum(JOB_STATUS, { each: true })
+  isActive?: JOB_STATUS[];
 
   @IsOptional()
   isShow?: number;

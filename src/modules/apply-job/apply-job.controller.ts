@@ -13,6 +13,7 @@ import {
   CreateApplyJobDto,
   GetApplyByStatusDto,
   GetApplyJobByJobIdDto,
+  UpdateApplyJobStatusDto,
 } from './dto/create-apply-job.dto';
 import { ROLE_LIST } from 'src/types/enum';
 import { Roles } from 'src/decorators/customize';
@@ -85,5 +86,17 @@ export class ApplyJobController {
   getResumeVersionForJob(@Req() req, @Param('applyId') applyId: number) {
     const companyId = req.user.id;
     return this.applyJobService.getResumeVersionForJob(companyId, +applyId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('status/:applyId')
+  updateStatus(
+    @Req() req,
+    @Param('applyId') applyId: number,
+    @Body() body: UpdateApplyJobStatusDto,
+  ) {
+    const companyId = req.user.id;
+    return this.applyJobService.updateStatus(companyId, +applyId, body);
   }
 }

@@ -25,9 +25,6 @@ export class CreateResumeVersionDto {
   @IsNotEmpty()
   dateOfBirth: Date;
 
-  @IsNotEmpty()
-  about: string;
-
   @IsOptional()
   @IsArray()
   languageResumes: { languageId: number; level: number }[];
@@ -66,6 +63,9 @@ export class CreateResumeVersionDto {
 
   @IsOptional()
   expectedSalary?: number;
+
+  @IsNotEmpty()
+  typeJobId?: number;
 }
 
 export class QueryDto {

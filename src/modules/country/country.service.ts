@@ -20,6 +20,29 @@ export class CountryService {
       },
     });
   }
+  async createDefaultCountries() {
+    const defaultCountries = [
+      {
+        name: 'Trung Quốc',
+        flag: 'https://res.cloudinary.com/dprryejno/image/upload/v1750646243/JOB_NEST/yhh8ehkt3m4gzchwsyuz.jpg',
+        publicId: 'JOB_NEST/yhh8ehkt3m4gzchwsyuz',
+      },
+      {
+        name: 'Việt Nam',
+        flag: 'https://res.cloudinary.com/dprryejno/image/upload/v1750646254/JOB_NEST/oxd5q4kyfnvsdkqywhmw.jpg',
+        publicId: 'JOB_NEST/oxd5q4kyfnvsdkqywhmw',
+      },
+    ];
+    for (const country of defaultCountries) {
+      const existingCountry = await this.countryRepository.findOne({
+        where: { name: country.name },
+      });
+      if (!existingCountry) {
+        const newCountry = this.countryRepository.create(country);
+        await this.countryRepository.save(newCountry);
+      }
+    }
+  }
 
   async createCountry(dto: CreateCountryDto, flag: Express.Multer.File) {
     if (!flag) {

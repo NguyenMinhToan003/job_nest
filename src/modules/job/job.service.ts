@@ -20,7 +20,6 @@ import {
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { JOB_STATUS, PackageType } from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
-import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
 import { getDistance } from 'geolib';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 
@@ -30,7 +29,6 @@ export class JobService {
     @InjectRepository(Job)
     private jobRepository: Repository<Job>,
     private languageJobService: LanguageJobService,
-    private blacklistKeywordService: BlacklistKeywordService,
     private readonly employerSubscriptionService: EmployerSubscriptionsService,
   ) {}
   async create(employerId: number, createJobDto: CreateJobDto) {
@@ -39,10 +37,6 @@ export class JobService {
         'Mức lương tối thiểu không thể lớn hơn mức lương tối đa',
       );
     }
-    const checkContent =
-      await this.blacklistKeywordService.checkContentForBlacklist(
-        createJobDto.name + createJobDto.description + createJobDto.requirement,
-      );
     const job = await this.jobRepository.save({
       name: createJobDto.name,
       description: createJobDto.description,
@@ -50,7 +44,7 @@ export class JobService {
       quantity: createJobDto.quantity,
       minSalary: createJobDto.minSalary,
       maxSalary: createJobDto.maxSalary,
-      isActive: !checkContent ? JOB_STATUS.ACTIVE : JOB_STATUS.PENDING,
+      isActive: JOB_STATUS.CREATE,
       createdAt: new Date(),
       majors: createJobDto?.majors?.map((id) => ({ id })),
       expiredAt: createJobDto.expiredAt,
@@ -171,7 +165,7 @@ export class JobService {
     } as any;
 
     if (filter.isActive !== undefined) {
-      where.isActive = filter.isActive;
+      where.isActive = In(filter.isActive);
     }
     if (filter.isExpired !== undefined) {
       const currentDate = new Date();
@@ -200,7 +194,7 @@ export class JobService {
   }
 
   async findOne(id: number) {
-    return this.jobRepository.findOne({
+    return await this.jobRepository.findOne({
       where: { id },
       relations: {
         experience: true,
@@ -218,7 +212,9 @@ export class JobService {
         languageJobs: {
           language: true,
         },
-        majors: true,
+        majors: {
+          field: true,
+        },
         matchingWeights: true,
         applyJobs: {
           resumeVersion: {
@@ -245,19 +241,11 @@ export class JobService {
     if (!job) {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
-    const checkContent =
-      await this.blacklistKeywordService.checkContentForBlacklist(
-        dto.name + dto.description + dto.requirement,
-      );
-    if (checkContent) {
-      throw new ForbiddenException(
-        'Công việc vi phạm từ khóa cấm. Vui lòng kiểm tra lại nội dung công việc.',
-      );
-    }
     if (job.isActive === JOB_STATUS.BLOCK) {
       job.isActive = JOB_STATUS.PENDING;
     }
     const updatedJob = this.jobRepository.merge(job, {
+      isActive: job.isActive,
       name: dto.name,
       description: dto.description,
       requirement: dto.requirement,
@@ -272,6 +260,7 @@ export class JobService {
       levels: dto.levels.map((id) => ({ id })),
       education: { id: dto.education },
       expiredAt: dto.expiredAt,
+      majors: dto?.majors?.map((id) => ({ id })),
     });
     return this.jobRepository.save(updatedJob);
   }
@@ -372,7 +361,6 @@ export class JobService {
       skip: body?.page ? (body?.page - 1) * body?.limit : undefined,
       take: body?.limit ? body?.limit : undefined,
     });
-    console.log('items', items);
     // them isApplied va isSaved vao tung job
     const jobForAccount = [];
     for (const job of items) {
@@ -431,6 +419,7 @@ export class JobService {
     });
     return this.jobRepository.save(updatedJob);
   }
+
   async toggleIsShow(employerId: number, jobId: number) {
     const job = await this.jobRepository.findOne({
       where: { id: +jobId, employer: { id: +employerId } },
@@ -485,6 +474,11 @@ export class JobService {
   async getJobInMap(map: MapDto) {
     const { latitude, longitude, radius = 5000 } = map;
     const allJobs = await this.jobRepository.find({
+      where: {
+        isActive: JOB_STATUS.ACTIVE,
+        isShow: 1,
+        expiredAt: MoreThanOrEqual(new Date()),
+      },
       relations: {
         experience: true,
         benefits: true,
@@ -522,5 +516,35 @@ export class JobService {
       }
     }
     return nearbyJobs;
+  }
+
+  async requestPublishJob(jobId: number, employerId: number) {
+    const job = await this.jobRepository.findOne({
+      where: { id: jobId, employer: { id: employerId } },
+    });
+    if (!job) {
+      throw new ForbiddenException('Không tìm thấy công việc');
+    }
+    const currentDate = new Date();
+    const expiredDate = new Date(job.expiredAt);
+    if (currentDate > expiredDate) {
+      throw new ForbiddenException('Hạn nộp đã hết');
+    }
+    if (job.isActive === JOB_STATUS.BLOCK) {
+      throw new ForbiddenException('Công việc kiểm duyệt không thành công');
+    }
+
+    if (job.isActive === JOB_STATUS.ACTIVE) {
+      throw new ForbiddenException('Công việc đã được xuất bản');
+    }
+
+    if (job.isActive !== JOB_STATUS.CREATE) {
+      throw new ForbiddenException(
+        'Không thể phát hành công việc ở trạng thái hiện tại',
+      );
+    }
+
+    job.isActive = JOB_STATUS.PENDING;
+    return this.jobRepository.save(job);
   }
 }

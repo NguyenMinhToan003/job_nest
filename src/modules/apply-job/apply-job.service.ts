@@ -10,6 +10,7 @@ import {
   CreateApplyJobDto,
   GetApplyByStatusDto,
   GetApplyJobByJobIdDto,
+  UpdateApplyJobStatusDto,
 } from './dto/create-apply-job.dto';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import { JobService } from 'src/modules/job/job.service';
@@ -64,7 +65,7 @@ export class ApplyJobService {
     const { matchingWeights } = job;
 
     // Tính điểm kỹ năng
-    if (matchingWeights.skillWeight) {
+    if (matchingWeights.skillWeight && job.skills.length > 0) {
       const skillScore = job.skills.filter((jobSkill) =>
         applyJob.resumeVersion.skills.some((skill) => skill.id === jobSkill.id),
       );
@@ -169,7 +170,7 @@ export class ApplyJobService {
     return this.applyJobRepository.save({
       job: { id: jobId },
       resumeVersion: { id: checkPer.id },
-      status: APPLY_JOB_STATUS.PENDING,
+      status: APPLY_JOB_STATUS.PROCESSING,
       applyTime: new Date(),
       viewStatus: 0,
       note: body.note,
@@ -396,13 +397,35 @@ export class ApplyJobService {
       allResumes.findIndex(
         (item) => item.resumeVersion.id === resumeVersion.resumeVersion.id,
       ) + 1;
-
     return {
       ...resumeVersion,
       majors,
       score,
+      matchingScore,
       matchingFields,
       rank,
     };
+  }
+  async updateStatus(
+    employerId: number,
+    applyId: number,
+    dto: UpdateApplyJobStatusDto,
+  ) {
+    const applyJob = await this.applyJobRepository.findOne({
+      where: {
+        id: applyId,
+        job: { employer: { id: employerId } },
+      },
+    });
+    if (!applyJob) {
+      throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
+    }
+    if (applyJob.status === APPLY_JOB_STATUS.HIRED) {
+      new BadRequestException(
+        'Không thể cập nhật trạng thái ứng tuyển đã được phê duyệt',
+      );
+    }
+    applyJob.status = dto.status;
+    return this.applyJobRepository.save(applyJob);
   }
 }
