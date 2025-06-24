@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Package } from './entities/package.entity';
 import { Not, Repository } from 'typeorm';
 import { PackageType, PAYMENT_STATUS } from 'src/types/enum';
+import { CreatePackageDto } from './dto/create-package.dto';
+import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
 export class PackagesService {
   constructor(
     @InjectRepository(Package)
     private readonly packageRepository: Repository<Package>,
+    private readonly uploadService: UploadService,
   ) {}
 
   async createDefaultPackages() {
@@ -16,7 +19,7 @@ export class PackagesService {
       {
         id: 'FREE_PACKAGE',
         name: 'Gói miễn phí',
-        type: PackageType.RESUME,
+        type: PackageType.JOB,
         features: 'Đăng tuyển 1 việc làm miễn phí',
         price: 0,
         image:
@@ -122,5 +125,40 @@ export class PackagesService {
       })
       .filter((pkg) => pkg.sub_total > pkg.sub_used);
     return convertPackagesResult;
+  }
+  async findAllPackages() {
+    return this.packageRepository.find({
+      order: {
+        price: 'ASC',
+      },
+      relations: {
+        employerSubscriptions: {
+          transaction: true,
+          job: true,
+        },
+      },
+    });
+  }
+  async createPackage(dto: CreatePackageDto) {
+    const uploadedImage = await this.uploadService.uploadFile([dto.image]);
+    const newPackage = this.packageRepository.create({
+      id: dto.name.toUpperCase().replace(/\s/g, '_'),
+      name: dto.name,
+      features: dto.features,
+      price: dto.price,
+      image: uploadedImage[0].secure_url,
+      dayValue: dto.dayValue,
+      type: dto.type,
+    });
+    return this.packageRepository.save(newPackage);
+  }
+  async deletePackage(packageId: string) {
+    const packageToDelete = await this.packageRepository.findOne({
+      where: { id: packageId },
+    });
+    if (!packageToDelete) {
+      throw new BadRequestException('Package not found');
+    }
+    return this.packageRepository.remove(packageToDelete);
   }
 }

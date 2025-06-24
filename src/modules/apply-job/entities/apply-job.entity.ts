@@ -32,7 +32,10 @@ export class ApplyJob {
   status: APPLY_JOB_STATUS;
 
   @Column({ nullable: true, type: 'text' })
-  note: string;
+  candidateNote: string;
+
+  @Column({ name: 'danh_gia', type: 'text', nullable: true })
+  feedback: string;
 
   @Column({ name: 'da_xem', default: 0 })
   viewStatus: number;

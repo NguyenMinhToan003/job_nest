@@ -23,32 +23,24 @@ export class NotiAccountController {
     return this.notiAccountService.create(accountId, dto);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.EMPLOYER)
   @Get('me')
   getMe(@Req() req) {
     const employerId = req.user.id;
     return this.notiAccountService.getMe(employerId);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.EMPLOYER)
   @Get('me/mark-read')
   markAllAsRead(@Req() req) {
     const employerId = req.user.id;
     return this.notiAccountService.markAllAsRead(employerId);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.EMPLOYER)
   @Get('me/mark-read/:id')
   markAsRead(@Req() req, @Param('id') id: string) {
     const employerId = req.user.id;
     return this.notiAccountService.markAsRead(employerId, +id);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.EMPLOYER)
   @Get('count-unread')
   countUnread(@Req() req) {
     const employerId = req.user.id;

@@ -9,5 +9,6 @@ import { AccountModule } from '../account/account.module';
   imports: [AccountModule, TypeOrmModule.forFeature([NotiAccount])],
   controllers: [NotiAccountController],
   providers: [NotiAccountService],
+  exports: [NotiAccountService],
 })
 export class NotiAccountModule {}

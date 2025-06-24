@@ -51,3 +51,20 @@ export class LoginCompanyDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class AdminFilterCompanyDto {
+  @IsOptional()
+  search?: string;
+
+  @IsOptional()
+  page?: number;
+
+  @IsOptional()
+  limit?: number;
+
+  @IsOptional()
+  sortBy?: string;
+
+  @IsOptional()
+  sortOrder?: 'asc' | 'desc';
+}

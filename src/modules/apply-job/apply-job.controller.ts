@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -10,9 +11,11 @@ import {
 import { ApplyJobService } from './apply-job.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import {
+  AddTagResumeDto,
   CreateApplyJobDto,
   GetApplyByStatusDto,
   GetApplyJobByJobIdDto,
+  SendMailToCandidateDto,
   UpdateApplyJobStatusDto,
 } from './dto/create-apply-job.dto';
 import { ROLE_LIST } from 'src/types/enum';
@@ -56,7 +59,13 @@ export class ApplyJobController {
     const candidateId = req.user.id;
     return this.applyJobService.getMeByStatus(+candidateId, param);
   }
-
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Get('candidate')
+  getApplyJobByCandidateId(@Req() req) {
+    const candidateId = req.user.id;
+    return this.applyJobService.getApplyJobByCandidateId(+candidateId);
+  }
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER)
   @Get('employer')
@@ -98,5 +107,53 @@ export class ApplyJobController {
   ) {
     const companyId = req.user.id;
     return this.applyJobService.updateStatus(companyId, +applyId, body);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('addTag/:applyId')
+  addTag(
+    @Req() req,
+    @Param('applyId') applyId: number,
+    @Body() body: AddTagResumeDto,
+  ) {
+    const companyId = req.user.id;
+    return this.applyJobService.addTag(companyId, +applyId, body);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Patch('removeTag/:applyId')
+  removeTag(
+    @Req() req,
+    @Param('applyId') applyId: number,
+    @Body() body: AddTagResumeDto,
+  ) {
+    const companyId = req.user.id;
+    return this.applyJobService.removeTag(companyId, +applyId, body);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('feedback/:applyId')
+  feedback(
+    @Req() req,
+    @Param('applyId') applyId: number,
+    @Body('feedback') feedback: string,
+  ) {
+    const companyId = req.user.id;
+    return this.applyJobService.feedback(companyId, +applyId, feedback);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('send-mail-to-candidate/:applyId')
+  sendMailToCandidate(
+    @Req() req,
+    @Param('applyId') applyId: number,
+    @Body() body: SendMailToCandidateDto,
+  ) {
+    const employerId = req.user.id;
+    return this.applyJobService.sendMailToCandidate(employerId, +applyId, body);
   }
 }

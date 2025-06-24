@@ -7,9 +7,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
 import { Repository } from 'typeorm';
 import {
+  AddTagResumeDto,
   CreateApplyJobDto,
   GetApplyByStatusDto,
   GetApplyJobByJobIdDto,
+  SendMailToCandidateDto,
   UpdateApplyJobStatusDto,
 } from './dto/create-apply-job.dto';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
@@ -17,6 +19,9 @@ import { JobService } from 'src/modules/job/job.service';
 import { ResumeVersionService } from 'src/modules/resume-version/resume-version.service';
 import { MajorService } from '../major/major.service';
 import { Job } from '../job/entities/job.entity';
+import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
+import { MailerService } from '@nestjs-modules/mailer';
+import { NotiAccountService } from '../noti-account/noti-account.service';
 
 @Injectable()
 export class ApplyJobService {
@@ -26,6 +31,8 @@ export class ApplyJobService {
     private jobService: JobService,
     private readonly resumeVersionService: ResumeVersionService,
     private readonly majorService: MajorService,
+    private readonly mailerService: MailerService,
+    private readonly notiAccountService: NotiAccountService,
   ) {}
 
   // Hàm tính điểm khớp chung
@@ -173,7 +180,7 @@ export class ApplyJobService {
       status: APPLY_JOB_STATUS.PROCESSING,
       applyTime: new Date(),
       viewStatus: 0,
-      note: body.note,
+      note: body.candidateNote,
     });
   }
 
@@ -196,6 +203,11 @@ export class ApplyJobService {
     const getApply = await this.getApply(candidateId, jobId);
     if (!getApply) {
       throw new BadRequestException('Công việc chưa ứng tuyển');
+    }
+    if (getApply.status !== APPLY_JOB_STATUS.PROCESSING) {
+      throw new BadRequestException(
+        'Bạn không thể hủy ứng tuyển công việc này vì đã có trạng thái khác ngoài "Đang xử lý"',
+      );
     }
     return this.applyJobRepository.remove(getApply);
   }
@@ -293,6 +305,34 @@ export class ApplyJobService {
       },
     });
   }
+  async getApplyJobByCandidateId(candidateId: number) {
+    return this.applyJobRepository.find({
+      where: {
+        resumeVersion: {
+          resume: {
+            candidate: { id: candidateId },
+          },
+        },
+      },
+      relations: {
+        job: {
+          employer: true,
+          locations: {
+            district: {
+              city: true,
+            },
+          },
+          skills: true,
+          levels: true,
+          typeJobs: true,
+        },
+        resumeVersion: true,
+      },
+      order: {
+        applyTime: 'DESC',
+      },
+    });
+  }
 
   async getApplyJobByJobId(companyId: number, param: GetApplyJobByJobIdDto) {
     const job = await this.jobService.findOne(param.jobId);
@@ -307,6 +347,7 @@ export class ApplyJobService {
         job: { id: +param.jobId },
       },
       relations: {
+        tagResumes: true,
         resumeVersion: {
           level: true,
           district: {
@@ -344,6 +385,7 @@ export class ApplyJobService {
     const resumeVersion = await this.applyJobRepository.findOne({
       where: { id: applyId },
       relations: {
+        tagResumes: true,
         job: {
           employer: true,
           locations: {
@@ -420,12 +462,138 @@ export class ApplyJobService {
     if (!applyJob) {
       throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
     }
+    console.log(applyJob.status, APPLY_JOB_STATUS.HIRED);
     if (applyJob.status === APPLY_JOB_STATUS.HIRED) {
-      new BadRequestException(
+      throw new BadRequestException(
         'Không thể cập nhật trạng thái ứng tuyển đã được phê duyệt',
       );
     }
     applyJob.status = dto.status;
     return this.applyJobRepository.save(applyJob);
+  }
+
+  async addTag(employerId: number, applyId: number, body: AddTagResumeDto) {
+    const applyJob = await this.applyJobRepository.findOne({
+      where: {
+        id: applyId,
+        job: { employer: { id: employerId } },
+      },
+      relations: {
+        tagResumes: true,
+      },
+    });
+    if (!applyJob) {
+      throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
+    }
+    const tag = applyJob.tagResumes || [];
+    console.log(tag);
+    for (const tagId of body.tagIds) {
+      if (!tag.some((t) => t.id === tagId)) {
+        const newTag = { id: tagId };
+        tag.push(newTag as TagResume);
+      }
+    }
+    applyJob.tagResumes = tag;
+    console.log(tag);
+    return this.applyJobRepository.save(applyJob);
+  }
+
+  async removeTag(employerId: number, applyId: number, body: AddTagResumeDto) {
+    const applyJob = await this.applyJobRepository.findOne({
+      where: {
+        id: applyId,
+        job: { employer: { id: employerId } },
+      },
+      relations: {
+        tagResumes: true,
+      },
+    });
+    if (!applyJob) {
+      throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
+    }
+    const tag = applyJob.tagResumes || [];
+    for (const tagId of body.tagIds) {
+      const index = tag.findIndex((t) => t.id === tagId);
+      if (index !== -1) {
+        tag.splice(index, 1);
+      }
+    }
+    applyJob.tagResumes = tag;
+    return this.applyJobRepository.save(applyJob);
+  }
+
+  async feedback(employerId: number, applyId: number, feedback: string) {
+    if (!feedback || feedback.trim() === '') {
+      throw new BadRequestException('Phản hồi không được để trống');
+    }
+    const applyJob = await this.applyJobRepository.findOne({
+      where: {
+        id: applyId,
+        job: { employer: { id: employerId } },
+      },
+    });
+    if (!applyJob) {
+      throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
+    }
+    applyJob.feedback = feedback;
+    return this.applyJobRepository.save(applyJob);
+  }
+
+  async sendMailToCandidate(
+    employerId: number,
+    applyId: number,
+    dto: SendMailToCandidateDto,
+  ) {
+    const applyJob = await this.applyJobRepository.findOne({
+      where: {
+        id: applyId,
+        job: { employer: { id: employerId } },
+      },
+      relations: {
+        job: {
+          employer: true,
+        },
+        resumeVersion: {
+          resume: {
+            candidate: true,
+          },
+        },
+      },
+    });
+    if (!applyJob) {
+      throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
+    }
+
+    const sendMail = await this.mailerService.sendMail({
+      to: applyJob.resumeVersion.email,
+      subject: dto.subject || 'Thông báo từ nhà tuyển dụng',
+      template: 'send-mail-to-candidate',
+      context: {
+        candidateName: applyJob.resumeVersion.resume.candidate.name,
+        content: dto.content,
+        jobTitle: applyJob.job.name,
+        employerName: applyJob.job.employer.name,
+      },
+    });
+    this.notiAccountService.create(employerId, {
+      content: `
+        ${dto.content}
+        <br>
+        <strong>Vị trí công việc:</strong> ${applyJob.job.name}
+        <br>
+        <strong>Nhà tuyển dụng:</strong> ${applyJob.job.employer.name}
+        <br>
+        <strong>Thời gian gửi:</strong> ${new Date().toLocaleString()}
+        <strong>gmail nhan</strong> ${applyJob.resumeVersion.email}
+      `,
+      link: 'tong-quat-ho-so/thong-bao',
+      title: dto.subject || 'Thông báo từ nhà tuyển dụng',
+      type: 'SEND_MAIL_TO_CANDIDATE',
+      receiverAccountId: applyJob.resumeVersion.resume.candidate.id,
+    });
+    return {
+      message: 'Gửi email thành công',
+      sendMail,
+    };
   }
 }

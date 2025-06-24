@@ -8,6 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { EmployerService } from './employer.service';
 import { UpdateCompanyDto } from './dto/update-employer.dto';
@@ -15,6 +16,7 @@ import { Public, Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AdminFilterCompanyDto } from './dto/create-employer.dto';
 
 @Controller('employer')
 export class EmployerController {
@@ -59,5 +61,12 @@ export class EmployerController {
     const id = req.user.id;
     console.log(id);
     return this.employerService.getMeEmployer(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Get('all')
+  async getAllEmployers(@Query() param: AdminFilterCompanyDto) {
+    return this.employerService.getAllEmployers(param);
   }
 }

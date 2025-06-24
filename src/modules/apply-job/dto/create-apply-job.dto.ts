@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -9,7 +10,7 @@ import { APPLY_JOB_STATUS } from 'src/types/enum';
 
 export class CreateApplyJobDto {
   @IsOptional()
-  note: string;
+  candidateNote: string;
 
   @IsNotEmpty()
   username: string;
@@ -23,7 +24,7 @@ export class CreateApplyJobDto {
 }
 export class ApplyJobWithNewCvDto {
   @IsOptional()
-  note: string;
+  candidateNote: string;
 
   @IsOptional()
   @IsNumber(
@@ -59,4 +60,14 @@ export class UpdateApplyJobStatusDto {
   @IsEnum(APPLY_JOB_STATUS)
   @IsNotEmpty()
   status: APPLY_JOB_STATUS;
+}
+
+export class AddTagResumeDto {
+  @IsNotEmpty()
+  @IsArray()
+  tagIds: number[];
+}
+export class SendMailToCandidateDto {
+  subject: string;
+  content: string;
 }

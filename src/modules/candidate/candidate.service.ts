@@ -4,7 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Candidate } from './entities/candidate.entity';
 import { UpdateUserDto } from './dto/update-candidate.dto';
 import { UploadService } from 'src/upload/upload.service';
-import { CreateUserDto } from './dto/create-candidate.dto';
+import {
+  AdminFilterCandidateDto,
+  CreateUserDto,
+} from './dto/create-candidate.dto';
 
 @Injectable()
 export class CandidateService {
@@ -65,5 +68,28 @@ export class CandidateService {
       }
     }
     return this.candidateRepo.save(candidate);
+  }
+  async getAllCandidates(query: AdminFilterCandidateDto) {
+    const where: any = {};
+    if (query.search) {
+      where.name = query.search;
+    }
+    const [items, total] = await this.candidateRepo.findAndCount({
+      where,
+      skip: (query.page - 1) * query.limit,
+      take: query.limit,
+      order: {
+        [query.sortBy || 'createdAt']: query.sortOrder || 'desc',
+      },
+      relations: {
+        account: true,
+      },
+    });
+    const totalPage = Math.ceil(total / query.limit);
+    return {
+      items,
+      total,
+      totalPage,
+    };
   }
 }

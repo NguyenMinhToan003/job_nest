@@ -40,7 +40,7 @@ export enum NOTI_TYPE {
 
 export enum PackageType {
   JOB = 'JOB',
-  RESUME = 'RESUME',
+  EMPLOYER = 'EMPLOYER',
   BANNER = 'BANNER',
 }
 

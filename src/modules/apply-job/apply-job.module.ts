@@ -7,9 +7,11 @@ import { JobModule } from 'src/modules/job/job.module';
 import { ResumeVersionModule } from 'src/modules/resume-version/resume-version.module';
 import { MatchingWeightModule } from '../matching-weight/matching-weight.module';
 import { MajorModule } from '../major/major.module';
+import { NotiAccountModule } from '../noti-account/noti-account.module';
 
 @Module({
   imports: [
+    NotiAccountModule,
     MajorModule,
     MatchingWeightModule,
     ResumeVersionModule,

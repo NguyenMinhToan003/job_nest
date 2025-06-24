@@ -42,3 +42,20 @@ export class LoginUserDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class AdminFilterCandidateDto {
+  @IsOptional()
+  search?: string;
+
+  @IsOptional()
+  page?: number;
+
+  @IsOptional()
+  limit?: number;
+
+  @IsOptional()
+  sortBy?: string;
+
+  @IsOptional()
+  sortOrder?: 'asc' | 'desc';
+}

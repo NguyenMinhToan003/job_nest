@@ -1,5 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateCompanyDto } from './dto/create-employer.dto';
+import {
+  AdminFilterCompanyDto,
+  CreateCompanyDto,
+} from './dto/create-employer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateCompanyDto } from './dto/update-employer.dto';
@@ -149,5 +152,30 @@ export class EmployerService {
     }
     employer.account.password = employer.account.password.length.toString();
     return employer;
+  }
+
+  async getAllEmployers(query: AdminFilterCompanyDto) {
+    const where: any = {};
+    if (query.search) {
+      where.name = query.search;
+    }
+    console.log('query', query);
+    const [items, total] = await this.employerRepo.findAndCount({
+      where,
+      skip: (+query.page - 1) * 10,
+      take: +query.limit || 10,
+      relations: {
+        account: true,
+        employeeScale: true,
+        businessType: true,
+        country: true,
+      },
+    });
+    const totalPage = Math.ceil(total / (query.limit || 10));
+    return {
+      items,
+      total,
+      totalPage,
+    };
   }
 }

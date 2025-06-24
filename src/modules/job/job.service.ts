@@ -71,7 +71,6 @@ export class JobService {
   }
 
   findAll(filter?: AdminJobFilterDto) {
-    console.log('filter', filter);
     const where: any = {};
     if (filter.search) {
       where.name = Like(`%${filter.search}%`);
@@ -128,6 +127,9 @@ export class JobService {
         experience: true,
         benefits: true,
         employer: true,
+        employerSubscription: {
+          package: true,
+        },
         locations: {
           district: {
             city: true,
