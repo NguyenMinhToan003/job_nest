@@ -49,3 +49,8 @@ export enum PAYMENT_STATUS {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
 }
+export enum ACCOUNT_STATUS {
+  CREATED = 'CREATED',
+  ACTIVE = 'ACTIVE',
+  BLOCKED = 'BLOCKED',
+}

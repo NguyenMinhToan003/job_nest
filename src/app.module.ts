@@ -48,8 +48,11 @@ import { EmployerScalesModule } from './employer-scales/employer-scales.module';
 import { BusinessTypeModule } from './business-type/business-type.module';
 import { PaymentModule } from './payment/payment.module';
 import { TagResumeModule } from './tag-resume/tag-resume.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotoJobCandidateService } from './cronjob/noti-job-candidate.service';
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: async () => ({
@@ -141,6 +144,7 @@ import { TagResumeModule } from './tag-resume/tag-resume.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    NotoJobCandidateService,
   ],
 })
 export class AppModule {}

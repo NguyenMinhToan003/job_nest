@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JobService } from './job.service';
 import {
@@ -21,7 +22,8 @@ import {
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { GetToken, Public, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
-import { ROLE_LIST } from 'src/types/enum';
+import { ACCOUNT_STATUS, ROLE_LIST } from 'src/types/enum';
+import { UseSubscriptionDto } from 'src/employer_subscriptions/dto/create-employer_subscription.dto';
 
 @Controller('job')
 export class JobController {
@@ -30,6 +32,11 @@ export class JobController {
   @Post()
   create(@Req() req, @Body() createJobDto: CreateJobDto) {
     const employerId = req.user.id;
+    if (req.user.status === ACCOUNT_STATUS.BLOCKED) {
+      throw new UnauthorizedException(
+        'Your account is blocked. Please contact support.',
+      );
+    }
     return this.jobService.create(employerId, createJobDto);
   }
 
@@ -83,6 +90,11 @@ export class JobController {
   @Patch(':id')
   update(@Param('id') id: string, @Req() req, @Body() dto: UpdateJobDto) {
     const employerId = req.user.id;
+    if (req.user.status === ACCOUNT_STATUS.BLOCKED) {
+      throw new UnauthorizedException(
+        'Your account is blocked. Please contact support.',
+      );
+    }
     return this.jobService.update(+id, employerId, dto);
   }
 
@@ -124,5 +136,13 @@ export class JobController {
   async getCountJobByEmployer(@Req() req) {
     const employerId = req.user.id;
     return this.jobService.getCountJobByEmployerId(+employerId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('use-subscription')
+  useSubscription(@Req() req, @Body() body: UseSubscriptionDto) {
+    const employerId = req.user.id;
+    return this.jobService.jobUseSubscription(+employerId, body);
   }
 }

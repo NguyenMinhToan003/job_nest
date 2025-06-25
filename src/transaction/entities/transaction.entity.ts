@@ -24,7 +24,6 @@ export class Transaction {
   @Column({
     name: 'ma_giao_dich',
     type: 'varchar',
-    length: 50,
     unique: true,
     nullable: false,
   })
@@ -41,6 +40,8 @@ export class Transaction {
   })
   transactionType: string;
 
+  @Column({ name: 'ghi_chu', type: 'varchar', length: 255, nullable: true })
+  note: string;
   @Column({
     name: 'trang_thai',
     enum: PAYMENT_STATUS,

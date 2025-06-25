@@ -5,6 +5,7 @@ import { Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 import {
   CreateEmployerSubscriptionDtoWrapper,
+  UseSubBannerDto,
   UseSubscriptionDto,
 } from './dto/create-employer_subscription.dto';
 
@@ -46,9 +47,23 @@ export class EmployerSubscriptionsController {
   }
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER)
-  @Post('use-subscription')
-  async useSubscription(@Req() req, @Body() body: UseSubscriptionDto) {
+  @Post('use-subscription/job')
+  async useSubscriptionJob(@Req() req, @Body() body: UseSubscriptionDto) {
     const employerId = req.user.id;
-    return this.employerSubscriptionsService.useSubscription(employerId, body);
+    return this.employerSubscriptionsService.useSubscriptionJob(
+      employerId,
+      body,
+    );
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('use-subscription/banner')
+  async useSubscriptionBanner(@Req() req, @Body() body: UseSubBannerDto) {
+    const employerId = req.user.id;
+    return this.employerSubscriptionsService.useSubscriptionBanner(
+      employerId,
+      body,
+    );
   }
 }

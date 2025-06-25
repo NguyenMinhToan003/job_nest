@@ -59,17 +59,14 @@ export class PackagesService {
     ]);
     return this.packageRepository.save(freePackage);
   }
+
   async findOneById(id: string): Promise<Package | null> {
     return this.packageRepository.findOne({
       where: { id },
     });
   }
   async findInBisiness() {
-    return this.packageRepository.find({
-      where: {
-        id: Not('FREE_PACKAGE'),
-      },
-    });
+    return this.packageRepository.find();
   }
   async getDetailTransactionPackage(transactionId: number) {
     const packageDetail = await this.packageRepository.find({
@@ -90,7 +87,6 @@ export class PackagesService {
   async findAvailablePackages(employerId: number) {
     const packages = await this.packageRepository.find({
       where: {
-        id: Not('FREE_PACKAGE'),
         employerSubscriptions: {
           transaction: {
             employer: { id: employerId },

@@ -3,6 +3,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Account } from './entities/account.entity';
+import { ACCOUNT_STATUS } from 'src/types/enum';
 
 @Injectable()
 export class AccountService {
@@ -61,7 +62,7 @@ export class AccountService {
       relations: { candidate: true, employer: true },
     });
   }
-  async toggleStatusEmployer(id: number) {
+  async changeStatus(id: number, status: ACCOUNT_STATUS) {
     const account = await this.accountRepository.findOne({
       where: { id },
       relations: { employer: true },
@@ -69,7 +70,7 @@ export class AccountService {
     if (!account || !account.employer) {
       throw new NotFoundException('Employer not found');
     }
-    account.status = account.status === 1 ? 0 : 1;
+    account.status = status;
     return this.accountRepository.save(account);
   }
 }

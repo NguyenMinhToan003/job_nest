@@ -18,10 +18,11 @@ import {
   Repository,
 } from 'typeorm';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { JOB_STATUS, PackageType } from 'src/types/enum';
+import { ACCOUNT_STATUS, JOB_STATUS, PackageType } from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { getDistance } from 'geolib';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
+import { UseSubscriptionDto } from 'src/packages/dto/create-package.dto';
 
 @Injectable()
 export class JobService {
@@ -37,6 +38,7 @@ export class JobService {
         'Mức lương tối thiểu không thể lớn hơn mức lương tối đa',
       );
     }
+
     const job = await this.jobRepository.save({
       name: createJobDto.name,
       description: createJobDto.description,
@@ -180,6 +182,7 @@ export class JobService {
     return this.jobRepository.find({
       where,
       relations: {
+        employer: true,
         matchingWeights: true,
         applyJobs: {
           resumeVersion: {
@@ -278,7 +281,7 @@ export class JobService {
     totalPage?: number;
   }> {
     const where: any = {
-      isActive: JOB_STATUS.ACTIVE,
+      isActive: In([JOB_STATUS.ACTIVE, JOB_STATUS.PENDING]),
       isShow: 1,
       expiredAt: MoreThanOrEqual(new Date()),
     };
@@ -446,7 +449,7 @@ export class JobService {
   async getJobInBanner() {
     return this.jobRepository.find({
       where: {
-        isActive: JOB_STATUS.ACTIVE,
+        isActive: In([JOB_STATUS.ACTIVE, JOB_STATUS.PENDING]),
         isShow: 1,
         expiredAt: MoreThanOrEqual(new Date()),
         employerSubscription: {
@@ -477,7 +480,7 @@ export class JobService {
     const { latitude, longitude, radius = 5000 } = map;
     const allJobs = await this.jobRepository.find({
       where: {
-        isActive: JOB_STATUS.ACTIVE,
+        isActive: In([JOB_STATUS.ACTIVE]),
         isShow: 1,
         expiredAt: MoreThanOrEqual(new Date()),
       },
@@ -559,7 +562,7 @@ export class JobService {
     const countActive = await this.jobRepository.count({
       where: {
         employer: { id: employerId },
-        isActive: JOB_STATUS.ACTIVE,
+        isActive: In([JOB_STATUS.ACTIVE]),
         expiredAt: MoreThanOrEqual(new Date()),
       },
     });
@@ -582,5 +585,19 @@ export class JobService {
       pending: countPending,
       expired: countExpired,
     };
+  }
+
+  async jobUseSubscription(employerId: number, body: UseSubscriptionDto) {
+    await this.employerSubscriptionService.useSubscriptionJob(employerId, {
+      jobId: body.jobId,
+      packageId: body.packageId,
+    });
+    const job = await this.jobRepository.findOne({
+      where: { id: body.jobId, employer: { id: employerId } },
+    });
+    if (job && job.isActive === JOB_STATUS.CREATE) {
+      job.isActive = JOB_STATUS.PENDING;
+    }
+    return this.jobRepository.save(job);
   }
 }

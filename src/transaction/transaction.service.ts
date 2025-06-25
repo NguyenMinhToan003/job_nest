@@ -8,6 +8,7 @@ import {
 } from './dto/create-transaction.dto';
 import { PackagesService } from 'src/packages/packages.service';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
+import { PAYMENT_STATUS } from 'src/types/enum';
 @Injectable()
 export class TransactionService {
   constructor(
@@ -32,10 +33,35 @@ export class TransactionService {
       amount: amount,
       employer: { id: dto.employerId },
       transactionType: dto.transactionType,
+      note: 'Giao dịch thanh toán',
+    });
+    const transaction = await this.transactionRepository.save(create);
+
+    await this.employerSubscriptionService.createEmployerSubscriptions(
+      dto.subscriptions,
+      transaction.id,
+    );
+    return transaction;
+  }
+  async triggerRegisterEmployer(employerId: number) {
+    const amount = 0;
+    const create = this.transactionRepository.create({
+      amount: amount,
+      employer: { id: employerId },
+      vnp_TxnRef: `REGISTER_EMPLOYER-${employerId}`,
+      transactionType: 'REGISTER_EMPLOYER',
+      status: PAYMENT_STATUS.SUCCESS,
+      note: 'Gói được tặng khi đăng ký nhà tuyển dụng',
+      recordedAt: new Date(),
     });
     const transaction = await this.transactionRepository.save(create);
     await this.employerSubscriptionService.createEmployerSubscriptions(
-      dto.subscriptions,
+      [
+        {
+          packageId: 'FREE_PACKAGE',
+          quantity: 1,
+        },
+      ],
       transaction.id,
     );
     return transaction;

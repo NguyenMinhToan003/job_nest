@@ -4,7 +4,7 @@ import {
   CreateCompanyDto,
 } from './dto/create-employer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, MoreThanOrEqual, Repository } from 'typeorm';
 import { UpdateCompanyDto } from './dto/update-employer.dto';
 import { Employer } from './entities/employer.entity';
 import { LocationService } from '../location/location.service';
@@ -12,6 +12,7 @@ import { FollowService } from '../follow/follow.service';
 import { JobService } from '../job/job.service';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 import { UploadService } from 'src/upload/upload.service';
+import { PackageType, PAYMENT_STATUS } from 'src/types/enum';
 
 @Injectable()
 export class EmployerService {
@@ -177,5 +178,22 @@ export class EmployerService {
       total,
       totalPage,
     };
+  }
+  async getBanner() {
+    return this.employerRepo.find({
+      where: {
+        transactions: {
+          status: PAYMENT_STATUS.SUCCESS,
+          employerSubscriptions: {
+            job: { id: IsNull() },
+            status: 'ACTIVE',
+            endDate: MoreThanOrEqual(new Date()),
+            package: {
+              type: PackageType.EMPLOYER,
+            },
+          },
+        },
+      },
+    });
   }
 }

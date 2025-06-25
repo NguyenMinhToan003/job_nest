@@ -69,4 +69,10 @@ export class EmployerController {
   async getAllEmployers(@Query() param: AdminFilterCompanyDto) {
     return this.employerService.getAllEmployers(param);
   }
+
+  @Public()
+  @Get('banner')
+  async getBanner() {
+    return this.employerService.getBanner();
+  }
 }

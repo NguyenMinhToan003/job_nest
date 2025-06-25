@@ -1,4 +1,4 @@
-import { ROLE_LIST } from 'src/types/enum';
+import { ACCOUNT_STATUS, ROLE_LIST } from 'src/types/enum';
 import {
   Column,
   Entity,
@@ -30,8 +30,14 @@ export class Account {
     enumName: 'vai_tro',
   })
   role: string;
-  @Column({ name: 'trang_thai', default: 1 })
-  status: number;
+  @Column({
+    name: 'trang_thai',
+    type: 'enum',
+    enum: ACCOUNT_STATUS,
+    enumName: 'trang_thai',
+    default: ACCOUNT_STATUS.CREATED,
+  })
+  status: ACCOUNT_STATUS;
   @Column({
     name: 'ngay_tao',
     type: 'timestamp',
