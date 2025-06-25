@@ -156,4 +156,10 @@ export class ApplyJobController {
     const employerId = req.user.id;
     return this.applyJobService.sendMailToCandidate(employerId, +applyId, body);
   }
+
+  @Get('dashboard/employer')
+  getApplyJobDashboard(@Req() req) {
+    const employerId = req.user.id;
+    return this.applyJobService.getApplyJobDashboard(+employerId);
+  }
 }

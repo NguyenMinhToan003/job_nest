@@ -119,4 +119,10 @@ export class JobController {
   getJobInMap(@Body() map: MapDto) {
     return this.jobService.getJobInMap(map);
   }
+
+  @Get('dashboard/employer/count')
+  async getCountJobByEmployer(@Req() req) {
+    const employerId = req.user.id;
+    return this.jobService.getCountJobByEmployerId(+employerId);
+  }
 }

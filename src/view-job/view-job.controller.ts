@@ -39,4 +39,10 @@ export class ViewJobController {
   async getViewJobById(@Param('id') id: number) {
     return this.viewJobService.countViewJob(id);
   }
+
+  @Get('dashboard/employer')
+  async getViewJobByJobId(@Req() req) {
+    const employerId = req.user.id;
+    return this.viewJobService.getViewDashboard(employerId);
+  }
 }

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import {
   AddTagResumeDto,
   CreateApplyJobDto,
@@ -22,6 +22,7 @@ import { Job } from '../job/entities/job.entity';
 import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { NotiAccountService } from '../noti-account/noti-account.service';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ApplyJobService {
@@ -594,6 +595,25 @@ export class ApplyJobService {
     return {
       message: 'Gửi email thành công',
       sendMail,
+    };
+  }
+  async getApplyJobDashboard(employerId: number) {
+    const totalApply = await this.applyJobRepository.count({
+      where: {
+        job: { employer: { id: employerId } },
+        applyTime: MoreThanOrEqual(dayjs().subtract(30, 'day').toDate()),
+      },
+    });
+    const notViewed = await this.applyJobRepository.count({
+      where: {
+        job: { employer: { id: employerId } },
+        viewStatus: 0,
+        applyTime: MoreThanOrEqual(dayjs().subtract(30, 'day').toDate()),
+      },
+    });
+    return {
+      totalApply,
+      notViewed,
     };
   }
 }

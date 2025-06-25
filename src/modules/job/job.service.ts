@@ -549,4 +549,38 @@ export class JobService {
     job.isActive = JOB_STATUS.PENDING;
     return this.jobRepository.save(job);
   }
+  async getCountJobByEmployerId(employerId: number) {
+    const countTotal = await this.jobRepository.count({
+      where: {
+        employer: { id: employerId },
+        expiredAt: MoreThanOrEqual(new Date()),
+      },
+    });
+    const countActive = await this.jobRepository.count({
+      where: {
+        employer: { id: employerId },
+        isActive: JOB_STATUS.ACTIVE,
+        expiredAt: MoreThanOrEqual(new Date()),
+      },
+    });
+    const countPending = await this.jobRepository.count({
+      where: {
+        employer: { id: employerId },
+        isActive: JOB_STATUS.PENDING,
+        expiredAt: MoreThanOrEqual(new Date()),
+      },
+    });
+    const countExpired = await this.jobRepository.count({
+      where: {
+        employer: { id: employerId },
+        expiredAt: LessThan(new Date()),
+      },
+    });
+    return {
+      total: countTotal,
+      active: countActive,
+      pending: countPending,
+      expired: countExpired,
+    };
+  }
 }

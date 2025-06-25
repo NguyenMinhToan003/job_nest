@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ViewJob } from './entities/view-job.entity';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { JobService } from 'src/modules/job/job.service';
-
+import * as dayjs from 'dayjs';
 @Injectable()
 export class ViewJobService {
   constructor(
@@ -111,5 +111,14 @@ export class ViewJobService {
       where: { job: { id: jobId } },
     });
     return count;
+  }
+  async getViewDashboard(employerId: number) {
+    const total = await this.viewJobRepository.count({
+      where: {
+        job: { employer: { id: employerId } },
+        viewDate: MoreThanOrEqual(dayjs().subtract(30, 'day').toDate()),
+      },
+    });
+    return total;
   }
 }
