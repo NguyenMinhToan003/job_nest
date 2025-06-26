@@ -6,13 +6,13 @@ import { Job } from './entities/job.entity';
 import { AccountModule } from '../account/account.module';
 import { FollowModule } from '../follow/follow.module';
 import { LanguageJobModule } from 'src/modules/language-job/language-job.module';
-import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.module';
 import { FieldModule } from '../field/field.module';
 import { EmployerSubscriptionsModule } from 'src/employer_subscriptions/employer_subscriptions.module';
+import { PackagesModule } from 'src/packages/packages.module';
 
 @Module({
   imports: [
-    BlacklistKeywordModule,
+    PackagesModule,
     LanguageJobModule,
     FollowModule,
     EmployerSubscriptionsModule,

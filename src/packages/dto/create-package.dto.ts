@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { PackageType } from 'src/types/enum';
 
 export class CreatePackageDto {
@@ -27,4 +27,13 @@ export class UseSubscriptionDto {
   packageId: string;
   @IsNotEmpty()
   jobId: number;
+}
+export class FilterPacageDto {
+  @IsOptional()
+  @IsArray()
+  @IsEnum(PackageType, { each: true })
+  type: PackageType[];
+
+  @IsOptional()
+  mini?: boolean;
 }

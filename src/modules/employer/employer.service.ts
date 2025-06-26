@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   AdminFilterCompanyDto,
   CreateCompanyDto,
+  FilterEmployerDto,
 } from './dto/create-employer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, MoreThanOrEqual, Repository } from 'typeorm';
@@ -12,7 +13,11 @@ import { FollowService } from '../follow/follow.service';
 import { JobService } from '../job/job.service';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 import { UploadService } from 'src/upload/upload.service';
-import { PackageType, PAYMENT_STATUS } from 'src/types/enum';
+import {
+  EMPLOYER_SUBSCRIPTION_STATUS,
+  PackageType,
+  PAYMENT_STATUS,
+} from 'src/types/enum';
 
 @Injectable()
 export class EmployerService {
@@ -180,13 +185,13 @@ export class EmployerService {
     };
   }
   async getBanner() {
-    return this.employerRepo.find({
+    const employersBanner = await this.employerRepo.find({
       where: {
         transactions: {
           status: PAYMENT_STATUS.SUCCESS,
           employerSubscriptions: {
             job: { id: IsNull() },
-            status: 'ACTIVE',
+            status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
             endDate: MoreThanOrEqual(new Date()),
             package: {
               type: PackageType.EMPLOYER,
@@ -194,6 +199,58 @@ export class EmployerService {
           },
         },
       },
+      relations: {
+        account: true,
+        employeeScale: true,
+        businessType: true,
+        country: true,
+      },
     });
+    const result = [];
+    for (const employer of employersBanner) {
+      const jobsCount = await this.jobService.getCountJobByEmployerId(
+        employer.id,
+      );
+      result.push({
+        ...employer,
+        jobsCount,
+      });
+    }
+    return result;
+  }
+  async filterSearch(query: FilterEmployerDto) {
+    const where: any = {};
+    if (query.search) {
+      where.name = query.search;
+    }
+    if (!query.page) {
+      query.page = 1;
+    }
+    if (query.countryId) {
+      where.country = { id: query.countryId };
+    }
+    if (query.employeeScaleId) {
+      where.employeeScale = { id: query.employeeScaleId };
+    }
+    if (query.businessTypeId) {
+      where.businessType = { id: query.businessTypeId };
+    }
+    const [items, total] = await this.employerRepo.findAndCount({
+      where,
+      skip: (+query.page - 1) * 10,
+      take: +query.limit || 10,
+      relations: {
+        account: true,
+        employeeScale: true,
+        businessType: true,
+        country: true,
+      },
+    });
+    const totalPage = Math.ceil(total / (query.limit || 10));
+    return {
+      items,
+      total,
+      totalPage,
+    };
   }
 }

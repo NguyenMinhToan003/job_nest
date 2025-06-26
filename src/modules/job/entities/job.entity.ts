@@ -53,6 +53,13 @@ export class Job {
   minSalary: number | null;
 
   @Column({
+    name: 'thoi_gian_kiem_duyet',
+    type: 'timestamp',
+    nullable: true,
+  })
+  approvedAt: Date | null;
+
+  @Column({
     name: 'luong_max',
     type: 'decimal',
     precision: 10,

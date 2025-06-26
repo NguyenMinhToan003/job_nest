@@ -10,7 +10,6 @@ import { DistrictModule } from './modules/district/district.module';
 import { CityModule } from './modules/city/city.module';
 import { CountryModule } from './modules/country/country.module';
 import { PostModule } from './modules/post/post.module';
-import { NotiSettingModule } from './modules/noti-setting/noti-setting.module';
 import { SaveJobModule } from './modules/save-job/save-job.module';
 import { ApplyJobModule } from './modules/apply-job/apply-job.module';
 import { FollowModule } from './modules/follow/follow.module';
@@ -39,7 +38,6 @@ import { LanguageResumeModule } from './modules/language-resume/language-resume.
 import { LanguageModule } from './modules/language/language.module';
 import { LanguageJobModule } from './modules/language-job/language-job.module';
 import { MatchingWeightModule } from './modules/matching-weight/matching-weight.module';
-import { BlacklistKeywordModule } from './blacklist-keyword/blacklist-keyword.module';
 import { ViewJobModule } from './view-job/view-job.module';
 import { PackagesModule } from './packages/packages.module';
 import { EmployerSubscriptionsModule } from './employer_subscriptions/employer_subscriptions.module';
@@ -49,7 +47,7 @@ import { BusinessTypeModule } from './business-type/business-type.module';
 import { PaymentModule } from './payment/payment.module';
 import { TagResumeModule } from './tag-resume/tag-resume.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { NotoJobCandidateService } from './cronjob/noti-job-candidate.service';
+import { CronJobModule } from './cronjob/cron-job.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -108,7 +106,6 @@ import { NotoJobCandidateService } from './cronjob/noti-job-candidate.service';
     CountryModule,
     MajorModule,
     PostModule,
-    NotiSettingModule,
     LevelModule,
     SaveJobModule,
     ApplyJobModule,
@@ -127,7 +124,6 @@ import { NotoJobCandidateService } from './cronjob/noti-job-candidate.service';
     LanguageModule,
     LanguageJobModule,
     MatchingWeightModule,
-    BlacklistKeywordModule,
     ViewJobModule,
     PackagesModule,
     EmployerSubscriptionsModule,
@@ -136,6 +132,7 @@ import { NotoJobCandidateService } from './cronjob/noti-job-candidate.service';
     BusinessTypeModule,
     PaymentModule,
     TagResumeModule,
+    CronJobModule,
   ],
   controllers: [AppController],
   providers: [
@@ -144,7 +141,6 @@ import { NotoJobCandidateService } from './cronjob/noti-job-candidate.service';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    NotoJobCandidateService,
   ],
 })
 export class AppModule {}

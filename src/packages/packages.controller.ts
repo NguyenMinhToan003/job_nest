@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -13,7 +14,7 @@ import { PackagesService } from './packages.service';
 import { Public, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { ROLE_LIST } from 'src/types/enum';
-import { CreatePackageDto } from './dto/create-package.dto';
+import { CreatePackageDto, FilterPacageDto } from './dto/create-package.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('packages')
@@ -22,16 +23,16 @@ export class PackagesController {
 
   @Public()
   @Get()
-  findInBisiness() {
-    return this.packagesService.findInBisiness();
+  findInBisiness(@Query() query: FilterPacageDto) {
+    return this.packagesService.findInBisiness(query);
   }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER)
   @Get('available')
-  findAvailablePackages(@Req() req) {
+  findAvailablePackages(@Req() req, @Query() query: FilterPacageDto) {
     const employerId = req.user.id;
-    return this.packagesService.findAvailablePackages(employerId);
+    return this.packagesService.findAvailablePackages(employerId, query);
   }
 
   @UseGuards(RolesGuard)

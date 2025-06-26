@@ -1,6 +1,5 @@
 import { Account } from 'src/modules/account/entities/account.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
-import { NotiSetting } from 'src/modules/noti-setting/entities/noti-setting.entity';
 import { SaveJob } from 'src/modules/save-job/entities/save-job.entity';
 import { Resume } from 'src/modules/resume/entities/resume.entity';
 import {
@@ -52,9 +51,6 @@ export class Candidate {
 
   @OneToMany(() => ViewJob, (viewJob) => viewJob.candidate)
   viewJobs: ViewJob[];
-
-  @OneToMany(() => NotiSetting, (notiSetting) => notiSetting.candidate)
-  notiSettings: NotiSetting[];
 
   @OneToMany(() => Resume, (resume) => resume.candidate)
   resumes: Resume[];

@@ -1,6 +1,5 @@
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Major } from 'src/modules/major/entities/major.entity';
-import { NotiSetting } from 'src/modules/noti-setting/entities/noti-setting.entity';
 import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
 import {
   Column,
@@ -8,7 +7,6 @@ import {
   JoinColumn,
   ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -24,9 +22,6 @@ export class Skill {
 
   @ManyToMany(() => Job, (job) => job.skills)
   jobs: Job[];
-
-  @OneToMany(() => NotiSetting, (notiSetting) => notiSetting.skill)
-  notiSettings: NotiSetting[];
 
   @ManyToOne(() => Major, (major) => major.skills)
   @JoinColumn({ name: 'ma_chuyen_mon' })

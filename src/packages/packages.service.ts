@@ -1,9 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Package } from './entities/package.entity';
-import { Not, Repository } from 'typeorm';
-import { PackageType, PAYMENT_STATUS } from 'src/types/enum';
-import { CreatePackageDto } from './dto/create-package.dto';
+import { In, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  EMPLOYER_SUBSCRIPTION_STATUS,
+  PackageType,
+  PAYMENT_STATUS,
+} from 'src/types/enum';
+import { CreatePackageDto, FilterPacageDto } from './dto/create-package.dto';
 import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
@@ -65,8 +69,18 @@ export class PackagesService {
       where: { id },
     });
   }
-  async findInBisiness() {
-    return this.packageRepository.find();
+  async findInBisiness(query?: FilterPacageDto) {
+    return this.packageRepository.find({
+      where: {
+        type: In(
+          query?.type || [
+            PackageType.JOB,
+            PackageType.BANNER,
+            PackageType.EMPLOYER,
+          ],
+        ),
+      },
+    });
   }
   async getDetailTransactionPackage(transactionId: number) {
     const packageDetail = await this.packageRepository.find({
@@ -84,9 +98,16 @@ export class PackagesService {
     return packageDetail;
   }
 
-  async findAvailablePackages(employerId: number) {
+  async findAvailablePackages(employerId: number, query?: FilterPacageDto) {
     const packages = await this.packageRepository.find({
       where: {
+        type: In(
+          query?.type || [
+            PackageType.JOB,
+            PackageType.BANNER,
+            PackageType.EMPLOYER,
+          ],
+        ),
         employerSubscriptions: {
           transaction: {
             employer: { id: employerId },
@@ -102,24 +123,26 @@ export class PackagesService {
       },
     });
 
-    const convertPackagesResult = packages
-      .map((pkg) => {
-        const sub_used = pkg.employerSubscriptions.filter(
-          (sub) => sub.job !== null,
-        );
-        return {
-          id: pkg.id,
-          name: pkg.name,
-          type: pkg.type,
-          features: pkg.features,
-          price: pkg.price,
-          image: pkg.image,
-          dayValue: pkg.dayValue,
-          sub_used: sub_used.length,
-          sub_total: pkg.employerSubscriptions.length,
-        };
-      })
-      .filter((pkg) => pkg.sub_total > pkg.sub_used);
+    const convertPackagesResult = packages.map((pkg) => {
+      const sub_used = pkg.employerSubscriptions.filter(
+        (sub) => sub.status === EMPLOYER_SUBSCRIPTION_STATUS.USED,
+      );
+
+      return {
+        id: pkg.id,
+        name: pkg.name,
+        type: pkg.type,
+        features: pkg.features,
+        price: pkg.price,
+        image: pkg.image,
+        dayValue: pkg.dayValue,
+        sub_used: sub_used.length,
+        sub_total: pkg.employerSubscriptions.length,
+      };
+    });
+    if (query?.mini) {
+      return convertPackagesResult.filter(pkg => pkg.sub_total > pkg.sub_used);
+    }
     return convertPackagesResult;
   }
   async findAllPackages() {
@@ -156,5 +179,25 @@ export class PackagesService {
       throw new BadRequestException('Package not found');
     }
     return this.packageRepository.remove(packageToDelete);
+  }
+
+  async getPackageUsedByJobId(jobId: number) {
+    return this.packageRepository.find({
+      where: {
+        employerSubscriptions: {
+          job: { id: jobId },
+          endDate: MoreThanOrEqual(new Date()),
+          status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
+          transaction: {
+            status: PAYMENT_STATUS.SUCCESS,
+          },
+        },
+      },
+      relations: {
+        employerSubscriptions: {
+          transaction: true,
+        },
+      },
+    });
   }
 }

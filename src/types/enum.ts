@@ -54,3 +54,7 @@ export enum ACCOUNT_STATUS {
   ACTIVE = 'ACTIVE',
   BLOCKED = 'BLOCKED',
 }
+export enum EMPLOYER_SUBSCRIPTION_STATUS {
+  ACTIVE = 'ACTIVE',
+  USED = 'USED',
+}

@@ -167,7 +167,7 @@ export class AuthService {
     console.log('account', account);
 
     const employer = await this.employerService.create(account.id, dto);
-    await this.transactionService.triggerRegisterEmployer(employer.id);
+    // await this.transactionService.triggerRegisterEmployer(employer.id);
     return employer;
   }
 }

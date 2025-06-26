@@ -13,7 +13,6 @@ import { DistrictModule } from '../modules/district/district.module';
 import { SeedController } from './seed.controller';
 import { EducationModule } from 'src/modules/education/education.module';
 import { LanguageModule } from 'src/modules/language/language.module';
-import { BlacklistKeywordModule } from 'src/blacklist-keyword/blacklist-keyword.module';
 import { PackagesModule } from 'src/packages/packages.module';
 import { BusinessTypeModule } from 'src/business-type/business-type.module';
 import { EmployerScalesModule } from 'src/employer-scales/employer-scales.module';
@@ -34,7 +33,6 @@ import { CountryModule } from 'src/modules/country/country.module';
     LanguageModule,
     AdminModule,
     CityModule,
-    BlacklistKeywordModule,
     DistrictModule,
     EmployerScalesModule,
   ],

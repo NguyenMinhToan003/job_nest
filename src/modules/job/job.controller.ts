@@ -145,4 +145,12 @@ export class JobController {
     const employerId = req.user.id;
     return this.jobService.jobUseSubscription(+employerId, body);
   }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Post('employer/request-publish/:jobId')
+  requestPublishJob(@Req() req, @Param('jobId') jobId: number) {
+    const employerId = req.user.id;
+    return this.jobService.requestPublishJob(+employerId, jobId);
+  }
 }

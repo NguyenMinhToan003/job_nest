@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, IsNull, MoreThanOrEqual, Repository } from 'typeorm';
+import { IsNull, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { EmployerSubscription } from './entities/employer_subscription.entity';
 import { PackagesService } from 'src/packages/packages.service';
 import {
@@ -8,7 +8,11 @@ import {
   UseSubBannerDto,
   UseSubscriptionDto,
 } from './dto/create-employer_subscription.dto';
-import { PackageType, PAYMENT_STATUS } from 'src/types/enum';
+import {
+  EMPLOYER_SUBSCRIPTION_STATUS,
+  PackageType,
+  PAYMENT_STATUS,
+} from 'src/types/enum';
 
 @Injectable()
 export class EmployerSubscriptionsService {
@@ -41,7 +45,7 @@ export class EmployerSubscriptionsService {
         },
         job: { id: IsNull() },
         endDate: MoreThanOrEqual(new Date()),
-        status: 'ACTIVE',
+        status: EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
       },
       relations: {
         package: true,
@@ -71,7 +75,7 @@ export class EmployerSubscriptionsService {
           Date.now() + packageData.dayValue * 24 * 60 * 60 * 1000,
         ),
         note: item.note || 'Mặc định',
-        status: 'ACTIVE',
+        status: EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
       } as EmployerSubscription;
       for (let i = 0; i < item.quantity; i++) {
         dataSubs.push(this.employerSubscriptionRepository.create(dataSub));
@@ -81,23 +85,6 @@ export class EmployerSubscriptionsService {
   }
 
   async useSubscriptionJob(employerId: number, body: UseSubscriptionDto) {
-    const validateJob = await this.employerSubscriptionRepository.findOne({
-      where: {
-        job: { id: body.jobId },
-        endDate: MoreThanOrEqual(new Date()),
-        package: {
-          type: In([PackageType.JOB, PackageType.BANNER]),
-        },
-      },
-      relations: {
-        package: true,
-      },
-    });
-    if (validateJob) {
-      throw new BadRequestException(
-        'Tin đang sử dụng gói dich vụ chưa hết hạn',
-      );
-    }
     const validate = await this.employerSubscriptionRepository.findOne({
       where: {
         transaction: {
@@ -106,7 +93,10 @@ export class EmployerSubscriptionsService {
         },
         job: { id: IsNull() },
         package: { id: body.packageId },
-        status: 'ACTIVE',
+        status: EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
+      },
+      relations: {
+        package: true,
       },
       order: {
         createdAt: 'ASC',
@@ -115,21 +105,40 @@ export class EmployerSubscriptionsService {
     if (!validate) {
       throw new BadRequestException('Sử dụng gói dịch vụ không hợp lệ');
     }
+    const validateJob = await this.employerSubscriptionRepository.findOne({
+      where: {
+        job: { id: body.jobId },
+        endDate: MoreThanOrEqual(new Date()),
+        package: {
+          type: validate.package.type,
+        },
+      },
+      relations: {
+        package: true,
+      },
+    });
+    if (validateJob) {
+      throw new BadRequestException(
+        'Loại dịch vụ này đang được sử dụng chưa hết hạn',
+      );
+    }
     await this.employerSubscriptionRepository.save({
       ...validate,
       job: { id: body.jobId },
-      status: 'USED',
+      status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
     });
     return {
       message: 'Sử dụng gói dịch vụ thành công',
       data: validate,
     };
   }
-  async getSubscriptionByJobId(jobId: number) {
+  async getSubscriptionPackageJobByJobId(jobId: number) {
     return this.employerSubscriptionRepository.findOne({
       where: {
         job: { id: jobId },
         endDate: MoreThanOrEqual(new Date()),
+        package: { type: PackageType.JOB },
+        status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
       },
       relations: {
         package: true,
@@ -144,20 +153,43 @@ export class EmployerSubscriptionsService {
           employer: { id: employerId },
           status: PAYMENT_STATUS.SUCCESS,
         },
+        package: { type: PackageType.EMPLOYER },
         job: { id: IsNull() },
-        status: 'ACTIVE',
-      },
-      order: {
-        createdAt: 'ASC',
+        status: EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
       },
     });
     if (!validate) {
       throw new BadRequestException('Sử dụng gói dịch vụ không hợp lệ');
     }
+    const checkEmployerIsUsingBanner =
+      await this.employerSubscriptionRepository.findOne({
+        where: {
+          id: Not(body.employerSubId),
+          job: { id: IsNull() },
+          endDate: MoreThanOrEqual(new Date()),
+          package: {
+            type: PackageType.EMPLOYER,
+          },
+          transaction: {
+            employer: { id: employerId },
+            status: PAYMENT_STATUS.SUCCESS,
+          },
+          status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
+        },
+        relations: {
+          package: true,
+        },
+      });
+    console.log('checkEmployerIsUsingBanner', checkEmployerIsUsingBanner);
+    if (checkEmployerIsUsingBanner) {
+      throw new BadRequestException(
+        'Bạn đang sử dụng gói dịch vụ banner chưa hết hạn',
+      );
+    }
     await this.employerSubscriptionRepository.save({
       ...validate,
       job: null,
-      status: 'USED',
+      status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
     });
     return {
       message: 'Sử dụng gói dịch vụ thành công',

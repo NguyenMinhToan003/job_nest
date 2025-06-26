@@ -9,5 +9,6 @@ import { JobModule } from 'src/modules/job/job.module';
   imports: [JobModule, TypeOrmModule.forFeature([ViewJob])],
   controllers: [ViewJobController],
   providers: [ViewJobService],
+  exports: [ViewJobService],
 })
 export class ViewJobModule {}

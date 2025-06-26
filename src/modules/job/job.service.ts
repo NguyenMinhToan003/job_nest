@@ -18,11 +18,12 @@ import {
   Repository,
 } from 'typeorm';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { ACCOUNT_STATUS, JOB_STATUS, PackageType } from 'src/types/enum';
+import { JOB_STATUS, PackageType } from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { getDistance } from 'geolib';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 import { UseSubscriptionDto } from 'src/packages/dto/create-package.dto';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class JobService {
@@ -184,6 +185,9 @@ export class JobService {
       relations: {
         employer: true,
         matchingWeights: true,
+        employerSubscription: {
+          package: true,
+        },
         applyJobs: {
           resumeVersion: {
             resume: {
@@ -248,6 +252,14 @@ export class JobService {
     }
     if (job.isActive === JOB_STATUS.BLOCK) {
       job.isActive = JOB_STATUS.PENDING;
+    }
+    if (job.isActive === JOB_STATUS.ACTIVE && job.name !== dto.name) {
+      const checkTimeApprove = dayjs(job.approvedAt).diff(dayjs(), 'hours');
+      if (checkTimeApprove < 72) {
+        throw new ForbiddenException(
+          'Bạn không thể sửa tên công việc trong vòng 72 giờ sau khi công việc được phê duyệt',
+        );
+      }
     }
     const updatedJob = this.jobRepository.merge(job, {
       isActive: job.isActive,
@@ -359,6 +371,7 @@ export class JobService {
       },
       order: {
         employerSubscription: {
+          status: 'DESC',
           endDate: 'DESC',
         },
         createdAt: 'DESC',
@@ -373,7 +386,9 @@ export class JobService {
       let isSaved = undefined;
       let isActiveSubscription = false;
       const employerSubscriptions =
-        await this.employerSubscriptionService.getSubscriptionByJobId(job.id);
+        await this.employerSubscriptionService.getSubscriptionPackageJobByJobId(
+          job.id,
+        );
       if (employerSubscriptions) {
         isActiveSubscription = true;
       }
@@ -421,6 +436,7 @@ export class JobService {
     }
     const updatedJob = this.jobRepository.merge(job, {
       isActive: dto.isActive,
+      approvedAt: new Date(),
     });
     return this.jobRepository.save(updatedJob);
   }
@@ -447,7 +463,7 @@ export class JobService {
   }
 
   async getJobInBanner() {
-    return this.jobRepository.find({
+    const jobList = await this.jobRepository.find({
       where: {
         isActive: In([JOB_STATUS.ACTIVE, JOB_STATUS.PENDING]),
         isShow: 1,
@@ -455,7 +471,7 @@ export class JobService {
         employerSubscription: {
           endDate: MoreThanOrEqual(new Date()),
           package: {
-            type: In([PackageType.BANNER, PackageType.JOB]),
+            type: In([PackageType.BANNER]),
           },
         },
       },
@@ -474,6 +490,22 @@ export class JobService {
         createdAt: 'DESC',
       },
     });
+    const jobForBanner = [];
+    for (const job of jobList) {
+      let isActiveSubscription = false;
+      const employerSubscriptions =
+        await this.employerSubscriptionService.getSubscriptionPackageJobByJobId(
+          job.id,
+        );
+      if (employerSubscriptions) {
+        isActiveSubscription = true;
+      }
+      jobForBanner.push({
+        ...job,
+        isActiveSubscription: isActiveSubscription,
+      });
+    }
+    return jobForBanner;
   }
 
   async getJobInMap(map: MapDto) {

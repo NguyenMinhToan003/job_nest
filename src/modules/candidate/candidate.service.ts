@@ -27,12 +27,19 @@ export class CandidateService {
     });
   }
 
+  async findAllSendMailCronjob() {
+    return this.candidateRepo.find({
+      relations: {
+        account: true,
+      },
+    });
+  }
+
   async getMe(userId: number) {
     const candidate = await this.candidateRepo.findOne({
       where: { id: userId },
       relations: {
         account: true,
-        notiSettings: true,
         saveJobs: true,
       },
     });

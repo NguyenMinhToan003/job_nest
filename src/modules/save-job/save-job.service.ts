@@ -17,7 +17,7 @@ export class SaveJobService {
     const checkJob = await this.jobService.findOne(createSaveJobDto.jobId);
     if (
       !checkJob ||
-      checkJob.isActive === JOB_STATUS.PENDING ||
+      checkJob.isActive === JOB_STATUS.BLOCK ||
       checkJob.isShow === 0
     ) {
       throw new BadRequestException('Công việc không tồn tại');

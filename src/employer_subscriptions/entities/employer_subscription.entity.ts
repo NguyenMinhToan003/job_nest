@@ -1,6 +1,7 @@
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Package } from 'src/packages/entities/package.entity';
 import { Transaction } from 'src/transaction/entities/transaction.entity';
+import { EMPLOYER_SUBSCRIPTION_STATUS } from 'src/types/enum';
 import {
   Column,
   Entity,
@@ -19,10 +20,19 @@ export class EmployerSubscription {
 
   @Column({ name: 'ngay_bat_dau', type: 'date', nullable: false })
   startDate: Date;
+
   @Column({ name: 'ngay_ket_thuc', type: 'date', nullable: false })
   endDate: Date;
-  @Column({ name: 'trang_thai', type: 'varchar', length: 50, nullable: false })
-  status: string;
+
+  @Column({
+    name: 'trang_thai',
+    type: 'enum',
+    enum: EMPLOYER_SUBSCRIPTION_STATUS,
+    default: EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
+    nullable: false,
+  })
+  status: EMPLOYER_SUBSCRIPTION_STATUS;
+
   @Column({
     name: 'ngay_tao',
     type: 'timestamp',

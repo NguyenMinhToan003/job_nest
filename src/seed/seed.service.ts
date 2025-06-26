@@ -11,7 +11,6 @@ import { CityService } from '../modules/city/city.service';
 import { DistrictService } from '../modules/district/district.service';
 import { EducationService } from 'src/modules/education/education.service';
 import { LanguageService } from 'src/modules/language/language.service';
-import { BlacklistKeywordService } from 'src/blacklist-keyword/blacklist-keyword.service';
 import { PackagesService } from 'src/packages/packages.service';
 import { BusinessTypeService } from 'src/business-type/business-type.service';
 import { EmployerScalesService } from 'src/employer-scales/employer-scales.service';
@@ -32,7 +31,6 @@ export class SeedService {
     private readonly districtService: DistrictService,
     private readonly educationService: EducationService,
     private readonly languageService: LanguageService,
-    private readonly blacklistKeywordService: BlacklistKeywordService,
     private readonly packagesService: PackagesService,
     private readonly businessTypeService: BusinessTypeService,
     private readonly employerScalesService: EmployerScalesService,
@@ -79,9 +77,6 @@ export class SeedService {
 
       await this.languageService.createDefaultLanguages();
       this.logger.log(`✅ Đã seed language`);
-
-      await this.blacklistKeywordService.createDefaultKeywords();
-      this.logger.log(`✅ Đã seed blacklist keywords`);
 
       await this.packagesService.createDefaultPackages();
       this.logger.log(`✅ Đã seed packages`);

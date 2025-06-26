@@ -9,5 +9,6 @@ import { JobModule } from 'src/modules/job/job.module';
   imports: [JobModule, TypeOrmModule.forFeature([SaveJob])],
   controllers: [SaveJobController],
   providers: [SaveJobService],
+  exports: [SaveJobService],
 })
 export class SaveJobModule {}

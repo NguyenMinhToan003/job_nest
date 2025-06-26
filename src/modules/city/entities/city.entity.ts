@@ -1,5 +1,4 @@
 import { District } from 'src/modules/district/entities/district.entity';
-import { NotiSetting } from 'src/modules/noti-setting/entities/noti-setting.entity';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'thanh_pho' })
@@ -11,7 +10,4 @@ export class City {
 
   @OneToMany(() => District, (district) => district.city)
   districts: District[];
-
-  @OneToMany(() => NotiSetting, (notiSetting) => notiSetting.city)
-  notiSettings: NotiSetting[];
 }

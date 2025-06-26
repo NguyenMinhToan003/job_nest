@@ -68,3 +68,20 @@ export class AdminFilterCompanyDto {
   @IsOptional()
   sortOrder?: 'asc' | 'desc';
 }
+
+export class FilterEmployerDto {
+  @IsOptional()
+  search?: string;
+
+  @IsOptional()
+  page?: number;
+
+  @IsOptional()
+  limit?: number;
+  @IsOptional()
+  employeeScaleId?: number;
+  @IsOptional()
+  businessTypeId?: number;
+  @IsOptional()
+  countryId?: number;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Công việc mới dành cho bạn</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; background-color: #f9f9f9; padding: 20px; color: #333;">
+    <h2>Chào {{candidateName}},</h2>
+    <p>Dưới đây là những công việc phù hợp với bạn hôm nay:</p>
+
+    {{#if saveJobs.length}}
+      <h3>🔖 Công việc bạn đã lưu:</h3>
+      <ul>
+        {{#each saveJobs}}
+          <li>
+            <strong>{{this.name}}</strong><br />
+            Công ty: {{this.employer.name}}<br />
+            Lương: 
+            {{#if this.minSalary}}{{this.minSalary}}{{else}}Thỏa thuận{{/if}} -
+            {{#if this.maxSalary}}{{this.maxSalary}}{{else}}Thỏa thuận{{/if}}<br />
+            <a href="https://yourdomain.com/jobs/{{this.id}}">Xem chi tiết</a>
+          </li>
+        {{/each}}
+      </ul>
+    {{/if}}
+
+    {{#if viewJobs.length}}
+      <h3>👁️ Công việc bạn từng xem:</h3>
+      <ul>
+        {{#each viewJobs}}
+          <li>
+            <strong>{{this.name}}</strong><br />
+            Công ty: {{this.employer.name}}<br />
+            Lương: 
+            {{#if this.minSalary}}{{this.minSalary}}{{else}}Thỏa thuận{{/if}} -
+            {{#if this.maxSalary}}{{this.maxSalary}}{{else}}Thỏa thuận{{/if}}<br />
+            <a href="https://yourdomain.com/jobs/{{this.id}}">Xem chi tiết</a>
+          </li>
+        {{/each}}
+      </ul>
+    {{/if}}
+
+    {{#if jobs.length}}
+      <h3>🆕 Công việc nổi bật hôm nay:</h3>
+      <ul>
+        {{#each jobs}}
+          <li>
+            <strong>{{this.name}}</strong><br />
+            Công ty: {{this.employer.name}}<br />
+            Lương: 
+            {{#if this.minSalary}}{{this.minSalary}}{{else}}Thỏa thuận{{/if}} -
+            {{#if this.maxSalary}}{{this.maxSalary}}{{else}}Thỏa thuận{{/if}}<br />
+            <a href="https://yourdomain.com/jobs/{{this.id}}">Xem chi tiết</a>
+          </li>
+        {{/each}}
+      </ul>
+    {{/if}}
+
+    <p>Chúc bạn sớm tìm được công việc ưng ý!</p>
+    <hr />
+    <p style="font-size: 0.9em; color: #777;">
+      Email này được gửi tự động từ hệ thống tuyển dụng. Vui lòng không phản hồi trực tiếp.
+    </p>
+  </body>
+</html>

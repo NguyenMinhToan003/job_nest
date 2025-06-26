@@ -16,7 +16,10 @@ import { Public, Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AdminFilterCompanyDto } from './dto/create-employer.dto';
+import {
+  AdminFilterCompanyDto,
+  FilterEmployerDto,
+} from './dto/create-employer.dto';
 
 @Controller('employer')
 export class EmployerController {
@@ -74,5 +77,11 @@ export class EmployerController {
   @Get('banner')
   async getBanner() {
     return this.employerService.getBanner();
+  }
+
+  @Public()
+  @Get('filter/search')
+  async filterSearch(@Query() query: FilterEmployerDto) {
+    return this.employerService.filterSearch(query);
   }
 }
