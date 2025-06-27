@@ -13,6 +13,7 @@ import {
   PackageType,
   PAYMENT_STATUS,
 } from 'src/types/enum';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class EmployerSubscriptionsService {
@@ -25,7 +26,11 @@ export class EmployerSubscriptionsService {
   async getMySubscription(employerId: number) {
     return this.employerSubscriptionRepository.find({
       where: {
-        transaction: { employer: { id: employerId } },
+        transaction: {
+          employerSubscriptions: {
+            employer: { id: employerId },
+          },
+        },
       },
       relations: {
         package: true,
@@ -40,7 +45,9 @@ export class EmployerSubscriptionsService {
     return this.employerSubscriptionRepository.find({
       where: {
         transaction: {
-          employer: { id: employerId },
+          employerSubscriptions: {
+            employer: { id: employerId },
+          },
           status: PAYMENT_STATUS.SUCCESS,
         },
         job: { id: IsNull() },
@@ -58,24 +65,24 @@ export class EmployerSubscriptionsService {
 
   async createEmployerSubscriptions(
     body: CreateEmployerSubscriptionDto[],
+    employerId: number,
     transactionId: number,
   ) {
     const dataSubs: EmployerSubscription[] = [];
     for (const item of body) {
       const packageData = await this.packageService.findOneById(item.packageId);
       if (!packageData) {
-        throw new BadRequestException('Package not found');
+        throw new BadRequestException('Gói dịch vụ không hợp lệ');
       }
       const dataSub = {
         transaction: { id: transactionId },
         job: null,
+        employer: { id: employerId },
         package: packageData,
-        startDate: new Date(),
-        endDate: new Date(
-          Date.now() + packageData.dayValue * 24 * 60 * 60 * 1000,
-        ),
+        startDate: null,
+        endDate: null,
         note: item.note || 'Mặc định',
-        status: EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
+        status: EMPLOYER_SUBSCRIPTION_STATUS.INACTIVE,
       } as EmployerSubscription;
       for (let i = 0; i < item.quantity; i++) {
         dataSubs.push(this.employerSubscriptionRepository.create(dataSub));
@@ -84,11 +91,27 @@ export class EmployerSubscriptionsService {
     return await this.employerSubscriptionRepository.save(dataSubs);
   }
 
+  async triggerTransactionSuccess(transactionId: number) {
+    const subscriptions = await this.employerSubscriptionRepository.find({
+      where: {
+        transaction: { id: transactionId },
+        status: EMPLOYER_SUBSCRIPTION_STATUS.INACTIVE,
+      },
+    });
+    if (subscriptions.length === 0) {
+      throw new BadRequestException('Không có gói dịch vụ nào để kích hoạt');
+    }
+    for (const sub of subscriptions) {
+      sub.status = EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE;
+    }
+    return this.employerSubscriptionRepository.save(subscriptions);
+  }
+
   async useSubscriptionJob(employerId: number, body: UseSubscriptionDto) {
     const validate = await this.employerSubscriptionRepository.findOne({
       where: {
+        employer: { id: employerId },
         transaction: {
-          employer: { id: employerId },
           status: PAYMENT_STATUS.SUCCESS,
         },
         job: { id: IsNull() },
@@ -126,6 +149,8 @@ export class EmployerSubscriptionsService {
       ...validate,
       job: { id: body.jobId },
       status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
+      startDate: new Date(),
+      endDate: dayjs().add(validate.package.dayValue, 'day').toDate(),
     });
     return {
       message: 'Sử dụng gói dịch vụ thành công',
@@ -150,12 +175,17 @@ export class EmployerSubscriptionsService {
       where: {
         id: body.employerSubId,
         transaction: {
-          employer: { id: employerId },
+          employerSubscriptions: {
+            employer: { id: employerId },
+          },
           status: PAYMENT_STATUS.SUCCESS,
         },
         package: { type: PackageType.EMPLOYER },
         job: { id: IsNull() },
         status: EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
+      },
+      relations: {
+        package: true,
       },
     });
     if (!validate) {
@@ -171,7 +201,9 @@ export class EmployerSubscriptionsService {
             type: PackageType.EMPLOYER,
           },
           transaction: {
-            employer: { id: employerId },
+            employerSubscriptions: {
+              employer: { id: employerId },
+            },
             status: PAYMENT_STATUS.SUCCESS,
           },
           status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
@@ -190,6 +222,8 @@ export class EmployerSubscriptionsService {
       ...validate,
       job: null,
       status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
+      startDate: new Date(),
+      endDate: dayjs().add(validate.package.dayValue, 'day').toDate(),
     });
     return {
       message: 'Sử dụng gói dịch vụ thành công',

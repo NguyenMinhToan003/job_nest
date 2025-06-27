@@ -18,7 +18,11 @@ import {
   Repository,
 } from 'typeorm';
 import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
-import { JOB_STATUS, PackageType } from 'src/types/enum';
+import {
+  EMPLOYER_SUBSCRIPTION_STATUS,
+  JOB_STATUS,
+  PackageType,
+} from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { getDistance } from 'geolib';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
@@ -161,6 +165,9 @@ export class JobService {
     if (!job) {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
+    if (job.isActive !== JOB_STATUS.CREATE) {
+      throw new ForbiddenException('Thao tác không thành công');
+    }
     return this.jobRepository.delete(id);
   }
 
@@ -185,6 +192,11 @@ export class JobService {
       relations: {
         employer: true,
         matchingWeights: true,
+        locations: {
+          district: {
+            city: true,
+          },
+        },
         employerSubscription: {
           package: true,
         },
@@ -469,6 +481,7 @@ export class JobService {
         isShow: 1,
         expiredAt: MoreThanOrEqual(new Date()),
         employerSubscription: {
+          status: In([EMPLOYER_SUBSCRIPTION_STATUS.USED]),
           endDate: MoreThanOrEqual(new Date()),
           package: {
             type: In([PackageType.BANNER]),
@@ -490,6 +503,7 @@ export class JobService {
         createdAt: 'DESC',
       },
     });
+    console.log('jobList', jobList);
     const jobForBanner = [];
     for (const job of jobList) {
       let isActiveSubscription = false;

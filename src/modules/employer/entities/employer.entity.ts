@@ -1,5 +1,6 @@
 import { BusinessType } from 'src/business-type/entities/business-type.entity';
 import { EmployerScale } from 'src/employer-scales/entities/employer-scale.entity';
+import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
 import { Account } from 'src/modules/account/entities/account.entity';
 import { Country } from 'src/modules/country/entities/country.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
@@ -69,8 +70,11 @@ export class Employer {
   @OneToMany(() => Job, (job) => job.employer)
   jobs: Job[];
 
-  @OneToMany(() => Transaction, (transaction) => transaction.employer)
-  transactions: Transaction[];
+  @OneToMany(
+    () => EmployerSubscription,
+    (subscription) => subscription.employer,
+  )
+  employerSubscriptions: EmployerSubscription[];
 
   @OneToMany(() => TagResume, (tagResume) => tagResume.employer)
   tagResumes: TagResume[];

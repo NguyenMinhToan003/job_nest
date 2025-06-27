@@ -6,6 +6,7 @@ import { CreateTransactionDto } from 'src/transaction/dto/create-transaction.dto
 import { PAYMENT_STATUS } from 'src/types/enum';
 import { dateFormat } from 'vnpay';
 import { MailerService } from '@nestjs-modules/mailer';
+import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 
 @Injectable()
 export class PaymentService {
@@ -15,6 +16,7 @@ export class PaymentService {
     private readonly transactionService: TransactionService,
     private readonly vnpayService: VnpayService,
     private readonly mailerService: MailerService,
+    private readonly employerSub: EmployerSubscriptionsService,
   ) {}
 
   async createPaymentUrl(
@@ -85,8 +87,9 @@ export class PaymentService {
       transaction.status = PAYMENT_STATUS.SUCCESS;
       transaction.recordedAt = new Date();
       await this.transactionService.update(transaction.id, transaction);
+      await this.employerSub.triggerTransactionSuccess(transaction.id);
       this.mailerService.sendMail({
-        to: transaction.employer.account.email,
+        to: transaction.employerSubscriptions[0].employer.account.email,
         from: 'tuyendung123@gmail.com',
         subject: `Thanh toán thành công - ${transaction.vnp_TxnRef}`,
         template: 'job-status',
@@ -106,7 +109,7 @@ export class PaymentService {
       transaction.recordedAt = new Date();
       await this.transactionService.update(transaction.id, transaction);
       this.mailerService.sendMail({
-        to: transaction.employer.account.email,
+        to: transaction.employerSubscriptions[0].employer.account.email,
         from: 'tuyendung123@gmail.com',
         subject: `Thanh toán thất bại - ${transaction.vnp_TxnRef}`,
         template: 'job-status',

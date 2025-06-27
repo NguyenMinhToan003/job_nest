@@ -1,3 +1,4 @@
+import { Employer } from 'src/modules/employer/entities/employer.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Package } from 'src/packages/entities/package.entity';
 import { Transaction } from 'src/transaction/entities/transaction.entity';
@@ -18,10 +19,10 @@ export class EmployerSubscription {
   @Column({ name: 'ghi_chu', type: 'text', nullable: true })
   note: string;
 
-  @Column({ name: 'ngay_bat_dau', type: 'date', nullable: false })
+  @Column({ name: 'ngay_bat_dau', type: 'date', nullable: true })
   startDate: Date;
 
-  @Column({ name: 'ngay_ket_thuc', type: 'date', nullable: false })
+  @Column({ name: 'ngay_ket_thuc', type: 'date', nullable: true })
   endDate: Date;
 
   @Column({
@@ -60,6 +61,12 @@ export class EmployerSubscription {
   )
   @JoinColumn({ name: 'goi_dich_vu_id', referencedColumnName: 'id' })
   package: Package;
+
+  @ManyToOne(() => Employer, (employer) => employer.employerSubscriptions, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'nha_tuyen_dung_id', referencedColumnName: 'id' })
+  employer: Employer;
 
   @ManyToOne(() => Job, (job) => job.employerSubscription, {
     nullable: true,

@@ -56,5 +56,6 @@ export enum ACCOUNT_STATUS {
 }
 export enum EMPLOYER_SUBSCRIPTION_STATUS {
   ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
   USED = 'USED',
 }

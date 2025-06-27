@@ -14,8 +14,10 @@ export class CreateTransactionDto {
   @ValidateNested({ each: true })
   @Type(() => CreateEmployerSubscriptionDto)
   subscriptions: CreateEmployerSubscriptionDto[];
+
   @IsNotEmpty()
   transactionType: string;
+
   @IsOptional()
   employerId: number;
 }

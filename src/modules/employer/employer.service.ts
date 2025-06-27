@@ -13,11 +13,7 @@ import { FollowService } from '../follow/follow.service';
 import { JobService } from '../job/job.service';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 import { UploadService } from 'src/upload/upload.service';
-import {
-  EMPLOYER_SUBSCRIPTION_STATUS,
-  PackageType,
-  PAYMENT_STATUS,
-} from 'src/types/enum';
+import { EMPLOYER_SUBSCRIPTION_STATUS, PackageType } from 'src/types/enum';
 
 @Injectable()
 export class EmployerService {
@@ -187,15 +183,12 @@ export class EmployerService {
   async getBanner() {
     const employersBanner = await this.employerRepo.find({
       where: {
-        transactions: {
-          status: PAYMENT_STATUS.SUCCESS,
-          employerSubscriptions: {
-            job: { id: IsNull() },
-            status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
-            endDate: MoreThanOrEqual(new Date()),
-            package: {
-              type: PackageType.EMPLOYER,
-            },
+        employerSubscriptions: {
+          job: { id: IsNull() },
+          status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
+          endDate: MoreThanOrEqual(new Date()),
+          package: {
+            type: PackageType.EMPLOYER,
           },
         },
       },
@@ -206,6 +199,7 @@ export class EmployerService {
         country: true,
       },
     });
+    console.log('employersBanner', employersBanner);
     const result = [];
     for (const employer of employersBanner) {
       const jobsCount = await this.jobService.getCountJobByEmployerId(

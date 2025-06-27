@@ -1,13 +1,6 @@
 import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
-import { Employer } from 'src/modules/employer/entities/employer.entity';
 import { PAYMENT_STATUS } from 'src/types/enum';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'giao_dich' })
 export class Transaction {
@@ -54,11 +47,6 @@ export class Transaction {
 
   @Column({ name: 'ngay_ghi_nhan', type: 'timestamp', nullable: true })
   recordedAt: Date;
-
-  @ManyToOne(() => Employer, (employer) => employer.transactions, {
-    nullable: false,
-  })
-  employer: Employer;
 
   @OneToMany(
     () => EmployerSubscription,

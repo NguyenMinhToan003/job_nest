@@ -34,19 +34,6 @@ export class EmployerSubscriptionsController {
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER)
-  @Post('payment')
-  async createEmployerSubscriptions(
-    @Req() req,
-    @Body() body: CreateEmployerSubscriptionDtoWrapper,
-  ) {
-    return this.employerSubscriptionsService.createEmployerSubscriptions(
-      body.subscriptions,
-      body.amount,
-    );
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.EMPLOYER)
   @Post('use-subscription/banner-employer')
   async useSubscriptionBanner(@Req() req, @Body() body: UseSubBannerDto) {
     const employerId = req.user.id;

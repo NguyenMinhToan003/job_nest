@@ -9,6 +9,7 @@ import {
 } from 'src/types/enum';
 import { CreatePackageDto, FilterPacageDto } from './dto/create-package.dto';
 import { UploadService } from 'src/upload/upload.service';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class PackagesService {
@@ -109,8 +110,12 @@ export class PackagesService {
           ],
         ),
         employerSubscriptions: {
+          employer: { id: employerId },
+          status: In([
+            EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
+            EMPLOYER_SUBSCRIPTION_STATUS.USED,
+          ]),
           transaction: {
-            employer: { id: employerId },
             status: PAYMENT_STATUS.SUCCESS,
           },
         },
@@ -127,6 +132,9 @@ export class PackagesService {
       const sub_used = pkg.employerSubscriptions.filter(
         (sub) => sub.status === EMPLOYER_SUBSCRIPTION_STATUS.USED,
       );
+      const sub_using = sub_used.filter(
+        (sub) => dayjs(sub.endDate).isAfter(dayjs(), 'day'),
+      );
 
       return {
         id: pkg.id,
@@ -137,11 +145,14 @@ export class PackagesService {
         image: pkg.image,
         dayValue: pkg.dayValue,
         sub_used: sub_used.length,
+        sub_using: sub_using,
         sub_total: pkg.employerSubscriptions.length,
       };
     });
     if (query?.mini) {
-      return convertPackagesResult.filter(pkg => pkg.sub_total > pkg.sub_used);
+      return convertPackagesResult.filter(
+        (pkg) => pkg.sub_total > pkg.sub_used,
+      );
     }
     return convertPackagesResult;
   }

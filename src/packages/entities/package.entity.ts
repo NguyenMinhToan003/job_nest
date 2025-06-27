@@ -22,7 +22,12 @@ export class Package {
   @Column({ name: 'hinh_anh', type: 'varchar', length: 255, nullable: true })
   image: string;
 
-  @Column({ name: 'so_ngay_hieu_luc', type: 'int', nullable: false })
+  @Column({
+    name: 'so_ngay_hieu_luc',
+    type: 'int',
+    nullable: false,
+    default: 7,
+  })
   dayValue: number;
 
   @Column({

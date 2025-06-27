@@ -8,7 +8,6 @@ import {
 } from './dto/create-transaction.dto';
 import { PackagesService } from 'src/packages/packages.service';
 import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
-import { PAYMENT_STATUS } from 'src/types/enum';
 @Injectable()
 export class TransactionService {
   constructor(
@@ -31,7 +30,6 @@ export class TransactionService {
     }
     const create = this.transactionRepository.create({
       amount: amount,
-      employer: { id: dto.employerId },
       transactionType: dto.transactionType,
       note: 'Giao dịch thanh toán',
     });
@@ -39,29 +37,7 @@ export class TransactionService {
 
     await this.employerSubscriptionService.createEmployerSubscriptions(
       dto.subscriptions,
-      transaction.id,
-    );
-    return transaction;
-  }
-  async triggerRegisterEmployer(employerId: number) {
-    const amount = 0;
-    const create = this.transactionRepository.create({
-      amount: amount,
-      employer: { id: employerId },
-      vnp_TxnRef: `REGISTER_EMPLOYER-${employerId}`,
-      transactionType: 'REGISTER_EMPLOYER',
-      status: PAYMENT_STATUS.SUCCESS,
-      note: 'Gói được tặng khi đăng ký nhà tuyển dụng',
-      recordedAt: new Date(),
-    });
-    const transaction = await this.transactionRepository.save(create);
-    await this.employerSubscriptionService.createEmployerSubscriptions(
-      [
-        {
-          packageId: 'FREE_PACKAGE',
-          quantity: 1,
-        },
-      ],
+      dto.employerId,
       transaction.id,
     );
     return transaction;
@@ -70,7 +46,9 @@ export class TransactionService {
   async getMyTransactions(employerId: number) {
     const transactions = await this.transactionRepository.find({
       where: {
-        employer: { id: employerId },
+        employerSubscriptions: {
+          employer: { id: employerId },
+        },
       },
       order: {
         createdAt: 'DESC',
@@ -94,9 +72,9 @@ export class TransactionService {
     const transaction = await this.transactionRepository.findOne({
       where: { id },
       relations: {
-        employer: true,
         employerSubscriptions: {
           package: true,
+          employer: true,
           job: true,
         },
       },
@@ -151,7 +129,11 @@ export class TransactionService {
     return this.transactionRepository.findOne({
       where: { id },
       relations: {
-        employer: true,
+        employerSubscriptions: {
+          package: true,
+          employer: true,
+          job: true,
+        },
       },
     });
   }
@@ -159,11 +141,12 @@ export class TransactionService {
     return this.transactionRepository.findOne({
       where: { vnp_TxnRef },
       relations: {
-        employer: {
-          account: true,
-        },
         employerSubscriptions: {
           package: true,
+          employer: {
+            account: true,
+          },
+          job: true,
         },
       },
     });
@@ -173,12 +156,14 @@ export class TransactionService {
     const transaction = await this.transactionRepository.findOne({
       where: {
         id: transactionId,
-        employer: { id: employerId },
+        employerSubscriptions: {
+          employer: { id: employerId },
+        },
       },
       relations: {
-        employer: true,
         employerSubscriptions: {
           package: true,
+          employer: true,
           job: true,
         },
       },
