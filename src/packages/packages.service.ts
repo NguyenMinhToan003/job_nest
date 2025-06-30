@@ -132,8 +132,8 @@ export class PackagesService {
       const sub_used = pkg.employerSubscriptions.filter(
         (sub) => sub.status === EMPLOYER_SUBSCRIPTION_STATUS.USED,
       );
-      const sub_using = sub_used.filter(
-        (sub) => dayjs(sub.endDate).isAfter(dayjs(), 'day'),
+      const sub_using = sub_used.filter((sub) =>
+        dayjs(sub.endDate).isAfter(dayjs(), 'day'),
       );
 
       return {

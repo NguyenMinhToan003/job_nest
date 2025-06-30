@@ -39,6 +39,11 @@ export class ResumeService {
         id: +resumeId,
         candidate: { id: +candidateId },
       },
+      relations: {
+        resumeVersions: {
+          applyJobs: true,
+        },
+      },
     });
   }
   async update(candidateId: number, resumeId: number, name: string) {
@@ -68,6 +73,14 @@ export class ResumeService {
     if (resume.isDefault) {
       throw new BadRequestException('Không thể xóa hồ sơ mặc định.');
     }
+    resume.resumeVersions.map((item) => {
+      if (item.applyJobs.length > 0) {
+        throw new BadRequestException(
+          'Không thể xóa hồ sơ đã có đơn ứng tuyển.',
+        );
+      }
+      return item;
+    });
     return this.resumeRepository.remove(resume);
   }
 

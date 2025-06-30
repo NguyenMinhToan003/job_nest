@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { MoreThanOrEqual, Not, Repository } from 'typeorm';
 import {
   AddTagResumeDto,
   CreateApplyJobDto,
@@ -331,6 +331,15 @@ export class ApplyJobService {
       },
       order: {
         applyTime: 'DESC',
+      },
+    });
+  }
+
+  async getApplyJobIsNotDeletedByResumeId(resumeId: number) {
+    return this.applyJobRepository.find({
+      where: {
+        resumeVersion: { resume: { id: resumeId } },
+        status: Not(APPLY_JOB_STATUS.PROCESSING),
       },
     });
   }

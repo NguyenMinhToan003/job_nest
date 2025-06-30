@@ -6,9 +6,7 @@ import { Country } from 'src/modules/country/entities/country.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
-import { Post } from 'src/modules/post/entities/post.entity';
 import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
-import { Transaction } from 'src/transaction/entities/transaction.entity';
 import {
   Column,
   Entity,
@@ -57,9 +55,6 @@ export class Employer {
   })
   @JoinColumn({ name: 'ma_quy_mo_nhan_su', referencedColumnName: 'id' })
   employeeScale: EmployerScale;
-
-  @OneToMany(() => Post, (post) => post.employer)
-  posts: Post[];
 
   @OneToMany(() => Location, (location) => location.employer)
   locations: Location[];

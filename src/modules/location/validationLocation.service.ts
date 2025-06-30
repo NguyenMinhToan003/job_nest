@@ -21,5 +21,6 @@ export class ValidationLocationService {
     if (location) {
       throw new BadRequestException('Địa điểm đã tồn tại');
     }
+    return location;
   }
 }

@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { ValidationLocationService } from './validationLocation.service';
 
@@ -100,9 +100,27 @@ export class LocationService {
     if (!location) {
       throw new NotFoundException('Location not found');
     }
+    const checkExistPlaceId = await this.locationRepository.findOne({
+      where: {
+        id: Not(id),
+        placeId: body.placeId,
+        employer: {
+          id: companyId,
+        },
+      },
+    });
+    console.log('checkExistPlaceId', checkExistPlaceId);
+    if (checkExistPlaceId) {
+      throw new BadRequestException('Place ID already exists');
+    }
     return await this.locationRepository.save({
       ...location,
-      ...body,
+      name: body.name,
+      placeId: body.placeId,
+      city: body.city,
+      district: body.district,
+      lat: body.lat,
+      lng: body.lng,
     });
   }
 

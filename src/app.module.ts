@@ -9,7 +9,6 @@ import { SkillModule } from './modules/skill/skill.module';
 import { DistrictModule } from './modules/district/district.module';
 import { CityModule } from './modules/city/city.module';
 import { CountryModule } from './modules/country/country.module';
-import { PostModule } from './modules/post/post.module';
 import { SaveJobModule } from './modules/save-job/save-job.module';
 import { ApplyJobModule } from './modules/apply-job/apply-job.module';
 import { FollowModule } from './modules/follow/follow.module';
@@ -105,7 +104,6 @@ import { CronJobModule } from './cronjob/cron-job.module';
     CityModule,
     CountryModule,
     MajorModule,
-    PostModule,
     LevelModule,
     SaveJobModule,
     ApplyJobModule,
