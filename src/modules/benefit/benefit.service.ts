@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Benefit } from './entities/benefit.entity';
 import { Repository } from 'typeorm';
+import { CreateBenefitDto } from './dto/create-benefit.dto';
 
 @Injectable()
 export class BenefitService {
@@ -72,5 +73,32 @@ export class BenefitService {
 
   findAll() {
     return this.benefitRepo.find();
+  }
+  async create(benefit: CreateBenefitDto) {
+    return this.benefitRepo.save({
+      id: benefit.id,
+      icon: benefit.icon,
+      name: benefit.name,
+      description: benefit.description,
+    });
+  }
+  async update(id: string, benefit: CreateBenefitDto) {
+    const existingBenefit = await this.benefitRepo.findOneBy({ id });
+    if (!existingBenefit) {
+      throw new BadRequestException('Quyền lợi không tồn tại');
+    }
+    return this.benefitRepo.save({
+      ...existingBenefit,
+      icon: benefit.icon,
+      name: benefit.name,
+      description: benefit.description,
+    });
+  }
+  async delete(id: string) {
+    const existingBenefit = await this.benefitRepo.findOneBy({ id });
+    if (!existingBenefit) {
+      throw new BadRequestException('Quyền lợi không tồn tại');
+    }
+    return this.benefitRepo.remove(existingBenefit);
   }
 }
