@@ -17,19 +17,22 @@ export class TransactionController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.EMPLOYER)
+  @Roles(ROLE_LIST.EMPLOYER, ROLE_LIST.ADMIN)
   @Get(':id')
   async getTransactionDetail(@Req() req, @Param('id') transactionId: number) {
-    const employerId = req.user.id;
-    return this.transactionService.getTransactionDetail(
-      employerId,
-      transactionId,
-    );
+    return this.transactionService.getTransactionDetail(transactionId);
   }
 
   @Public()
   @Get('checkout/:id')
   async getTransactionById(@Param('id') transactionId: number) {
     return this.transactionService.getTransactionById(transactionId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Get('admin/get-all')
+  async getTransactionDetailAdmin() {
+    return this.transactionService.getAllTransactions();
   }
 }

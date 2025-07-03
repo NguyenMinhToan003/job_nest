@@ -6,6 +6,7 @@ import { JobModule } from 'src/modules/job/job.module';
 import { SaveJobModule } from 'src/modules/save-job/save-job.module';
 import { ViewJobModule } from 'src/view-job/view-job.module';
 import { NotoJobCandidateService } from './noti-job-candidate.service';
+import { refreshJobService } from './refresh-job.service';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { NotoJobCandidateService } from './noti-job-candidate.service';
     CandidateModule,
     MailerModule,
   ],
-  providers: [NotoJobCandidateService],
+  providers: [NotoJobCandidateService, refreshJobService],
 })
 export class CronJobModule {}

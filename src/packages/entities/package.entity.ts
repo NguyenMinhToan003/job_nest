@@ -19,6 +19,9 @@ export class Package {
   })
   price: number;
 
+  @Column({ name: 'trang_thai', type: 'boolean', default: true })
+  status: boolean;
+
   @Column({ name: 'hinh_anh', type: 'varchar', length: 255, nullable: true })
   image: string;
 

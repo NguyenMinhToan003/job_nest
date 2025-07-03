@@ -73,11 +73,13 @@ export class PackagesService {
   async findInBisiness(query?: FilterPacageDto) {
     return this.packageRepository.find({
       where: {
+        status: true,
         type: In(
           query?.type || [
             PackageType.JOB,
             PackageType.BANNER,
             PackageType.EMPLOYER,
+            PackageType.REFRESH,
           ],
         ),
       },
@@ -107,6 +109,7 @@ export class PackagesService {
             PackageType.JOB,
             PackageType.BANNER,
             PackageType.EMPLOYER,
+            PackageType.REFRESH,
           ],
         ),
         employerSubscriptions: {
@@ -210,5 +213,34 @@ export class PackagesService {
         },
       },
     });
+  }
+  async updatePackage(packageId: string, dto: CreatePackageDto) {
+    const packageToUpdate = await this.packageRepository.findOne({
+      where: { id: packageId },
+    });
+    if (!packageToUpdate) {
+      throw new BadRequestException('Gói dịch vụ không tồn tại');
+    }
+    if (dto.image) {
+      const uploadedImage = await this.uploadService.uploadFile([dto.image]);
+      packageToUpdate.image = uploadedImage[0].secure_url;
+    }
+    packageToUpdate.name = dto.name;
+    packageToUpdate.features = dto.features;
+    packageToUpdate.price = dto.price;
+    packageToUpdate.dayValue = dto.dayValue;
+    packageToUpdate.type = dto.type;
+
+    return this.packageRepository.save(packageToUpdate);
+  }
+  async changeStatusPackage(packageId: string) {
+    const packageToUpdate = await this.packageRepository.findOne({
+      where: { id: packageId },
+    });
+    if (!packageToUpdate) {
+      throw new BadRequestException('Gói dịch vụ không tồn tại');
+    }
+    packageToUpdate.status = !packageToUpdate.status;
+    return this.packageRepository.save(packageToUpdate);
   }
 }

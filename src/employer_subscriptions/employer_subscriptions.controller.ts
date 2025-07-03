@@ -3,10 +3,7 @@ import { EmployerSubscriptionsService } from './employer_subscriptions.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
-import {
-  CreateEmployerSubscriptionDtoWrapper,
-  UseSubBannerDto,
-} from './dto/create-employer_subscription.dto';
+import { UseSubBannerDto } from './dto/create-employer_subscription.dto';
 
 @Controller('employer-sub')
 export class EmployerSubscriptionsController {
@@ -41,5 +38,13 @@ export class EmployerSubscriptionsController {
       employerId,
       body,
     );
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Get('get-all-in-package/:packageId')
+  async getAllInPackage(@Req() req) {
+    const packageId = req.params.packageId;
+    return this.employerSubscriptionsService.getAllInPackage(packageId);
   }
 }

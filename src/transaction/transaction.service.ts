@@ -68,6 +68,32 @@ export class TransactionService {
     return transactionPackages;
   }
 
+  async getAllTransactions() {
+    const transactions = await this.transactionRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: {
+        employerSubscriptions: {
+          package: true,
+          employer: true,
+          job: true,
+        },
+      },
+    });
+    const transactionPackages = [];
+    for (const transaction of transactions) {
+      const packageDetails =
+        await this.packageService.getDetailTransactionPackage(transaction.id);
+      const packageConverted =
+        await this.convertPackageResponse(packageDetails);
+      transactionPackages.push({
+        ...transaction,
+        package: packageConverted,
+      });
+    }
+    return transactionPackages;
+  }
   async getTransactionById(id: number) {
     const transaction = await this.transactionRepository.findOne({
       where: { id },
@@ -152,13 +178,10 @@ export class TransactionService {
     });
   }
 
-  async getTransactionDetail(employerId: number, transactionId: number) {
+  async getTransactionDetail(transactionId: number) {
     const transaction = await this.transactionRepository.findOne({
       where: {
         id: transactionId,
-        employerSubscriptions: {
-          employer: { id: employerId },
-        },
       },
       relations: {
         employerSubscriptions: {

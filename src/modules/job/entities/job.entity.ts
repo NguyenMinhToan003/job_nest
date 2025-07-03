@@ -79,6 +79,13 @@ export class Job {
   createdAt: Date;
 
   @Column({
+    name: 'lam_moi',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  refreshDate: Date;
+
+  @Column({
     name: 'thoi_gian_cap_nhat',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',

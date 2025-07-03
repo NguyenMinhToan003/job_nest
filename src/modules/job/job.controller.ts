@@ -16,6 +16,7 @@ import {
   AdminJobFilterDto,
   CompanyFilterJobDto,
   CreateJobDto,
+  ExtendJobDto,
   JobFilterDto,
   MapDto,
 } from './dto/create-job.dto';
@@ -113,6 +114,13 @@ export class JobController {
   }
 
   @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Post('/refresh-job')
+  refreshJob() {
+    return this.jobService.refreshJobInPackage();
+  }
+
+  @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER)
   @Patch('employer/toggle-is-show/:jobId')
   toggleViewStatus(@Req() req, @Param('jobId') jobId: number) {
@@ -152,5 +160,22 @@ export class JobController {
   requestPublishJob(@Req() req, @Param('jobId') jobId: number) {
     const employerId = req.user.id;
     return this.jobService.requestPublishJob(+employerId, jobId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Patch('/extend/:jobId')
+  extendJob(
+    @Req() req,
+    @Param('jobId') jobId: number,
+    @Body() body: ExtendJobDto,
+  ) {
+    const employerId = req.user.id;
+    if (req.user.status === ACCOUNT_STATUS.BLOCKED) {
+      throw new UnauthorizedException(
+        'Your account is blocked. Please contact support.',
+      );
+    }
+    return this.jobService.extendJob(+employerId, jobId, body.expiredAt);
   }
 }

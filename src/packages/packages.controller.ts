@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -60,5 +62,25 @@ export class PackagesController {
   deletePackage(@Req() req) {
     const packageId = req.params.id;
     return this.packagesService.deletePackage(packageId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  updatePackage(
+    @Req() req,
+    @Body() dto: CreatePackageDto,
+    @UploadedFile() image: Express.Multer.File | null,
+  ) {
+    const packageId = req.params.id;
+    dto.image = image || undefined;
+    return this.packagesService.updatePackage(packageId, dto);
+  }
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Post('change-status/:id')
+  changeStatusPackage(@Param('id') id: string) {
+    return this.packagesService.changeStatusPackage(id);
   }
 }

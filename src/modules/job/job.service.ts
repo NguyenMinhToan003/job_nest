@@ -305,7 +305,7 @@ export class JobService {
     totalPage?: number;
   }> {
     const where: any = {
-      isActive: In([JOB_STATUS.ACTIVE, JOB_STATUS.PENDING]),
+      isActive: In([JOB_STATUS.ACTIVE]),
       isShow: 1,
       expiredAt: MoreThanOrEqual(new Date()),
     };
@@ -382,11 +382,7 @@ export class JobService {
         employerSubscription: true,
       },
       order: {
-        employerSubscription: {
-          status: 'DESC',
-          endDate: 'DESC',
-        },
-        createdAt: 'DESC',
+        refreshDate: 'DESC',
       },
       skip: body?.page ? (body?.page - 1) * body?.limit : undefined,
       take: body?.limit ? body?.limit : undefined,
@@ -446,6 +442,11 @@ export class JobService {
     if (!job) {
       throw new ForbiddenException('Không tìm thấy công việc');
     }
+    if (dto.isActive === JOB_STATUS.BLOCK) {
+      await this.employerSubscriptionService.triggerAdminBlockJob(id);
+    } else if (dto.isActive === JOB_STATUS.ACTIVE) {
+      await this.employerSubscriptionService.triggerAdminActiveJob(id);
+    }
     const updatedJob = this.jobRepository.merge(job, {
       isActive: dto.isActive,
       approvedAt: new Date(),
@@ -477,7 +478,7 @@ export class JobService {
   async getJobInBanner() {
     const jobList = await this.jobRepository.find({
       where: {
-        isActive: In([JOB_STATUS.ACTIVE, JOB_STATUS.PENDING]),
+        isActive: In([JOB_STATUS.ACTIVE]),
         isShow: 1,
         expiredAt: MoreThanOrEqual(new Date()),
         employerSubscription: {
@@ -634,16 +635,56 @@ export class JobService {
   }
 
   async jobUseSubscription(employerId: number, body: UseSubscriptionDto) {
-    await this.employerSubscriptionService.useSubscriptionJob(employerId, {
-      jobId: body.jobId,
-      packageId: body.packageId,
-    });
     const job = await this.jobRepository.findOne({
       where: { id: body.jobId, employer: { id: employerId } },
     });
     if (job && job.isActive === JOB_STATUS.CREATE) {
       job.isActive = JOB_STATUS.PENDING;
     }
+    const status = job.isActive;
+    await this.employerSubscriptionService.useSubscriptionJob(employerId, {
+      jobId: body.jobId,
+      packageId: body.packageId,
+      status:
+        status === JOB_STATUS.PENDING
+          ? EMPLOYER_SUBSCRIPTION_STATUS.PENDING
+          : EMPLOYER_SUBSCRIPTION_STATUS.USED,
+    });
     return this.jobRepository.save(job);
+  }
+
+  async extendJob(employerId: number, jobId: number, expiredAt: Date) {
+    const job = await this.jobRepository.findOne({
+      where: { id: jobId, employer: { id: employerId } },
+    });
+    if (!job) {
+      throw new ForbiddenException('Không tìm thấy công việc');
+    }
+    if (job.isActive === JOB_STATUS.BLOCK) {
+      throw new ForbiddenException('Công việc kiểm duyệt không thành công');
+    }
+    job.expiredAt = expiredAt;
+    return this.jobRepository.save(job);
+  }
+
+  async refreshJobInPackage() {
+    const jobs = await this.jobRepository.find({
+      where: {
+        isActive: In([JOB_STATUS.ACTIVE]),
+        employerSubscription: {
+          status: In([EMPLOYER_SUBSCRIPTION_STATUS.USED]),
+          endDate: MoreThanOrEqual(new Date()),
+          package: {
+            type: In([PackageType.REFRESH]),
+          },
+        },
+      },
+    });
+    for (const job of jobs) {
+      job.refreshDate = new Date();
+      job.isActive = JOB_STATUS.ACTIVE;
+      await this.jobRepository.save(job);
+    }
+    return jobs;
   }
 }

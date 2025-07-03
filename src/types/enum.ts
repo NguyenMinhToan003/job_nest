@@ -42,6 +42,7 @@ export enum PackageType {
   JOB = 'JOB',
   EMPLOYER = 'EMPLOYER',
   BANNER = 'BANNER',
+  REFRESH = 'REFRESH',
 }
 
 export enum PAYMENT_STATUS {
@@ -58,4 +59,5 @@ export enum EMPLOYER_SUBSCRIPTION_STATUS {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   USED = 'USED',
+  PENDING = 'PENDING',
 }

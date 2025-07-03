@@ -148,15 +148,56 @@ export class EmployerSubscriptionsService {
     await this.employerSubscriptionRepository.save({
       ...validate,
       job: { id: body.jobId },
-      status: EMPLOYER_SUBSCRIPTION_STATUS.USED,
-      startDate: new Date(),
-      endDate: dayjs().add(validate.package.dayValue, 'day').toDate(),
+      status: body.status,
+      startDate:
+        body.status === EMPLOYER_SUBSCRIPTION_STATUS.USED ? new Date() : null,
+      endDate:
+        body.status === EMPLOYER_SUBSCRIPTION_STATUS.USED
+          ? dayjs().add(validate.package.dayValue, 'day').toDate()
+          : null,
     });
     return {
       message: 'Sử dụng gói dịch vụ thành công',
       data: validate,
     };
   }
+  async triggerAdminActiveJob(jobId: number) {
+    const subs_pending = await this.employerSubscriptionRepository.find({
+      where: {
+        job: { id: jobId },
+        status: EMPLOYER_SUBSCRIPTION_STATUS.PENDING,
+      },
+      relations: {
+        package: true,
+      },
+    });
+    if (subs_pending.length > 0) {
+      for (const sub of subs_pending) {
+        sub.status = EMPLOYER_SUBSCRIPTION_STATUS.USED;
+        sub.startDate = new Date();
+        sub.endDate = dayjs().add(sub.package.dayValue, 'day').toDate();
+      }
+      return this.employerSubscriptionRepository.save(subs_pending);
+    }
+    return null;
+  }
+  async triggerAdminBlockJob(jobId: number) {
+    const subs_pending = await this.employerSubscriptionRepository.find({
+      where: {
+        job: { id: jobId },
+        status: EMPLOYER_SUBSCRIPTION_STATUS.PENDING,
+      },
+    });
+    if (subs_pending.length > 0) {
+      for (const sub of subs_pending) {
+        sub.status = EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE;
+        sub.job = null;
+      }
+      return this.employerSubscriptionRepository.save(subs_pending);
+    }
+    return null;
+  }
+
   async getSubscriptionPackageJobByJobId(jobId: number) {
     return this.employerSubscriptionRepository.findOne({
       where: {
@@ -229,5 +270,20 @@ export class EmployerSubscriptionsService {
       message: 'Sử dụng gói dịch vụ thành công',
       data: validate,
     };
+  }
+  async getAllInPackage(packageId: string) {
+    return this.employerSubscriptionRepository.find({
+      where: {
+        package: { id: packageId },
+      },
+      relations: {
+        employer: true,
+        job: true,
+        transaction: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 }

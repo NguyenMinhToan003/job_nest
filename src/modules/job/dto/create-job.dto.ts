@@ -229,3 +229,9 @@ export class MapDto {
   @IsOptional()
   radius?: number; // in meters, default is 5000m
 }
+
+export class ExtendJobDto {
+  @IsNotEmpty()
+  @Type(() => Date)
+  expiredAt: Date;
+}

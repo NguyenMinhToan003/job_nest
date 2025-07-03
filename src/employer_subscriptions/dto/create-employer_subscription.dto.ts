@@ -6,6 +6,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
+import { EMPLOYER_SUBSCRIPTION_STATUS } from 'src/types/enum';
 
 export class CreateEmployerSubscriptionDto {
   @IsNotEmpty()
@@ -21,6 +22,8 @@ export class UseSubscriptionDto {
   jobId: number;
   @IsNotEmpty()
   packageId: string;
+  @IsOptional()
+  status: EMPLOYER_SUBSCRIPTION_STATUS;
 }
 export class UseSubBannerDto {
   @IsNotEmpty()
