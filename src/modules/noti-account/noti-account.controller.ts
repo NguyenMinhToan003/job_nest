@@ -4,14 +4,11 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { NotiAccountService } from './noti-account.service';
-import { RolesGuard } from 'src/auth/passport/role.guard';
-import { Roles } from 'src/decorators/customize';
-import { ROLE_LIST } from 'src/types/enum';
-import { CreateNotiAccountDto } from './dto/create-noti-account.dto';
+import { CreateNotiAccountDto, FilterNotiAccountDto } from './dto/create-noti-account.dto';
 
 @Controller('noti-account')
 export class NotiAccountController {
@@ -24,9 +21,9 @@ export class NotiAccountController {
   }
 
   @Get('me')
-  getMe(@Req() req) {
+  getMe(@Req() req, @Query() query: FilterNotiAccountDto) {
     const employerId = req.user.id;
-    return this.notiAccountService.getMe(employerId);
+    return this.notiAccountService.getMe(employerId, query);
   }
 
   @Get('me/mark-read')

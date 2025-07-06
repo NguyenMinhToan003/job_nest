@@ -117,6 +117,7 @@ export class PackagesService {
           status: In([
             EMPLOYER_SUBSCRIPTION_STATUS.ACTIVE,
             EMPLOYER_SUBSCRIPTION_STATUS.USED,
+            EMPLOYER_SUBSCRIPTION_STATUS.PENDING,
           ]),
           transaction: {
             status: PAYMENT_STATUS.SUCCESS,
@@ -133,7 +134,9 @@ export class PackagesService {
 
     const convertPackagesResult = packages.map((pkg) => {
       const sub_used = pkg.employerSubscriptions.filter(
-        (sub) => sub.status === EMPLOYER_SUBSCRIPTION_STATUS.USED,
+        (sub) =>
+          sub.status === EMPLOYER_SUBSCRIPTION_STATUS.USED ||
+          sub.status === EMPLOYER_SUBSCRIPTION_STATUS.PENDING,
       );
       const sub_using = sub_used.filter((sub) =>
         dayjs(sub.endDate).isAfter(dayjs(), 'day'),

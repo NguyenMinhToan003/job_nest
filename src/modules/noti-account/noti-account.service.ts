@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotiAccount } from './entities/noti-account.entity';
 import { Repository } from 'typeorm';
-import { CreateNotiAccountDto } from './dto/create-noti-account.dto';
+import { CreateNotiAccountDto, FilterNotiAccountDto } from './dto/create-noti-account.dto';
 import { AccountService } from '../account/account.service';
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -39,8 +39,15 @@ export class NotiAccountService {
       receiverAccount: { id: dto.receiverAccountId },
     });
   }
-  async getMe(accountId: number) {
-    return this.notiAccountRepository.find({
+  async getMe(accountId: number, query: FilterNotiAccountDto) {
+    if (!query.page || query.page < 1) {
+      query.page = 1;
+    }
+    if (!query.limit || query.limit < 1) {
+      query.limit = 4;
+    }
+
+    const [items, total] = await this.notiAccountRepository.findAndCount({
       where: { receiverAccount: { id: accountId } },
       relations: {
         senderAccount: {
@@ -49,7 +56,17 @@ export class NotiAccountService {
         },
       },
       order: { time: 'DESC' },
+      skip: (query.page - 1) * (query.limit || 10),
+      take: query.limit || 10,
     });
+    const unreadCount = await this.countUnread(accountId);
+    const totalPage = Math.ceil(total / (query.limit || 10));
+    return {
+      items,
+      total,
+      totalPage,
+      unreadCount,
+    };
   }
 
   async markAllAsRead(accountId: number) {

@@ -45,8 +45,11 @@ export class GetApplyByStatusDto {
   status: APPLY_JOB_STATUS;
 }
 export class GetApplyJobByJobIdDto {
-  @IsNotEmpty()
-  jobId: number;
+  @IsOptional()
+  jobId?: number;
+  @IsOptional()
+  @IsEnum(APPLY_JOB_STATUS)
+  status?: APPLY_JOB_STATUS;
 }
 
 export class FilterApplyJobDto {

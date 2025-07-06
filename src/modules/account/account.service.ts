@@ -3,7 +3,7 @@ import { CreateAccountDto } from './dto/create-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Account } from './entities/account.entity';
-import { ACCOUNT_STATUS } from 'src/types/enum';
+import { ACCOUNT_STATUS, ROLE_LIST } from 'src/types/enum';
 
 @Injectable()
 export class AccountService {
@@ -72,5 +72,21 @@ export class AccountService {
     }
     account.status = status;
     return this.accountRepository.save(account);
+  }
+  async getDashboardData() {
+    const employers = await this.accountRepository.count({
+      where: {
+        role: ROLE_LIST.EMPLOYER,
+      },
+    });
+    const candidates = await this.accountRepository.count({
+      where: {
+        role: ROLE_LIST.CANDIDATE,
+      },
+    });
+    return {
+      employers,
+      candidates,
+    };
   }
 }

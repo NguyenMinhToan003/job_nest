@@ -175,6 +175,15 @@ export class AdminJobFilterDto {
 
   @IsOptional()
   employerId: number;
+
+  @IsOptional()
+  limit?: number;
+  @IsOptional()
+  page?: number;
+  @IsOptional()
+  sortBy?: string;
+  @IsOptional()
+  sortOrder?: 'asc' | 'desc';
 }
 export class CompanyFilterJobDto {
   @IsOptional()
@@ -227,6 +236,7 @@ export class MapDto {
   longitude: number;
 
   @IsOptional()
+  @Min(0)
   radius?: number; // in meters, default is 5000m
 }
 

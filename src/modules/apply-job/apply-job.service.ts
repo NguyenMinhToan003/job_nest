@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApplyJob } from './entities/apply-job.entity';
-import { MoreThanOrEqual, Not, Repository } from 'typeorm';
 import {
   AddTagResumeDto,
   CreateApplyJobDto,
@@ -22,7 +21,7 @@ import { Job } from '../job/entities/job.entity';
 import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { NotiAccountService } from '../noti-account/noti-account.service';
-import * as dayjs from 'dayjs';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ApplyJobService {
@@ -345,17 +344,14 @@ export class ApplyJobService {
   }
 
   async getApplyJobByJobId(companyId: number, param: GetApplyJobByJobIdDto) {
-    const job = await this.jobService.findOne(param.jobId);
-    if (!job) {
-      throw new BadRequestException('Công việc không tồn tại');
-    } else if (job.employer.id !== companyId) {
-      throw new BadRequestException('Bạn không có quyền xem ứng tuyển này');
+    const where = {
+      job: { employer: { id: companyId } },
+    } as Record<string, any>;
+    if (param.jobId) {
+      where.job = { id: +param.jobId };
     }
-
     const resumes = await this.applyJobRepository.find({
-      where: {
-        job: { id: +param.jobId },
-      },
+      where,
       relations: {
         tagResumes: true,
         resumeVersion: {
@@ -384,7 +380,11 @@ export class ApplyJobService {
     });
 
     const listWithScores = resumes.map((item) => {
-      const { matchingScore } = this.calculateMatchingScore(item, job, true);
+      const { matchingScore } = this.calculateMatchingScore(
+        item,
+        item.job,
+        true,
+      );
       return { ...item, matchingScore };
     });
 
@@ -610,19 +610,46 @@ export class ApplyJobService {
     const totalApply = await this.applyJobRepository.count({
       where: {
         job: { employer: { id: employerId } },
-        applyTime: MoreThanOrEqual(dayjs().subtract(30, 'day').toDate()),
       },
     });
     const notViewed = await this.applyJobRepository.count({
       where: {
         job: { employer: { id: employerId } },
         viewStatus: 0,
-        applyTime: MoreThanOrEqual(dayjs().subtract(30, 'day').toDate()),
       },
     });
+    const penddingApply = await this.applyJobRepository.count({
+      where: {
+        job: { employer: { id: employerId } },
+        status: APPLY_JOB_STATUS.PROCESSING,
+      },
+    });
+    const hiredApply = await this.applyJobRepository.count({
+      where: {
+        job: { employer: { id: employerId } },
+        status: APPLY_JOB_STATUS.HIRED,
+      },
+    });
+    const interviewApply = await this.applyJobRepository.count({
+      where: {
+        job: { employer: { id: employerId } },
+        status: APPLY_JOB_STATUS.INTERVIEWING,
+      },
+    });
+    const qualifiedApply = await this.applyJobRepository.count({
+      where: {
+        job: { employer: { id: employerId } },
+        status: APPLY_JOB_STATUS.QUALIFIED,
+      },
+    });
+
     return {
       totalApply,
       notViewed,
+      penddingApply,
+      hiredApply,
+      interviewApply,
+      qualifiedApply,
     };
   }
 }

@@ -1,4 +1,12 @@
-import { Body, Controller, Patch, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AccountService } from './account.service';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { Roles } from 'src/decorators/customize';
@@ -21,5 +29,12 @@ export class AccountController {
   @Patch('change-status')
   async changeStatus(@Body() body: ChangeStatusDto) {
     return this.accountService.changeStatus(body.accountId, body.status);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Get('admin/get-dashboard-data')
+  async getDashboardData() {
+    return this.accountService.getDashboardData();
   }
 }

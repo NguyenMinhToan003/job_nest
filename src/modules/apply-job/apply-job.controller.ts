@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -76,10 +77,10 @@ export class ApplyJobController {
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.EMPLOYER)
-  @Get('employer/job/:jobId')
-  getApplyJobByJobId(@Req() req, @Param() param: GetApplyJobByJobIdDto) {
+  @Get('employer/job')
+  getApplyJobByJobId(@Req() req, @Query() query: GetApplyJobByJobIdDto) {
     const companyId = req.user.id;
-    return this.applyJobService.getApplyJobByJobId(+companyId, param);
+    return this.applyJobService.getApplyJobByJobId(+companyId, query);
   }
 
   @UseGuards(RolesGuard)

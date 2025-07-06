@@ -178,4 +178,11 @@ export class JobController {
     }
     return this.jobService.extendJob(+employerId, jobId, body.expiredAt);
   }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Get('admin/get-dashboard')
+  getDashboardData() {
+    return this.jobService.getDashboardData();
+  }
 }

@@ -77,7 +77,7 @@ export class JobService {
     return job;
   }
 
-  findAll(filter?: AdminJobFilterDto) {
+  async findAll(filter?: AdminJobFilterDto) {
     const where: any = {};
     if (filter.search) {
       where.name = Like(`%${filter.search}%`);
@@ -128,7 +128,7 @@ export class JobService {
       where.employer = { id: filter.employerId };
     }
 
-    return this.jobRepository.find({
+    const [items, total] = await this.jobRepository.findAndCount({
       where,
       relations: {
         experience: true,
@@ -151,7 +151,21 @@ export class JobService {
         },
         majors: true,
       },
+      skip: filter?.page ? (filter?.page - 1) * filter?.limit : undefined,
+      take: filter?.limit ? filter?.limit : undefined,
+      order: {
+        [filter?.sortBy || 'createdAt']:
+          filter?.sortOrder === 'desc' ? 'DESC' : 'ASC',
+      },
     });
+    const totalPages = Math.ceil(total / (filter?.limit || 1));
+    return {
+      total,
+      data: items,
+      page: filter?.page || 1,
+      limit: filter?.limit || total,
+      totalPages,
+    };
   }
 
   async remove(employerId: number, id: number) {
@@ -603,7 +617,6 @@ export class JobService {
     const countTotal = await this.jobRepository.count({
       where: {
         employer: { id: employerId },
-        expiredAt: MoreThanOrEqual(new Date()),
       },
     });
     const countActive = await this.jobRepository.count({
@@ -686,5 +699,27 @@ export class JobService {
       await this.jobRepository.save(job);
     }
     return jobs;
+  }
+  async getDashboardData() {
+    const totalJobs = await this.jobRepository.count();
+    const activeJobs = await this.jobRepository.count({
+      where: { isActive: JOB_STATUS.ACTIVE },
+    });
+    const pendingJobs = await this.jobRepository.count({
+      where: { isActive: JOB_STATUS.PENDING },
+    });
+    const expiredJobs = await this.jobRepository.count({
+      where: { expiredAt: LessThan(new Date()) },
+    });
+    const blockedJobs = await this.jobRepository.count({
+      where: { isActive: JOB_STATUS.BLOCK },
+    });
+    return {
+      totalJobs,
+      activeJobs,
+      pendingJobs,
+      expiredJobs,
+      blockedJobs,
+    };
   }
 }
