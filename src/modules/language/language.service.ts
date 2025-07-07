@@ -12,11 +12,14 @@ export class LanguageService {
 
   async createDefaultLanguages() {
     const defaultLanguages = [
-      { name: 'Tiếng Việt', id: 1 },
-      { name: 'Tiếng Anh', id: 2 },
-      { name: 'Tiếng Trung', id: 3 },
-      { name: 'Tiếng Nhật', id: 4 },
-      { name: 'Tiếng Hàn', id: 5 },
+      { id: 8, name: 'Không yêu cầu ngoại ngữ' },
+      { id: 1, name: 'Tiếng Việt' },
+      { id: 2, name: 'Tiếng Anh (English)' },
+      { id: 3, name: 'Tiếng Trung (Chinese)' },
+      { id: 4, name: 'Tiếng Nhật (Japanese)' },
+      { id: 5, name: 'Tiếng Hàn (Korean)' },
+      { id: 6, name: 'Tiếng Pháp (French)' },
+      { id: 7, name: 'Tiếng Đức (German)' },
     ];
     await this.languageRepository.save(defaultLanguages);
   }

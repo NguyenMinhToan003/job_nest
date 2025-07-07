@@ -109,7 +109,6 @@ export class LocationService {
         },
       },
     });
-    console.log('checkExistPlaceId', checkExistPlaceId);
     if (checkExistPlaceId) {
       throw new BadRequestException('Place ID already exists');
     }

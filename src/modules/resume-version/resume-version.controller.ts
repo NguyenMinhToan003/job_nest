@@ -117,7 +117,6 @@ export class ResumeVersionController {
   @Public()
   @Post('search')
   async search(@Body() query: QueryDto) {
-    console.log('Search query:', query);
     return this.resumeVersionService.search(query);
   }
 }

@@ -61,7 +61,6 @@ export class LocationController {
   @Patch('toggle-enable/:id')
   toggleEnableLocation(@Param('id') id: number, @Req() req) {
     const employerId = req.user.id;
-    console.log('employerId', employerId);
     return this.locationService.toggleEnableLocation(+id, +employerId);
   }
 

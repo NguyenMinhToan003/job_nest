@@ -13,7 +13,6 @@ export class MatchingWeightService {
   ) {}
 
   async triggerJobCreate(jobId: number, dto: CreateMatchingWeightDto) {
-    console.log(dto);
     return this.matchingWeightRepository.save({
       job: { id: jobId },
       locationWeight: dto.locationWeight,

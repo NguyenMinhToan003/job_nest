@@ -155,7 +155,6 @@ export class ResumeVersionService {
     if (!resume) {
       throw new BadRequestException('Bạn không có quyền sửa đổi Hồ sơ này');
     }
-    console.log(dto, 'dto');
     this.resumeService.update(candidateId, resumeId, dto.name);
     const lastResumeVersion = await this.viewResume(candidateId, resumeId);
     let uploadImage = [];
@@ -201,7 +200,6 @@ export class ResumeVersionService {
   }
 
   async viewResume(candidateId: number, resumeId: number) {
-    console.log('candidateId', candidateId, 'resumeId', resumeId);
     const resume = await this.getOne(candidateId, +resumeId);
     if (!resume) {
       throw new BadRequestException('Hồ sơ không tồn tại');

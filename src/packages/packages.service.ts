@@ -22,43 +22,44 @@ export class PackagesService {
   async createDefaultPackages() {
     const freePackage = this.packageRepository.create([
       {
-        id: 'FREE_PACKAGE',
-        name: 'Gói miễn phí',
-        type: PackageType.JOB,
-        features: 'Đăng tuyển 1 việc làm miễn phí',
-        price: 0,
+        id: 'TRANG_CHU_TUYEN_GAP',
+        name: 'Trang chủ tuyển gấp',
+        type: PackageType.BANNER,
+        features: 'Tin đăng hiển thị tại “Việc làm tuyển gấp” trên trang chủ.',
+        price: 1000000,
         image:
           'https://cdn1.vieclam24h.vn/images/public/2023/12/27/basic_post-min_170364707414.png',
         dayValue: 30,
       },
       {
-        id: 'BASIC_PACKAGE',
-        name: 'Gói cơ bản',
-        type: PackageType.JOB,
-        features: 'Đăng tuyển 5 việc làm, xem 100 hồ sơ ứng viên',
-        price: 50000,
-        image:
-          'https://cdn1.vieclam24h.vn/images/public/2023/12/27/basic_post-min_170364707414.png',
-        dayValue: 30,
-      },
-      {
-        id: 'PRO_PACKAGE',
-        name: 'Gói chuyên nghiệp',
-        features: 'Đăng tuyển 10 việc làm, xem 200 hồ sơ ứng viên',
-        price: 100000,
+        id: 'HIEU_UNG_TIN',
+        name: 'Hiệu ứng tin tuyển dụng',
+        features: 'Tin đăng hiển thị nổi bật trên trang tìm kiếm.',
+        price: 1000000,
         type: PackageType.JOB,
         image:
           'https://cdn1.vieclam24h.vn/images/public/2023/12/27/refresh_hourly-min_170364713622.png',
         dayValue: 30,
       },
       {
-        id: 'PREMIUM_PACKAGE',
-        name: 'Gói cao cấp',
-        features: 'Đăng tuyển 20 việc làm, xem 500 hồ sơ ứng viên',
-        price: 200000,
-        type: PackageType.BANNER,
+        id: 'LOGO_NOI_BAT',
+        name: 'Logo nổi bật',
+        features:
+          'Logo của công ty sẽ hiển thị ở vị trí nổi bật và trung tâm nhất trên trang chủ.',
+        price: 2000000,
+        type: PackageType.EMPLOYER,
         image:
           'https://cdn1.vieclam24h.vn/images/public/2023/12/27/points-min_170364712744.png',
+        dayValue: 30,
+      },
+      {
+        id: 'LAM_MOI_TIN',
+        name: 'Làm mới mỗi ngày - Đăng tin cơ bản',
+        features: 'Tin đăng được tự động làm mới mỗi ngày 1 lần',
+        price: 500000,
+        type: PackageType.REFRESH,
+        image:
+          'https://cdn1.vieclam24h.vn/images/public/2023/12/27/refresh_daily-min_170364713021.png',
         dayValue: 30,
       },
     ]);

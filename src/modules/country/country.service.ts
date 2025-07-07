@@ -63,7 +63,6 @@ export class CountryService {
       throw new BadRequestException('Tên quốc gia đã tồn tại');
     }
     const uploadedFlag = await this.uploadService.uploadFile([flag]);
-    console.log('uploadedFlag', uploadedFlag);
     const country = this.countryRepository.create({
       name: dto.name,
       flag: uploadedFlag[0].secure_url,

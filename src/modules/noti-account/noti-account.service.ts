@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotiAccount } from './entities/noti-account.entity';
 import { Repository } from 'typeorm';
-import { CreateNotiAccountDto, FilterNotiAccountDto } from './dto/create-noti-account.dto';
+import {
+  CreateNotiAccountDto,
+  FilterNotiAccountDto,
+} from './dto/create-noti-account.dto';
 import { AccountService } from '../account/account.service';
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -18,7 +21,6 @@ export class NotiAccountService {
     const receiverAccount = await this.accountService.findOne({
       id: dto.receiverAccountId,
     });
-    console.log('receiverAccount', receiverAccount.email);
     await this.mailerService.sendMail({
       to: receiverAccount.email,
       from: 'tuyendung123@gmail.com',

@@ -62,7 +62,6 @@ export class PaymentService {
     transactionId;
   }> {
     const { vnp_TxnRef, vnp_ResponseCode } = query;
-    console.log(vnp_ResponseCode, vnp_TxnRef);
     // Kiểm tra chữ ký
     const isValid = this.vnpayService.verifyReturnUrl(query);
     if (!isValid) {

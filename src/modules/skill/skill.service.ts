@@ -24,43 +24,393 @@ export class SkillService {
     const majorMap = Object.fromEntries(majors.map((m) => [m.name, m]));
 
     const skillMap: Record<string, string[]> = {
-      'Lập trình Web': ['HTML', 'CSS', 'JavaScript', 'React', 'Vue'],
-      'Lập trình Mobile': ['Flutter', 'React Native', 'Swift', 'Kotlin'],
-      'Phát triển Backend': ['Node.js', 'Java', 'NestJS', 'MySQL'],
-      'Cơ sở dữ liệu': ['SQL', 'MongoDB', 'PostgreSQL'],
-      'Khoa học Dữ liệu': ['Python', 'Pandas', 'Machine Learning'],
-      DevOps: ['Docker', 'Kubernetes', 'CI/CD', 'AWS'],
-      'AI/Machine Learning': ['TensorFlow', 'Scikit-Learn', 'PyTorch'],
-      'An toàn thông tin': ['PenTest', 'Network Security', 'Firewall'],
+      // Công nghệ thông tin
+      'Lập trình Web': ['HTML', 'CSS', 'JavaScript', 'React', 'Next.js'],
+      'Phát triển Mobile': [
+        'Flutter',
+        'React Native',
+        'Swift',
+        'Kotlin',
+        'Firebase',
+      ],
+      'DevOps & Cloud': ['Docker', 'Kubernetes', 'CI/CD', 'AWS', 'Terraform'],
+      'AI & Data Science': [
+        'Python',
+        'Pandas',
+        'Machine Learning',
+        'Scikit-learn',
+        'TensorFlow',
+      ],
 
-      'Bán hàng': ['Kỹ năng giao tiếp', 'Chốt sale', 'CRM'],
-      Marketing: ['SEO', 'Google Ads', 'Content marketing'],
-      'Quản trị kinh doanh': ['Phân tích thị trường', 'Chiến lược kinh doanh'],
-      'Tài chính doanh nghiệp': ['Dự báo tài chính', 'Phân tích tài chính'],
+      // Kinh doanh
+      'Bán hàng': ['Giao tiếp', 'Chốt đơn', 'CRM', 'Tư vấn khách hàng'],
+      'Chăm sóc khách hàng': [
+        'Lắng nghe',
+        'Giải quyết khiếu nại',
+        'Call Center',
+        'Kiên nhẫn',
+      ],
+      'Quản lý cửa hàng': [
+        'Quản lý nhân viên',
+        'POS',
+        'Báo cáo doanh số',
+        'Quản lý hàng tồn',
+      ],
+      'Tư vấn kinh doanh': [
+        'Phân tích thị trường',
+        'Đàm phán',
+        'Lập kế hoạch kinh doanh',
+        'Thuyết trình',
+      ],
 
-      'Thư ký văn phòng': ['Tin học văn phòng', 'Lên lịch', 'Quản lý tài liệu'],
-      'Trợ lý điều hành': ['Lập kế hoạch', 'Tổ chức họp', 'Giao tiếp'],
+      // Hành chính - Văn phòng
+      'Trợ lý điều hành': [
+        'Giao tiếp',
+        'Lập kế hoạch',
+        'Soạn thảo văn bản',
+        'Quản lý lịch',
+      ],
+      'Thư ký văn phòng': [
+        'Tin học văn phòng',
+        'Lưu trữ hồ sơ',
+        'Soạn thảo hợp đồng',
+        'Đặt lịch họp',
+      ],
+      'Lễ tân': [
+        'Đón tiếp khách',
+        'Quản lý điện thoại',
+        'Ứng xử khéo léo',
+        'Ghi nhận thông tin',
+      ],
+      'Quản lý hồ sơ': [
+        'Sắp xếp tài liệu',
+        'Lưu trữ số',
+        'Kiểm tra hồ sơ',
+        'Bảo mật thông tin',
+      ],
 
-      'Kế toán tổng hợp': ['Excel', 'Báo cáo tài chính'],
-      'Kế toán thuế': ['Luật thuế', 'Kê khai thuế'],
+      // Kế toán - Tài chính
+      'Kế toán tổng hợp': ['Excel', 'Hạch toán', 'Lập BCTC', 'Quản lý sổ sách'],
+      'Kế toán thuế': [
+        'Kê khai thuế',
+        'Luật thuế',
+        'Hóa đơn điện tử',
+        'Báo cáo thuế',
+      ],
+      'Kiểm toán nội bộ': [
+        'Phân tích tài chính',
+        'Kiểm tra chứng từ',
+        'Báo cáo rủi ro',
+        'Tuân thủ nội quy',
+      ],
+      'Chuyên viên tài chính': [
+        'Dự báo tài chính',
+        'Phân tích dòng tiền',
+        'Kế hoạch đầu tư',
+        'Tài chính doanh nghiệp',
+      ],
 
-      'Tuyển dụng': ['Phỏng vấn', 'Đánh giá ứng viên'],
-      'Đào tạo nhân sự': ['Kỹ năng giảng dạy', 'Soạn giáo trình'],
+      // Marketing - Truyền thông
+      'Digital Marketing': [
+        'SEO',
+        'Google Ads',
+        'Facebook Ads',
+        'Email Marketing',
+      ],
+      'SEO/Content': [
+        'Viết bài chuẩn SEO',
+        'Nghiên cứu từ khóa',
+        'Tối ưu Onpage',
+        'Content Strategy',
+      ],
+      'PR & Truyền thông': [
+        'Quan hệ báo chí',
+        'Sáng tạo nội dung',
+        'Tổ chức sự kiện',
+        'Xây dựng thương hiệu',
+      ],
+      'Trade Marketing': [
+        'POSM',
+        'Chương trình khuyến mãi',
+        'Kênh phân phối',
+        'Đàm phán',
+      ],
 
-      'Kỹ thuật cơ khí': ['AutoCAD', 'SolidWorks'],
-      'Kỹ thuật điện': ['Điện tử cơ bản', 'Mạch điện'],
+      // Giáo dục - Đào tạo
+      'Giáo viên tiếng Anh': [
+        'Phát âm',
+        'Ngữ pháp',
+        'Lesson Plan',
+        'Phản xạ tiếng Anh',
+      ],
+      'Giáo viên mầm non': [
+        'Quản lý lớp',
+        'Chăm sóc trẻ',
+        'Soạn giáo án',
+        'Kỹ năng mềm',
+      ],
+      'Gia sư': [
+        'Kỹ năng truyền đạt',
+        'Ôn tập kiến thức',
+        'Soạn bài tập',
+        'Lắng nghe học sinh',
+      ],
+      'Chuyên viên đào tạo': [
+        'Soạn giáo trình',
+        'Đánh giá học viên',
+        'Tổ chức lớp học',
+        'Kỹ năng giảng dạy',
+      ],
 
-      'Tư vấn khách hàng': ['Giao tiếp', 'Xử lý tình huống'],
-      'Tổng đài viên': ['Kỹ năng lắng nghe', 'Phần mềm tổng đài'],
+      // Nhân sự
+      'Tuyển dụng': [
+        'Đăng tin',
+        'Phỏng vấn',
+        'Đánh giá ứng viên',
+        'Tìm kiếm hồ sơ',
+      ],
+      'C&B (Lương thưởng)': [
+        'Tính lương',
+        'Phúc lợi',
+        'Bảo hiểm',
+        'Bảng lương',
+      ],
+      'Đào tạo nội bộ': [
+        'Kế hoạch đào tạo',
+        'Slide thuyết trình',
+        'Tổ chức lớp học',
+        'Đánh giá nhân viên',
+      ],
+      'Quản trị nhân sự': [
+        'Quy trình nhân sự',
+        'Nội quy công ty',
+        'Chính sách HR',
+        'Giải quyết khiếu nại',
+      ],
 
-      'Nhân viên bán hàng': ['Bán hàng POS', 'Chăm sóc khách'],
-      'Quản lý cửa hàng': ['Quản lý nhân viên', 'Báo cáo doanh số'],
+      // Kỹ thuật
+      'Kỹ sư cơ khí': [
+        'AutoCAD',
+        'SolidWorks',
+        'Gia công cơ khí',
+        'Đọc bản vẽ kỹ thuật',
+      ],
+      'Kỹ sư điện': ['PLC', 'Điện công nghiệp', 'Mạch điện', 'Thi công điện'],
+      'Bảo trì - Bảo dưỡng': [
+        'Sửa chữa máy móc',
+        'Bảo trì thiết bị',
+        'Lập kế hoạch bảo dưỡng',
+        'Đọc sơ đồ kỹ thuật',
+      ],
+      'Tự động hóa': ['Lập trình PLC', 'Sensor', 'Robot công nghiệp', 'SCADA'],
 
-      'Giáo viên tiểu học': ['Soạn giáo án', 'Quản lý lớp học'],
-      'Giáo viên tiếng Anh': ['Phát âm', 'Ngữ pháp tiếng Anh'],
+      // Y tế - Sức khỏe
+      'Bác sĩ đa khoa': [
+        'Khám bệnh',
+        'Chẩn đoán',
+        'Xét nghiệm',
+        'Tư vấn điều trị',
+      ],
+      'Y tá - Điều dưỡng': [
+        'Chăm sóc bệnh nhân',
+        'Tiêm truyền',
+        'Theo dõi dấu hiệu',
+        'Sơ cứu',
+      ],
+      'Dược sĩ': [
+        'Kê đơn thuốc',
+        'Dược lý học',
+        'Tư vấn sử dụng thuốc',
+        'Quản lý kho thuốc',
+      ],
+      'Kỹ thuật xét nghiệm': [
+        'Lấy mẫu',
+        'Máy xét nghiệm',
+        'Phân tích kết quả',
+        'Vệ sinh phòng lab',
+      ],
 
-      'Thu mua nội địa': ['Tìm nhà cung cấp', 'Đàm phán'],
-      'Thu mua quốc tế': ['Incoterms', 'Tiếng Anh chuyên ngành'],
+      // Xây dựng
+      'Kỹ sư xây dựng': [
+        'AutoCAD',
+        'Thiết kế kết cấu',
+        'Giám sát công trình',
+        'Bóc tách khối lượng',
+      ],
+      'Giám sát công trình': [
+        'Lập kế hoạch thi công',
+        'Theo dõi tiến độ',
+        'An toàn lao động',
+        'Ghi nhật ký',
+      ],
+      'Thiết kế kết cấu': [
+        'ETABS',
+        'SAP2000',
+        'Thiết kế bản vẽ',
+        'Phân tích tải trọng',
+      ],
+      'Dự toán công trình': [
+        'Dự toán chi phí',
+        'Đọc bản vẽ',
+        'Bóc tách vật tư',
+        'Sử dụng phần mềm GXD',
+      ],
+
+      // Luật - Pháp lý
+      'Luật sư': [
+        'Luật dân sự',
+        'Soạn hợp đồng',
+        'Bào chữa',
+        'Tư vấn pháp luật',
+      ],
+      'Pháp chế doanh nghiệp': [
+        'Luật doanh nghiệp',
+        'Hợp đồng thương mại',
+        'Thẩm định pháp lý',
+        'Rủi ro pháp lý',
+      ],
+      'Tư vấn pháp lý': [
+        'Tư vấn cá nhân',
+        'Luật lao động',
+        'Giải quyết tranh chấp',
+        'Luật thuế',
+      ],
+      'Thẩm phán / Kiểm sát': [
+        'Luật tố tụng',
+        'Xét xử',
+        'Trình bày bản án',
+        'Điều tra hồ sơ',
+      ],
+
+      // Ngân hàng - Tín dụng
+      'Giao dịch viên': [
+        'Giao dịch tiền mặt',
+        'Kiểm kê quỹ',
+        'Xác minh thông tin',
+        'Bán chéo sản phẩm',
+      ],
+      'Chuyên viên tín dụng': [
+        'Phân tích hồ sơ',
+        'Thẩm định tài chính',
+        'Tư vấn vay vốn',
+        'Giải ngân',
+      ],
+      'Kiểm soát nội bộ': [
+        'Rủi ro tín dụng',
+        'Đối chiếu số liệu',
+        'Kiểm tra quy trình',
+        'Báo cáo sai phạm',
+      ],
+      'Chuyên viên thẻ': [
+        'Phát hành thẻ',
+        'Ngăn chặn gian lận',
+        'Chăm sóc khách hàng',
+        'Xử lý sự cố',
+      ],
+
+      // Logistics - Chuỗi cung ứng
+      'Nhân viên kho vận': [
+        'Kiểm hàng',
+        'Sắp xếp kho',
+        'Nhập xuất hàng',
+        'Dán tem mã vạch',
+      ],
+      'Xuất nhập khẩu': [
+        'Khai báo hải quan',
+        'Incoterms',
+        'Bill of Lading',
+        'HS code',
+      ],
+      'Chuyên viên mua hàng': [
+        'Đàm phán',
+        'Tìm NCC',
+        'So sánh giá',
+        'Quản lý hợp đồng',
+      ],
+      'Vận chuyển hàng hóa': [
+        'Theo dõi đơn hàng',
+        'Lên lộ trình',
+        'Tài xế',
+        'Giám sát giao hàng',
+      ],
+
+      // Bất động sản
+      'Chuyên viên môi giới': [
+        'Tư vấn khách',
+        'Chốt deal',
+        'Marketing BĐS',
+        'Dẫn khách',
+      ],
+      'Quản lý dự án BĐS': [
+        'Lập kế hoạch dự án',
+        'Pháp lý đất',
+        'Tài chính dự án',
+        'Quản lý tiến độ',
+      ],
+      'Tư vấn BĐS': [
+        'Nắm bắt thị trường',
+        'Kỹ năng thuyết phục',
+        'Hợp đồng BĐS',
+        'Chăm sóc khách hàng',
+      ],
+      'Thẩm định giá': [
+        'Định giá tài sản',
+        'Khảo sát thực địa',
+        'Báo cáo định giá',
+        'Phân tích thị trường',
+      ],
+
+      // Du lịch - Khách sạn
+      'Lễ tân khách sạn': [
+        'Check-in/out',
+        'Sử dụng phần mềm khách sạn',
+        'Tiếng Anh giao tiếp',
+        'Giao tiếp khách hàng',
+      ],
+      'Hướng dẫn viên': [
+        'Lên lịch trình',
+        'Thuyết minh điểm đến',
+        'Giải quyết sự cố',
+        'Kỹ năng kể chuyện',
+      ],
+      'Quản lý nhà hàng': [
+        'Điều hành hoạt động',
+        'Kiểm tra chất lượng',
+        'Quản lý nhân sự',
+        'Quản lý chi phí',
+      ],
+      'Đặt phòng - Booking': [
+        'Hệ thống booking',
+        'Tư vấn khách',
+        'Xác nhận đơn',
+        'Quản lý tồn phòng',
+      ],
+
+      // Thiết kế - Mỹ thuật
+      'Thiết kế đồ họa': [
+        'Photoshop',
+        'Illustrator',
+        'Figma',
+        'Thiết kế banner',
+      ],
+      'Thiết kế nội thất': [
+        'SketchUp',
+        '3Ds Max',
+        'AutoCAD',
+        'Thuyết trình ý tưởng',
+      ],
+      'Thiết kế thời trang': [
+        'Phác thảo mẫu',
+        'May mẫu',
+        'Chọn chất liệu',
+        'Phối màu',
+      ],
+      'Chỉnh sửa video': [
+        'Adobe Premiere',
+        'After Effects',
+        'Cut & Trim',
+        'Motion Graphic',
+      ],
     };
 
     const skillsMap = new Map<string, { name: string; majors: Major[] }>();

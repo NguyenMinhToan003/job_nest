@@ -21,56 +21,125 @@ export class MajorService {
     const fieldMap = Object.fromEntries(fields.map((f) => [f.name, f]));
 
     const defaultMajors = [
-      // IT
+      // Công nghệ thông tin
       { name: 'Lập trình Web', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'Lập trình Mobile', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'Phát triển Backend', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'Cơ sở dữ liệu', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'Khoa học Dữ liệu', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'DevOps', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'AI/Machine Learning', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'An toàn thông tin', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'Phát triển Mobile', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'DevOps & Cloud', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'AI & Data Science', field: fieldMap['Công nghệ thông tin'] },
 
       // Kinh doanh
       { name: 'Bán hàng', field: fieldMap['Kinh doanh'] },
-      { name: 'Marketing', field: fieldMap['Kinh doanh'] },
-      { name: 'Quản trị kinh doanh', field: fieldMap['Kinh doanh'] },
-      { name: 'Tài chính doanh nghiệp', field: fieldMap['Kinh doanh'] },
+      { name: 'Chăm sóc khách hàng', field: fieldMap['Kinh doanh'] },
+      { name: 'Quản lý cửa hàng', field: fieldMap['Kinh doanh'] },
+      { name: 'Tư vấn kinh doanh', field: fieldMap['Kinh doanh'] },
 
-      // Giáo dục / Hành chính
-      { name: 'Thư ký văn phòng', field: fieldMap['Giáo dục'] },
-      { name: 'Trợ lý điều hành', field: fieldMap['Giáo dục'] },
+      // Hành chính - Văn phòng
+      { name: 'Trợ lý điều hành', field: fieldMap['Hành chính - Văn phòng'] },
+      { name: 'Thư ký văn phòng', field: fieldMap['Hành chính - Văn phòng'] },
+      { name: 'Lễ tân', field: fieldMap['Hành chính - Văn phòng'] },
+      { name: 'Quản lý hồ sơ', field: fieldMap['Hành chính - Văn phòng'] },
 
-      // Kế toán
-      { name: 'Kế toán tổng hợp', field: fieldMap['Giáo dục'] },
-      { name: 'Kế toán thuế', field: fieldMap['Giáo dục'] },
+      // Kế toán - Tài chính
+      { name: 'Kế toán tổng hợp', field: fieldMap['Kế toán - Tài chính'] },
+      { name: 'Kế toán thuế', field: fieldMap['Kế toán - Tài chính'] },
+      { name: 'Kiểm toán nội bộ', field: fieldMap['Kế toán - Tài chính'] },
+      { name: 'Chuyên viên tài chính', field: fieldMap['Kế toán - Tài chính'] },
+
+      // Marketing - Truyền thông
+      {
+        name: 'Digital Marketing',
+        field: fieldMap['Marketing - Truyền thông'],
+      },
+      { name: 'SEO/Content', field: fieldMap['Marketing - Truyền thông'] },
+      {
+        name: 'PR & Truyền thông',
+        field: fieldMap['Marketing - Truyền thông'],
+      },
+      { name: 'Trade Marketing', field: fieldMap['Marketing - Truyền thông'] },
+
+      // Giáo dục - Đào tạo
+      { name: 'Giáo viên tiếng Anh', field: fieldMap['Giáo dục - Đào tạo'] },
+      { name: 'Giáo viên mầm non', field: fieldMap['Giáo dục - Đào tạo'] },
+      { name: 'Gia sư', field: fieldMap['Giáo dục - Đào tạo'] },
+      { name: 'Chuyên viên đào tạo', field: fieldMap['Giáo dục - Đào tạo'] },
 
       // Nhân sự
-      { name: 'Tuyển dụng', field: fieldMap['Giáo dục'] },
-      { name: 'Đào tạo nhân sự', field: fieldMap['Giáo dục'] },
+      { name: 'Tuyển dụng', field: fieldMap['Nhân sự'] },
+      { name: 'C&B (Lương thưởng)', field: fieldMap['Nhân sự'] },
+      { name: 'Đào tạo nội bộ', field: fieldMap['Nhân sự'] },
+      { name: 'Quản trị nhân sự', field: fieldMap['Nhân sự'] },
 
       // Kỹ thuật
-      { name: 'Kỹ thuật cơ khí', field: fieldMap['Công nghệ thông tin'] },
-      { name: 'Kỹ thuật điện', field: fieldMap['Công nghệ thông tin'] },
+      { name: 'Kỹ sư cơ khí', field: fieldMap['Kỹ thuật'] },
+      { name: 'Kỹ sư điện', field: fieldMap['Kỹ thuật'] },
+      { name: 'Bảo trì - Bảo dưỡng', field: fieldMap['Kỹ thuật'] },
+      { name: 'Tự động hóa', field: fieldMap['Kỹ thuật'] },
 
-      // Chăm sóc khách hàng
-      { name: 'Tư vấn khách hàng', field: fieldMap['Kinh doanh'] },
-      { name: 'Tổng đài viên', field: fieldMap['Kinh doanh'] },
+      // Y tế - Sức khỏe
+      { name: 'Bác sĩ đa khoa', field: fieldMap['Y tế - Sức khỏe'] },
+      { name: 'Y tá - Điều dưỡng', field: fieldMap['Y tế - Sức khỏe'] },
+      { name: 'Dược sĩ', field: fieldMap['Y tế - Sức khỏe'] },
+      { name: 'Kỹ thuật xét nghiệm', field: fieldMap['Y tế - Sức khỏe'] },
 
-      // Bán lẻ
-      { name: 'Nhân viên bán hàng', field: fieldMap['Kinh doanh'] },
-      { name: 'Quản lý cửa hàng', field: fieldMap['Kinh doanh'] },
+      // Xây dựng
+      { name: 'Kỹ sư xây dựng', field: fieldMap['Xây dựng'] },
+      { name: 'Giám sát công trình', field: fieldMap['Xây dựng'] },
+      { name: 'Thiết kế kết cấu', field: fieldMap['Xây dựng'] },
+      { name: 'Dự toán công trình', field: fieldMap['Xây dựng'] },
 
-      // Giáo viên
-      { name: 'Giáo viên tiểu học', field: fieldMap['Giáo dục'] },
-      { name: 'Giáo viên tiếng Anh', field: fieldMap['Giáo dục'] },
+      // Luật - Pháp lý
+      { name: 'Luật sư', field: fieldMap['Luật - Pháp lý'] },
+      { name: 'Pháp chế doanh nghiệp', field: fieldMap['Luật - Pháp lý'] },
+      { name: 'Tư vấn pháp lý', field: fieldMap['Luật - Pháp lý'] },
+      { name: 'Thẩm phán / Kiểm sát', field: fieldMap['Luật - Pháp lý'] },
 
-      // Thu mua
-      { name: 'Thu mua nội địa', field: fieldMap['Kinh doanh'] },
-      { name: 'Thu mua quốc tế', field: fieldMap['Kinh doanh'] },
+      // Ngân hàng - Tín dụng
+      { name: 'Giao dịch viên', field: fieldMap['Ngân hàng - Tín dụng'] },
+      { name: 'Chuyên viên tín dụng', field: fieldMap['Ngân hàng - Tín dụng'] },
+      { name: 'Kiểm soát nội bộ', field: fieldMap['Ngân hàng - Tín dụng'] },
+      { name: 'Chuyên viên thẻ', field: fieldMap['Ngân hàng - Tín dụng'] },
+
+      // Logistics - Chuỗi cung ứng
+      {
+        name: 'Nhân viên kho vận',
+        field: fieldMap['Logistics - Chuỗi cung ứng'],
+      },
+      { name: 'Xuất nhập khẩu', field: fieldMap['Logistics - Chuỗi cung ứng'] },
+      {
+        name: 'Chuyên viên mua hàng',
+        field: fieldMap['Logistics - Chuỗi cung ứng'],
+      },
+      {
+        name: 'Vận chuyển hàng hóa',
+        field: fieldMap['Logistics - Chuỗi cung ứng'],
+      },
+
+      // Bất động sản
+      { name: 'Chuyên viên môi giới', field: fieldMap['Bất động sản'] },
+      { name: 'Quản lý dự án BĐS', field: fieldMap['Bất động sản'] },
+      { name: 'Tư vấn BĐS', field: fieldMap['Bất động sản'] },
+      { name: 'Thẩm định giá', field: fieldMap['Bất động sản'] },
+
+      // Du lịch - Khách sạn
+      { name: 'Lễ tân khách sạn', field: fieldMap['Du lịch - Khách sạn'] },
+      { name: 'Hướng dẫn viên', field: fieldMap['Du lịch - Khách sạn'] },
+      { name: 'Quản lý nhà hàng', field: fieldMap['Du lịch - Khách sạn'] },
+      { name: 'Đặt phòng - Booking', field: fieldMap['Du lịch - Khách sạn'] },
+
+      // Thiết kế - Mỹ thuật
+      { name: 'Thiết kế đồ họa', field: fieldMap['Thiết kế - Mỹ thuật'] },
+      { name: 'Thiết kế nội thất', field: fieldMap['Thiết kế - Mỹ thuật'] },
+      { name: 'Thiết kế thời trang', field: fieldMap['Thiết kế - Mỹ thuật'] },
+      { name: 'Chỉnh sửa video', field: fieldMap['Thiết kế - Mỹ thuật'] },
     ];
-
-    return this.majorRepository.save(defaultMajors);
+    const majors = defaultMajors.map((major) => {
+      const field = fieldMap[major.field.name];
+      return this.majorRepository.create({
+        name: major.name,
+        field: { id: field.id },
+      });
+    });
+    return this.majorRepository.save(majors);
   }
 
   async findOne(where: any) {

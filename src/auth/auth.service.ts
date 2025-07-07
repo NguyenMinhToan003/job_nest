@@ -25,7 +25,6 @@ export class AuthService {
   ) {}
 
   async signIn(res, dto: AuthDto) {
-    console.log('dto', dto);
     const account = await this.accountService.findEmail(dto.email);
     if (!account) {
       throw new UnauthorizedException('Tài khoản hoặc mật khẩu không đúng');
@@ -73,7 +72,6 @@ export class AuthService {
     }
     const { profile } = req.user;
     const account = await this.accountService.getAccountByGoogleId(profile.id);
-    console.log('account', account);
     if (account) {
       const accessTokenLocal = await this.jwtService.signAsync({
         sub: account.id,
@@ -164,7 +162,6 @@ export class AuthService {
     } else {
       dto.logo = null;
     }
-    console.log('account', account);
 
     const employer = await this.employerService.create(account.id, dto);
     // await this.transactionService.triggerRegisterEmployer(employer.id);

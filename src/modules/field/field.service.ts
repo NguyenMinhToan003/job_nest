@@ -15,15 +15,23 @@ export class FieldService {
     const defaultFields = [
       { name: 'Công nghệ thông tin' },
       { name: 'Kinh doanh' },
-      { name: 'Hành chính' },
-      { name: 'Kế toán' },
+      { name: 'Hành chính - Văn phòng' },
+      { name: 'Kế toán - Tài chính' },
+      { name: 'Marketing - Truyền thông' },
+      { name: 'Giáo dục - Đào tạo' },
       { name: 'Nhân sự' },
       { name: 'Kỹ thuật' },
-      { name: 'Chăm sóc khách hàng' },
-      { name: 'Bán lẻ' },
-      { name: 'Giáo dục' },
-      { name: 'Thu mua' },
+      { name: 'Y tế - Sức khỏe' },
+      { name: 'Xây dựng' },
+      { name: 'Luật - Pháp lý' },
+      { name: 'Ngân hàng - Tín dụng' },
+      { name: 'Sản xuất - Vận hành' },
+      { name: 'Logistics - Chuỗi cung ứng' },
+      { name: 'Bất động sản' },
+      { name: 'Du lịch - Khách sạn' },
+      { name: 'Thiết kế - Mỹ thuật' },
     ];
+
     const existing = await this.fieldRepository.find();
     if (existing.length === 0) {
       await this.fieldRepository.save(defaultFields);

@@ -12,11 +12,12 @@ export class EducationService {
 
   async createDefaultEducation() {
     const defaultEducation = [
-      { name: 'Cao đẳng', id: 1, weight: 1 },
-      { name: 'Đại học', id: 2, weight: 2 },
-      { name: 'Thạc sĩ', id: 3, weight: 3 },
-      { name: 'Tiến sĩ', id: 4, weight: 4 },
-      { name: 'Khác', id: 5, weight: 5 },
+      { id: 6, name: 'Không yêu cầu bằng cấp' },
+      { id: 1, name: 'Cao đẳng (College)' },
+      { id: 2, name: 'Đại học (Bachelor)' },
+      { id: 3, name: 'Thạc sĩ (Master)' },
+      { id: 4, name: 'Tiến sĩ (PhD)' },
+      { id: 5, name: 'Trình độ khác' },
     ];
     await this.educationRepository.save(defaultEducation);
   }

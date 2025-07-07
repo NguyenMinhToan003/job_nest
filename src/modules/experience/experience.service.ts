@@ -18,15 +18,17 @@ export class ExperienceService {
 
   async createDefaultExperience() {
     const defaultExperience = [
-      { name: '1 năm', id: 1 },
-      { name: '3 năm', id: 2 },
-      { name: '5 năm', id: 3 },
-      { name: '7 năm', id: 4 },
-      { name: '10 năm', id: 5 },
-      { name: 'Trên 10 năm', id: 6 },
+      { id: 7, name: 'Không yêu cầu kinh nghiệm' },
+      { id: 1, name: 'Dưới 1 năm kinh nghiệm' },
+      { id: 2, name: 'Từ 1 đến 3 năm kinh nghiệm' },
+      { id: 3, name: 'Từ 3 đến 5 năm kinh nghiệm' },
+      { id: 4, name: 'Từ 5 đến 7 năm kinh nghiệm' },
+      { id: 5, name: 'Từ 7 đến 10 năm kinh nghiệm' },
+      { id: 6, name: 'Trên 10 năm kinh nghiệm' },
     ];
     await this.experienceRepository.save(defaultExperience);
   }
+
   async create(dto: CreateExperienceDto) {
     const existingExperience = await this.experienceRepository.findOneBy({
       name: dto.name,

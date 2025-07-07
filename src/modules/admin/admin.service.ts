@@ -17,7 +17,6 @@ export class AdminService {
       await this.accountService.findEmail('admin@gmail.com');
 
     if (existingAdmin) {
-      console.log('Default admin already exists.');
       return;
     }
     const account = await this.accountService.create({

@@ -185,4 +185,19 @@ export class JobController {
   getDashboardData() {
     return this.jobService.getDashboardData();
   }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Get('recommend-jobs-by-followed-employers')
+  async getRecommendJobsByFollowedEmployers(@Req() req) {
+    const candidateId = req.user.id;
+    return this.jobService.getRecommendJobsByFollowedEmployers(+candidateId);
+  }
+
+  @Public()
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Get('recommend-jobs-best-viewed')
+  async getRecommendJobsBestViewed() {
+    return this.jobService.getRecommendJobsBestViewed();
+  }
 }

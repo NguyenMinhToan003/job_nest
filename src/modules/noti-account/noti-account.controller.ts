@@ -1,14 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import { NotiAccountService } from './noti-account.service';
-import { CreateNotiAccountDto, FilterNotiAccountDto } from './dto/create-noti-account.dto';
+import {
+  CreateNotiAccountDto,
+  FilterNotiAccountDto,
+} from './dto/create-noti-account.dto';
 
 @Controller('noti-account')
 export class NotiAccountController {

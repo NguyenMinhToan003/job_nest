@@ -84,8 +84,6 @@ export class FollowService {
     });
     const listSkills = getResumeVersions.skills.map((skill) => skill.id);
     const listIdsFollowed = listFollow.map((follow) => follow.employer.id);
-    console.log('listSkills', listSkills);
-    console.log('listIdsFollowed', listIdsFollowed);
     const listJob = await this.followRepository
       .createQueryBuilder('follow')
       .leftJoinAndSelect('follow.employer', 'employer')
@@ -105,5 +103,10 @@ export class FollowService {
 
     const employer = listJob.map((item) => item.employer);
     return employer;
+  }
+  async countFollowsEmployer(employerId: number) {
+    return this.followRepository.count({
+      where: { employer: { id: employerId } },
+    });
   }
 }

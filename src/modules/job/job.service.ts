@@ -518,7 +518,6 @@ export class JobService {
         createdAt: 'DESC',
       },
     });
-    console.log('jobList', jobList);
     const jobForBanner = [];
     for (const job of jobList) {
       let isActiveSubscription = false;
@@ -721,5 +720,56 @@ export class JobService {
       expiredJobs,
       blockedJobs,
     };
+  }
+
+  async getRecommendJobsBestViewed() {
+    const bestViewedJobs = await this.jobRepository.find({
+      where: {
+        isActive: JOB_STATUS.ACTIVE,
+        isShow: 1,
+        expiredAt: MoreThanOrEqual(new Date()),
+      },
+      relations: {
+        employer: true,
+        locations: {
+          district: {
+            city: true,
+          },
+        },
+        skills: true,
+        levels: true,
+        typeJobs: true,
+      },
+
+      take: 9,
+    });
+    return bestViewedJobs;
+  }
+  async getRecommendJobsByFollowedEmployers(candidateId: number) {
+    const followedEmployers = await this.jobRepository.find({
+      where: {
+        isActive: JOB_STATUS.ACTIVE,
+        isShow: 1,
+        expiredAt: MoreThanOrEqual(new Date()),
+        employer: {
+          follows: { candidate: { id: candidateId } },
+        },
+      },
+      relations: {
+        employer: true,
+        locations: {
+          district: {
+            city: true,
+          },
+        },
+        skills: true,
+        levels: true,
+        typeJobs: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    return followedEmployers;
   }
 }

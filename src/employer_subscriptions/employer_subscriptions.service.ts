@@ -145,6 +145,28 @@ export class EmployerSubscriptionsService {
         'Loại dịch vụ này đang được sử dụng chưa hết hạn',
       );
     }
+    const validatePendding = await this.employerSubscriptionRepository.findOne({
+      where: {
+        employer: { id: employerId },
+        transaction: {
+          status: PAYMENT_STATUS.SUCCESS,
+        },
+        job: { id: body.jobId },
+        package: { id: body.packageId },
+        status: EMPLOYER_SUBSCRIPTION_STATUS.PENDING,
+      },
+      relations: {
+        package: true,
+      },
+      order: {
+        createdAt: 'ASC',
+      },
+    });
+    if (validatePendding) {
+      throw new BadRequestException(
+        'Vui lòng chờ đội ngũ quản trị duyệt gói dịch vụ này trước khi sử dụng',
+      );
+    }
     await this.employerSubscriptionRepository.save({
       ...validate,
       job: { id: body.jobId },
@@ -253,7 +275,6 @@ export class EmployerSubscriptionsService {
           package: true,
         },
       });
-    console.log('checkEmployerIsUsingBanner', checkEmployerIsUsingBanner);
     if (checkEmployerIsUsingBanner) {
       throw new BadRequestException(
         'Bạn đang sử dụng gói dịch vụ banner chưa hết hạn',

@@ -472,7 +472,6 @@ export class ApplyJobService {
     if (!applyJob) {
       throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
     }
-    console.log(applyJob.status, APPLY_JOB_STATUS.HIRED);
     if (applyJob.status === APPLY_JOB_STATUS.HIRED) {
       throw new BadRequestException(
         'Không thể cập nhật trạng thái ứng tuyển đã được phê duyệt',
@@ -496,7 +495,6 @@ export class ApplyJobService {
       throw new BadRequestException('Không tìm thấy đơn ứng tuyển');
     }
     const tag = applyJob.tagResumes || [];
-    console.log(tag);
     for (const tagId of body.tagIds) {
       if (!tag.some((t) => t.id === tagId)) {
         const newTag = { id: tagId };
@@ -504,7 +502,6 @@ export class ApplyJobService {
       }
     }
     applyJob.tagResumes = tag;
-    console.log(tag);
     return this.applyJobRepository.save(applyJob);
   }
 

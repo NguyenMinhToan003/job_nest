@@ -13,7 +13,6 @@ export class AccountService {
   ) {}
   async create(createAccountDto: CreateAccountDto) {
     const create = await this.accountRepository.create(createAccountDto);
-    console.log('create', create);
     return this.accountRepository.save(create);
   }
   findAll() {
@@ -35,7 +34,6 @@ export class AccountService {
     });
   }
   findCandidateWhere(where: any) {
-    console.log('where', where);
     return this.accountRepository.find({
       where,
       relations: { candidate: true },

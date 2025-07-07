@@ -23,7 +23,6 @@ export class PaymentController {
   @Roles(ROLE_LIST.EMPLOYER)
   @Post('create')
   async createPayment(@Body() dto: CreateTransactionDto, @Req() req) {
-    console.log('Create payment DTO:', dto);
     const employerId = req.user.id;
     dto.employerId = employerId;
     return await this.paymentService.createPaymentUrl(dto);
@@ -32,7 +31,6 @@ export class PaymentController {
   @Public()
   @Get('callback')
   async handleCallback(@Query() query: any, @Res() res: Response) {
-    console.log('Callback query:', query);
     const result = await this.paymentService.handleCallback(query);
     res.redirect(
       `http://localhost:5173/payment-result?status=${result.status}&&transactionId=${result.transactionId}`,

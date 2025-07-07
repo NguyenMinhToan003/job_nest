@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { EmployerService } from './employer.service';
 import { UpdateCompanyDto } from './dto/update-employer.dto';
-import { Public, Roles } from 'src/decorators/customize';
+import { GetToken, Public, Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -50,7 +50,7 @@ export class EmployerController {
     return this.employerService.updated(id, dto, file);
   }
 
-  @Public()
+  @GetToken()
   @Get('detail/:companyId')
   async getCompanyDetail(@Param('companyId') companyId: number, @Req() req) {
     const accountId = req.user?.id;
@@ -62,7 +62,6 @@ export class EmployerController {
   @Get('me')
   async getMeEmployer(@Req() req) {
     const id = req.user.id;
-    console.log(id);
     return this.employerService.getMeEmployer(id);
   }
 

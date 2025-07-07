@@ -12,14 +12,21 @@ export class CityService {
     private readonly cityRepository: Repository<City>,
   ) {}
   async fetchAll() {
-    const citys = await axios.get('https://provinces.open-api.vn/api/?depth=2');
-    for (const city of citys.data) {
-      this.cityRepository.save({
-        id: city.codename,
-        name: cleanNameProvince(city.name),
-      } as City);
+    try {
+      const citys = await axios.get(
+        'http://provinces.open-api.vn/api/?depth=2',
+      );
+      for (const city of citys.data) {
+        this.cityRepository.save({
+          id: city.codename,
+          name: cleanNameProvince(city.name),
+        } as City);
+      }
+      return citys.data;
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+      throw new Error('Failed to fetch cities');
     }
-    return citys.data;
   }
   getCity() {
     return this.cityRepository.find({

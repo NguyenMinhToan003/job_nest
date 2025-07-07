@@ -19,22 +19,14 @@ export class TypeJobService {
 
   async createDefaultTypeJob() {
     const defaultTypeJobs = [
-      {
-        name: 'Nhân viên chính thức',
-        status: 1,
-      },
-      {
-        name: 'Bán thời gian',
-        status: 1,
-      },
-      {
-        name: 'Thời vụ',
-        status: 1,
-      },
-      {
-        name: 'Thực tập',
-        status: 1,
-      },
+      { name: 'Nhân viên chính thức', status: 1 }, // Full-time permanent
+      { name: 'Bán thời gian', status: 1 }, // Part-time
+      { name: 'Thời vụ', status: 1 }, // Seasonal/Temporary
+      { name: 'Thực tập', status: 1 }, // Internship
+      { name: 'Cộng tác viên', status: 1 }, // Freelancer/Contributor
+      { name: 'Làm việc từ xa', status: 1 }, // Remote job
+      { name: 'Linh hoạt thời gian', status: 1 }, // Flexible
+      { name: 'Hợp đồng ngắn hạn', status: 1 }, // Contract-based
     ];
 
     await this.typeJobRepository.save(defaultTypeJobs);
@@ -83,7 +75,6 @@ export class TypeJobService {
     if (!typeJob) {
       throw new NotFoundException('Loại công việc không tồn tại');
     }
-    console.log(typeJob);
     if (
       typeJob.jobs &&
       typeJob.jobs.length > 0 &&

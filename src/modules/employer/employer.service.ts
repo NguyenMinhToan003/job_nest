@@ -11,7 +11,6 @@ import { Employer } from './entities/employer.entity';
 import { LocationService } from '../location/location.service';
 import { FollowService } from '../follow/follow.service';
 import { JobService } from '../job/job.service';
-import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
 import { UploadService } from 'src/upload/upload.service';
 import { EMPLOYER_SUBSCRIPTION_STATUS, PackageType } from 'src/types/enum';
 
@@ -24,7 +23,6 @@ export class EmployerService {
     private followService: FollowService,
     private jobService: JobService,
     private readonly uploadService: UploadService,
-    private readonly employerSubscriptionService: EmployerSubscriptionsService,
   ) {}
 
   async create(accountId: number, dto: CreateCompanyDto): Promise<Employer> {
@@ -90,7 +88,6 @@ export class EmployerService {
       const upload = await this.uploadService.uploadFile([file]);
       dto.logo = upload[0].secure_url;
     }
-    console.log(dto);
     return this.employerRepo.save({
       businessType: { id: dto.businessTypeId || employer.businessType.id },
       country: { id: dto.countryId || employer.country.id },
@@ -126,6 +123,9 @@ export class EmployerService {
     if (!employer) {
       throw new BadRequestException('Công ty không tồn tại');
     }
+    const countFollows = await this.followService.countFollowsEmployer(
+      +companyId,
+    );
     const locations = await this.locationService.findByCompany(companyId, 1);
     employer.locations = locations;
     const jobIsNotExpired = await this.jobService.filter({
@@ -135,6 +135,7 @@ export class EmployerService {
       ...employer,
       isFollowed: !!isFollowed,
       jobs: jobIsNotExpired.data,
+      countFollows,
     };
   }
   async getMeEmployer(id: number) {
@@ -161,7 +162,6 @@ export class EmployerService {
     if (query.search) {
       where.name = query.search;
     }
-    console.log('query', query);
     const [items, total] = await this.employerRepo.findAndCount({
       where,
       skip: (+query.page - 1) * 10,
@@ -199,7 +199,6 @@ export class EmployerService {
         country: true,
       },
     });
-    console.log('employersBanner', employersBanner);
     const result = [];
     for (const employer of employersBanner) {
       const jobsCount = await this.jobService.getCountJobByEmployerId(
