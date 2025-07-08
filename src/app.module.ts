@@ -37,16 +37,16 @@ import { LanguageResumeModule } from './modules/language-resume/language-resume.
 import { LanguageModule } from './modules/language/language.module';
 import { LanguageJobModule } from './modules/language-job/language-job.module';
 import { MatchingWeightModule } from './modules/matching-weight/matching-weight.module';
-import { ViewJobModule } from './view-job/view-job.module';
-import { PackagesModule } from './packages/packages.module';
-import { EmployerSubscriptionsModule } from './employer_subscriptions/employer_subscriptions.module';
-import { TransactionModule } from './transaction/transaction.module';
-import { EmployerScalesModule } from './employer-scales/employer-scales.module';
-import { BusinessTypeModule } from './business-type/business-type.module';
-import { PaymentModule } from './payment/payment.module';
-import { TagResumeModule } from './tag-resume/tag-resume.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronJobModule } from './cronjob/cron-job.module';
+import { ViewJobModule } from './modules/view-job/view-job.module';
+import { PackagesModule } from './modules/packages/packages.module';
+import { EmployerSubscriptionsModule } from './modules/employer_subscriptions/employer_subscriptions.module';
+import { TransactionModule } from './modules/transaction/transaction.module';
+import { EmployerScalesModule } from './modules/employer-scales/employer-scales.module';
+import { BusinessTypeModule } from './modules/business-type/business-type.module';
+import { PaymentModule } from './payment/payment.module';
+import { TagResumeModule } from './modules/tag-resume/tag-resume.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),

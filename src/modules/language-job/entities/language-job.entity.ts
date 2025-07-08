@@ -10,13 +10,6 @@ export class LanguageJob {
   @PrimaryColumn({ name: 'ma_cong_viec' })
   jobId: number;
 
-  @PrimaryColumn({
-    name: 'trinh_do',
-    type: 'enum',
-    enum: [1, 2, 3], // Assuming these are the levels defined in your application
-  })
-  level: number;
-
   @ManyToOne(() => Language, (language) => language.languageJobs, {
     nullable: false,
     onDelete: 'CASCADE',

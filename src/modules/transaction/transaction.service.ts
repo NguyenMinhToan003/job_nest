@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
 import {
+  AdminFilterTransactionDto,
   CreateTransactionDto,
   UpdateTransactionDto,
 } from './dto/create-transaction.dto';
-import { PackagesService } from 'src/packages/packages.service';
-import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
+import { PackagesService } from '../packages/packages.service';
+import { EmployerSubscriptionsService } from '../employer_subscriptions/employer_subscriptions.service';
 @Injectable()
 export class TransactionService {
   constructor(
@@ -68,19 +69,47 @@ export class TransactionService {
     return transactionPackages;
   }
 
-  async getAllTransactions() {
-    const transactions = await this.transactionRepository.find({
-      order: {
-        createdAt: 'DESC',
-      },
-      relations: {
-        employerSubscriptions: {
-          package: true,
-          employer: true,
-          job: true,
+  async getAllTransactions(query: AdminFilterTransactionDto) {
+    const where = {};
+    if (query.status) {
+      where['status'] = query.status;
+    }
+    if (query.vnp_TxnRef) {
+      where['vnp_TxnRef'] = query.vnp_TxnRef;
+    }
+    if (query.employerId) {
+      where['employerSubscriptions'] = {
+        employer: { id: query.employerId },
+      };
+    }
+    const order = {};
+    if (query.sortBy) {
+      order[query.sortBy] = query.sortOrder === 'asc' ? 'ASC' : 'DESC';
+    } else {
+      order['createdAt'] = 'DESC';
+    }
+    if (!query.page) {
+      query.page = 1;
+    }
+    if (!query.limit) {
+      query.limit = 10;
+    }
+
+    const [transactions, total] = await this.transactionRepository.findAndCount(
+      {
+        where,
+        order,
+        relations: {
+          employerSubscriptions: {
+            package: true,
+            employer: true,
+            job: true,
+          },
         },
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
       },
-    });
+    );
     const transactionPackages = [];
     for (const transaction of transactions) {
       const packageDetails =
@@ -92,7 +121,12 @@ export class TransactionService {
         package: packageConverted,
       });
     }
-    return transactionPackages;
+    const totalPages = Math.ceil(total / query.limit);
+    return {
+      items: transactionPackages,
+      total,
+      totalPages,
+    };
   }
   async getTransactionById(id: number) {
     const transaction = await this.transactionRepository.findOne({
@@ -163,7 +197,7 @@ export class TransactionService {
       },
     });
   }
-  async findOneByVnpTxnRef(vnp_TxnRef: string) {
+  async findOneByVnpTxnRef(vnp_TxnRef: string): Promise<Transaction | null> {
     return this.transactionRepository.findOne({
       where: { vnp_TxnRef },
       relations: {

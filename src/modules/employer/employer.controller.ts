@@ -64,16 +64,23 @@ export class EmployerController {
     const id = req.user.id;
     return this.employerService.getMeEmployer(id);
   }
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Get('/:id')
+  async adminGetEmployer(@Req() req) {
+    const id = req.params.id;
+    return this.employerService.getMeEmployer(id);
+  }
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.ADMIN)
-  @Get('all')
+  @Get('admin/all')
   async getAllEmployers(@Query() param: AdminFilterCompanyDto) {
     return this.employerService.getAllEmployers(param);
   }
 
   @Public()
-  @Get('banner')
+  @Get('banner/view')
   async getBanner() {
     return this.employerService.getBanner();
   }

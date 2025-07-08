@@ -5,6 +5,4 @@ export class CreateLanguageResumeDto {
   languageId: number;
   @IsNotEmpty()
   resumeVersionId: number;
-  @IsNotEmpty()
-  level: number;
 }

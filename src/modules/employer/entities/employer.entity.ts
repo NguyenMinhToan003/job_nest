@@ -1,12 +1,12 @@
-import { BusinessType } from 'src/business-type/entities/business-type.entity';
-import { EmployerScale } from 'src/employer-scales/entities/employer-scale.entity';
-import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
 import { Account } from 'src/modules/account/entities/account.entity';
+import { BusinessType } from 'src/modules/business-type/entities/business-type.entity';
 import { Country } from 'src/modules/country/entities/country.entity';
+import { EmployerScale } from 'src/modules/employer-scales/entities/employer-scale.entity';
+import { EmployerSubscription } from 'src/modules/employer_subscriptions/entities/employer_subscription.entity';
 import { Follow } from 'src/modules/follow/entities/follow.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
 import { Location } from 'src/modules/location/entities/location.entity';
-import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
+import { TagResume } from 'src/modules/tag-resume/entities/tag-resume.entity';
 import {
   Column,
   Entity,

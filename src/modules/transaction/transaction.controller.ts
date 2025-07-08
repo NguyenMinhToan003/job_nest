@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { Public, Roles } from 'src/decorators/customize';
 import { ROLE_LIST } from 'src/types/enum';
 import { RolesGuard } from 'src/auth/passport/role.guard';
+import { AdminFilterTransactionDto } from './dto/create-transaction.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -32,7 +33,7 @@ export class TransactionController {
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.ADMIN)
   @Get('admin/get-all')
-  async getTransactionDetailAdmin() {
-    return this.transactionService.getAllTransactions();
+  async getTransactionDetailAdmin(@Query() query: AdminFilterTransactionDto) {
+    return this.transactionService.getAllTransactions(query);
   }
 }

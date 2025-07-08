@@ -5,7 +5,7 @@ import { Cron } from '@nestjs/schedule';
 import { CandidateService } from 'src/modules/candidate/candidate.service';
 import { JobService } from 'src/modules/job/job.service';
 import { SaveJobService } from 'src/modules/save-job/save-job.service';
-import { ViewJobService } from 'src/view-job/view-job.service';
+import { ViewJobService } from 'src/modules/view-job/view-job.service';
 
 @Injectable()
 export class NotoJobCandidateService {

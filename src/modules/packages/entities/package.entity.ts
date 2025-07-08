@@ -1,4 +1,4 @@
-import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
+import { EmployerSubscription } from 'src/modules/employer_subscriptions/entities/employer_subscription.entity';
 import { PackageType } from 'src/types/enum';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 

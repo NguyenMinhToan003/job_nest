@@ -58,7 +58,6 @@ export class ResumeVersionService {
       for (const languageResume of dto.languageResumes) {
         await this.languageResumeService.create({
           languageId: languageResume.languageId,
-          level: languageResume.level,
           resumeVersionId: resumeVersion.id,
         });
       }
@@ -192,7 +191,6 @@ export class ResumeVersionService {
       for (const languageResume of dto.languageResumes) {
         await this.languageResumeService.create({
           languageId: languageResume.languageId,
-          level: languageResume.level,
           resumeVersionId: resumeVersion.id,
         });
       }

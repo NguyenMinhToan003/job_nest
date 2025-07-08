@@ -5,10 +5,6 @@ import { Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 export class Admin {
   @PrimaryColumn({ name: 'ma_tai_khoan' })
   id: number;
-  @PrimaryColumn({ name: 'chuc_vu_id' })
-  roleId: number;
-  @PrimaryColumn({ name: 'trang_thai' })
-  status: number;
 
   @OneToOne(() => Account, (account) => account.id)
   @JoinColumn({ name: 'ma_tai_khoan' })

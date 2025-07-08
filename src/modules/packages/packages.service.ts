@@ -142,6 +142,9 @@ export class PackagesService {
       const sub_using = sub_used.filter((sub) =>
         dayjs(sub.endDate).isAfter(dayjs(), 'day'),
       );
+      const sub_pending = sub_used.filter(
+        (sub) => sub.status === EMPLOYER_SUBSCRIPTION_STATUS.PENDING,
+      );
 
       return {
         id: pkg.id,
@@ -153,6 +156,7 @@ export class PackagesService {
         dayValue: pkg.dayValue,
         sub_used: sub_used.length,
         sub_using: sub_using,
+        sub_pending: sub_pending,
         sub_total: pkg.employerSubscriptions.length,
       };
     });

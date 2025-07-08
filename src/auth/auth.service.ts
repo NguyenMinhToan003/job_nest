@@ -10,7 +10,6 @@ import { EmployerService } from 'src/modules/employer/employer.service';
 import { CreateUserDto } from 'src/modules/candidate/dto/create-candidate.dto';
 import { CreateCompanyDto } from 'src/modules/employer/dto/create-employer.dto';
 import { UploadService } from 'src/upload/upload.service';
-import { TransactionService } from 'src/transaction/transaction.service';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +20,6 @@ export class AuthService {
     private candidateService: CandidateService,
     private employerService: EmployerService,
     private readonly uploadService: UploadService,
-    private readonly transactionService: TransactionService,
   ) {}
 
   async signIn(res, dto: AuthDto) {

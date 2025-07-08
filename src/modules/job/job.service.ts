@@ -25,9 +25,9 @@ import {
 } from 'src/types/enum';
 import { LanguageJobService } from 'src/modules/language-job/language-job.service';
 import { getDistance } from 'geolib';
-import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
-import { UseSubscriptionDto } from 'src/packages/dto/create-package.dto';
 import * as dayjs from 'dayjs';
+import { EmployerSubscriptionsService } from '../employer_subscriptions/employer_subscriptions.service';
+import { UseSubscriptionDto } from '../packages/dto/create-package.dto';
 
 @Injectable()
 export class JobService {
@@ -70,7 +70,6 @@ export class JobService {
         await this.languageJobService.create({
           jobId: job.id,
           languageId: language.languageId,
-          level: language.level,
         });
       }
     }
@@ -563,6 +562,15 @@ export class JobService {
         },
         typeJobs: true,
       },
+      select: {
+        id: true,
+        name: true,
+        employer: true,
+        locations: true,
+        minSalary: true,
+        maxSalary: true,
+        expiredAt: true,
+      },
     });
     const nearbyJobs = [];
     for (const job of allJobs) {
@@ -574,12 +582,16 @@ export class JobService {
         if (distanceMeters <= radius) {
           nearbyJobs.push({
             ...job,
+            locations: [location],
             distanceKm: (distanceMeters / 1000).toFixed(2),
           });
           break;
         }
       }
     }
+    nearbyJobs.sort((a, b) => {
+      return b.distanceKm - a.distanceKm;
+    });
     return nearbyJobs;
   }
 

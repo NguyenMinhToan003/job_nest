@@ -6,7 +6,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { CreateEmployerSubscriptionDto } from 'src/employer_subscriptions/dto/create-employer_subscription.dto';
+import { CreateEmployerSubscriptionDto } from 'src/modules/employer_subscriptions/dto/create-employer_subscription.dto';
 import { PAYMENT_STATUS } from 'src/types/enum';
 
 export class CreateTransactionDto {
@@ -31,4 +31,25 @@ export class UpdateTransactionDto {
 
   @IsOptional()
   recordedAt?: Date;
+}
+
+export class AdminFilterTransactionDto {
+  @IsOptional()
+  @IsEnum(PAYMENT_STATUS)
+  status?: PAYMENT_STATUS;
+
+  @IsOptional()
+  vnp_TxnRef?: string;
+
+  @IsOptional()
+  employerId?: number;
+
+  @IsOptional()
+  sortBy?: 'createdAt' | 'amount';
+  @IsOptional()
+  sortOrder?: 'asc' | 'desc';
+  @IsOptional()
+  page?: number;
+  @IsOptional()
+  limit?: number;
 }

@@ -1,6 +1,6 @@
 import { Job } from 'src/modules/job/entities/job.entity';
 import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
-import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
+import { TagResume } from 'src/modules/tag-resume/entities/tag-resume.entity';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
 import {
   Column,

@@ -52,10 +52,7 @@ export class NotiAccountService {
     const [items, total] = await this.notiAccountRepository.findAndCount({
       where: { receiverAccount: { id: accountId } },
       relations: {
-        senderAccount: {
-          candidate: true,
-          employer: true,
-        },
+        receiverAccount: true,
       },
       order: { time: 'DESC' },
       skip: (query.page - 1) * (query.limit || 10),

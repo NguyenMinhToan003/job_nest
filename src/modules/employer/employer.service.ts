@@ -123,9 +123,8 @@ export class EmployerService {
     if (!employer) {
       throw new BadRequestException('Công ty không tồn tại');
     }
-    const countFollows = await this.followService.countFollowsEmployer(
-      +companyId,
-    );
+    const countFollows =
+      await this.followService.countFollowsEmployer(+companyId);
     const locations = await this.locationService.findByCompany(companyId, 1);
     employer.locations = locations;
     const jobIsNotExpired = await this.jobService.filter({

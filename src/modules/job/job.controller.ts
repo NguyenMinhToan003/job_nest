@@ -24,7 +24,7 @@ import { UpdateJobAdminDto, UpdateJobDto } from './dto/update-job.dto';
 import { GetToken, Public, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { ACCOUNT_STATUS, ROLE_LIST } from 'src/types/enum';
-import { UseSubscriptionDto } from 'src/employer_subscriptions/dto/create-employer_subscription.dto';
+import { UseSubscriptionDto } from '../packages/dto/create-package.dto';
 
 @Controller('job')
 export class JobController {

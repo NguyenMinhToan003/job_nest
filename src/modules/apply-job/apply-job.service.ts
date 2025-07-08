@@ -14,21 +14,19 @@ import {
   UpdateApplyJobStatusDto,
 } from './dto/create-apply-job.dto';
 import { APPLY_JOB_STATUS } from 'src/types/enum';
-import { JobService } from 'src/modules/job/job.service';
 import { ResumeVersionService } from 'src/modules/resume-version/resume-version.service';
 import { MajorService } from '../major/major.service';
 import { Job } from '../job/entities/job.entity';
-import { TagResume } from 'src/tag-resume/entities/tag-resume.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { NotiAccountService } from '../noti-account/noti-account.service';
 import { Not, Repository } from 'typeorm';
+import { TagResume } from '../tag-resume/entities/tag-resume.entity';
 
 @Injectable()
 export class ApplyJobService {
   constructor(
     @InjectRepository(ApplyJob)
     private applyJobRepository: Repository<ApplyJob>,
-    private jobService: JobService,
     private readonly resumeVersionService: ResumeVersionService,
     private readonly majorService: MajorService,
     private readonly mailerService: MailerService,

@@ -1,12 +1,12 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { VnpayService } from 'nestjs-vnpay';
-import { Transaction } from '../transaction/entities/transaction.entity';
-import { TransactionService } from 'src/transaction/transaction.service';
-import { CreateTransactionDto } from 'src/transaction/dto/create-transaction.dto';
 import { PAYMENT_STATUS } from 'src/types/enum';
 import { dateFormat } from 'vnpay';
 import { MailerService } from '@nestjs-modules/mailer';
-import { EmployerSubscriptionsService } from 'src/employer_subscriptions/employer_subscriptions.service';
+import { TransactionService } from 'src/modules/transaction/transaction.service';
+import { EmployerSubscriptionsService } from 'src/modules/employer_subscriptions/employer_subscriptions.service';
+import { CreateTransactionDto } from 'src/modules/transaction/dto/create-transaction.dto';
+import { Transaction } from 'src/modules/transaction/entities/transaction.entity';
 
 @Injectable()
 export class PaymentService {

@@ -53,7 +53,4 @@ export class Account {
 
   @OneToMany(() => NotiAccount, (notiAccount) => notiAccount.receiverAccount)
   receiverAccount: NotiAccount[];
-
-  @OneToMany(() => NotiAccount, (notiAccount) => notiAccount.senderAccount)
-  senderAccount: NotiAccount[];
 }

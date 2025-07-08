@@ -15,7 +15,6 @@ export class LanguageResumeService {
     return this.languadeResumeRepository.save({
       language: { id: +dto.languageId },
       resumeVersion: { id: +dto.resumeVersionId },
-      level: dto.level,
     });
   }
 }

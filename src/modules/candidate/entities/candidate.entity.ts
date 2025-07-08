@@ -10,7 +10,7 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { ViewJob } from 'src/view-job/entities/view-job.entity';
+import { ViewJob } from 'src/modules/view-job/entities/view-job.entity';
 
 @Entity({ name: 'nguoi_ung_tuyen' })
 export class Candidate {

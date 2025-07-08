@@ -15,7 +15,6 @@ export class LanguageJobService {
     return this.languageJobRepository.save({
       job: { id: dto.jobId },
       language: { id: dto.languageId },
-      level: dto.level,
     });
   }
 }

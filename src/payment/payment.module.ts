@@ -3,10 +3,9 @@ import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { VnpayModule } from 'nestjs-vnpay';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-import { PackagesModule } from '../packages/packages.module';
-import { EmployerSubscriptionsModule } from 'src/employer_subscriptions/employer_subscriptions.module';
-import { TransactionModule } from 'src/transaction/transaction.module';
+import { TransactionModule } from 'src/modules/transaction/transaction.module';
+import { EmployerSubscriptionsModule } from 'src/modules/employer_subscriptions/employer_subscriptions.module';
+import { PackagesModule } from 'src/modules/packages/packages.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { TransactionModule } from 'src/transaction/transaction.module';
         secureSecret: configService.getOrThrow<string>('VNPAY_HASH_SECRET'),
         vnpayHost: configService.getOrThrow<string>('VNPAY_URL'),
         returnUrl: configService.getOrThrow<string>('VNPAY_RETURN_URL'),
-        ipnUrl: configService.getOrThrow<string>('VNPAY_IPN_URL'),
         vnp_Version: '2.1.0',
         testMode: true,
       }),

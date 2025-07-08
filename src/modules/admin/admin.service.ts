@@ -26,8 +26,6 @@ export class AdminService {
     });
     const admin = this.adminRepository.create({
       id: account.id,
-      roleId: 1,
-      status: 1,
     });
     await this.adminRepository.save(admin);
   }

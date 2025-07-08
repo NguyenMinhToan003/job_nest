@@ -13,10 +13,10 @@ import { DistrictModule } from '../modules/district/district.module';
 import { SeedController } from './seed.controller';
 import { EducationModule } from 'src/modules/education/education.module';
 import { LanguageModule } from 'src/modules/language/language.module';
-import { PackagesModule } from 'src/packages/packages.module';
-import { BusinessTypeModule } from 'src/business-type/business-type.module';
-import { EmployerScalesModule } from 'src/employer-scales/employer-scales.module';
 import { CountryModule } from 'src/modules/country/country.module';
+import { BusinessTypeModule } from 'src/modules/business-type/business-type.module';
+import { PackagesModule } from 'src/modules/packages/packages.module';
+import { EmployerScalesModule } from 'src/modules/employer-scales/employer-scales.module';
 @Module({
   imports: [
     FieldModule,

@@ -1,7 +1,7 @@
 import { Employer } from 'src/modules/employer/entities/employer.entity';
 import { Job } from 'src/modules/job/entities/job.entity';
-import { Package } from 'src/packages/entities/package.entity';
-import { Transaction } from 'src/transaction/entities/transaction.entity';
+import { Package } from 'src/modules/packages/entities/package.entity';
+import { Transaction } from 'src/modules/transaction/entities/transaction.entity';
 import { EMPLOYER_SUBSCRIPTION_STATUS } from 'src/types/enum';
 import {
   Column,

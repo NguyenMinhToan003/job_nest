@@ -9,11 +9,9 @@ import { GoogleStrategy } from './passport/google.strategy';
 import { CandidateModule } from 'src/modules/candidate/candidate.module';
 import { EmployerModule } from 'src/modules/employer/employer.module';
 import { UploadModule } from 'src/upload/upload.module';
-import { TransactionModule } from 'src/transaction/transaction.module';
 
 @Module({
   imports: [
-    TransactionModule,
     UploadModule,
     CandidateModule,
     EmployerModule,

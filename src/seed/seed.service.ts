@@ -11,10 +11,10 @@ import { CityService } from '../modules/city/city.service';
 import { DistrictService } from '../modules/district/district.service';
 import { EducationService } from 'src/modules/education/education.service';
 import { LanguageService } from 'src/modules/language/language.service';
-import { PackagesService } from 'src/packages/packages.service';
-import { BusinessTypeService } from 'src/business-type/business-type.service';
-import { EmployerScalesService } from 'src/employer-scales/employer-scales.service';
 import { CountryService } from 'src/modules/country/country.service';
+import { PackagesService } from 'src/modules/packages/packages.service';
+import { BusinessTypeService } from 'src/modules/business-type/business-type.service';
+import { EmployerScalesService } from 'src/modules/employer-scales/employer-scales.service';
 
 @Injectable()
 export class SeedService {

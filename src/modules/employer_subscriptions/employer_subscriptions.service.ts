@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { EmployerSubscription } from './entities/employer_subscription.entity';
-import { PackagesService } from 'src/packages/packages.service';
 import {
   CreateEmployerSubscriptionDto,
   UseSubBannerDto,
@@ -14,6 +13,7 @@ import {
   PAYMENT_STATUS,
 } from 'src/types/enum';
 import * as dayjs from 'dayjs';
+import { PackagesService } from '../packages/packages.service';
 
 @Injectable()
 export class EmployerSubscriptionsService {

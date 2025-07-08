@@ -22,9 +22,9 @@ import {
 } from 'typeorm';
 import { LanguageJob } from 'src/modules/language-job/entities/language-job.entity';
 import { MatchingWeight } from 'src/modules/matching-weight/entities/matching-weight.entity';
-import { ViewJob } from 'src/view-job/entities/view-job.entity';
-import { EmployerSubscription } from 'src/employer_subscriptions/entities/employer_subscription.entity';
 import { Major } from 'src/modules/major/entities/major.entity';
+import { ViewJob } from 'src/modules/view-job/entities/view-job.entity';
+import { EmployerSubscription } from 'src/modules/employer_subscriptions/entities/employer_subscription.entity';
 
 @Entity({ name: 'cong_viec' })
 export class Job {

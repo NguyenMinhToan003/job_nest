@@ -11,9 +11,9 @@ import {
 import { PaymentService } from './payment.service';
 import { Response } from 'express';
 import { Public, Roles } from 'src/decorators/customize';
-import { CreateTransactionDto } from 'src/transaction/dto/create-transaction.dto';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { ROLE_LIST } from 'src/types/enum';
+import { CreateTransactionDto } from 'src/modules/transaction/dto/create-transaction.dto';
 
 @Controller('payment')
 export class PaymentController {
@@ -35,10 +35,5 @@ export class PaymentController {
     res.redirect(
       `http://localhost:5173/payment-result?status=${result.status}&&transactionId=${result.transactionId}`,
     );
-  }
-
-  @Get('ipn')
-  async handleIpn(@Query() query: any) {
-    return await this.paymentService.handleIpn(query);
   }
 }

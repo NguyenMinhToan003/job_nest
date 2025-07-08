@@ -8,12 +8,6 @@ export class LanguageResume {
   languageId: number;
   @PrimaryColumn({ name: 'ma_phien_ban' })
   resumeVersionId: number;
-  @PrimaryColumn({
-    name: 'trinh_do',
-    type: 'enum',
-    enum: [1, 2, 3],
-  })
-  level: number;
 
   @ManyToOne(() => Language, (language) => language.languageResumes, {
     nullable: false,
