@@ -25,9 +25,9 @@ export class CreateResumeVersionDto {
   @IsNotEmpty()
   dateOfBirth: Date;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsArray()
-  languageResumes: { languageId: number; level: number }[];
+  languageResumes: { languageId: number }[];
 
   @IsNotEmpty()
   @IsArray()
@@ -42,14 +42,14 @@ export class CreateResumeVersionDto {
   @IsNotEmpty()
   district: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   name: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   majors: number[];
 
   @IsOptional()

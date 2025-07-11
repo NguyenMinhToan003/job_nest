@@ -1,8 +1,9 @@
 import { EmployerSubscription } from 'src/modules/employer_subscriptions/entities/employer_subscription.entity';
 import { PackageType } from 'src/types/enum';
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'goi_dich_vu' })
+@Unique('UQ_package_type_day_value', ['type', 'dayValue'])
 export class Package {
   @PrimaryColumn({ name: 'id' })
   id: string;

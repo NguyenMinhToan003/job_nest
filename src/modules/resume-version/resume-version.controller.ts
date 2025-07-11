@@ -21,6 +21,7 @@ import {
 } from './dto/create-resume-version.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResumeService } from '../resume/resume.service';
+import { file } from 'googleapis/build/src/apis/file';
 
 @Controller('resume-version')
 export class ResumeVersionController {
@@ -47,6 +48,11 @@ export class ResumeVersionController {
       cv?: Express.Multer.File[] | null;
     },
   ) {
+    if (!files.cv) {
+      throw new BadRequestException(
+        'Vui lòng tải lên đầy đủ ảnh đại diện & CV',
+      );
+    }
     const candidateId = req.user.id;
     const resume = await this.resumeService.create(candidateId, dto.name);
     try {
@@ -58,6 +64,7 @@ export class ResumeVersionController {
       return resumeVer;
     } catch (err: any) {
       await this.resumeService.deleteWhenError(candidateId, +resume.id);
+      console.error('Error creating resume version:', err); 
       throw new BadRequestException(
         'Đã sảy ra lỗi khi khởi tạo hồ sơ công việc',
       );

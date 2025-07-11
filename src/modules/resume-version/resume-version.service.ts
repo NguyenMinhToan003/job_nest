@@ -129,6 +129,7 @@ export class ResumeVersionService {
         languageResumes: {
           language: true,
         },
+        typeJob: true,
         education: true,
         skills: true,
         resume: true,
@@ -217,6 +218,7 @@ export class ResumeVersionService {
         languageResumes: {
           language: true,
         },
+        typeJob: true,
         education: true,
         skills: true,
         resume: true,
@@ -244,6 +246,7 @@ export class ResumeVersionService {
         education: true,
         majors: true,
         level: true,
+        typeJob: true,
         district: {
           city: true,
         },
@@ -272,6 +275,7 @@ export class ResumeVersionService {
         languageResumes: {
           language: true,
         },
+        typeJob: true,
         education: true,
         majors: true,
         level: true,

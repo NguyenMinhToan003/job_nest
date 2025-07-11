@@ -18,10 +18,13 @@ export class CandidateService {
   ) {}
 
   async create(accountId, dto: CreateUserDto) {
+    console.log('create candidate', accountId, dto);
     return this.candidateRepo.save({
       id: accountId,
       name: dto.name,
       avatar: dto.avatar,
+      birthday: dto.birthday,
+      location: dto.location,
       phone: dto.phone,
       gender: dto.gender,
     });
