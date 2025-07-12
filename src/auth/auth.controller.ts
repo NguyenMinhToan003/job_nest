@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -60,6 +61,9 @@ export class AuthController {
     @Body() dto: CreateCompanyDto,
     @UploadedFile() logoFile: Express.Multer.File,
   ) {
+    if (!logoFile) {
+      throw new BadRequestException('Hãy tải lên logo doanh nghiệp');
+    }
     return this.authService.registerEmployer(dto, logoFile);
   }
 }

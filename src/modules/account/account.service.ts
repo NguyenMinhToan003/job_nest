@@ -12,8 +12,23 @@ export class AccountService {
     private readonly accountRepository: Repository<Account>,
   ) {}
   async create(createAccountDto: CreateAccountDto) {
+    const existingAccount = await this.accountRepository.findOne({
+      where: { email: createAccountDto.email },
+    });
+    if (existingAccount) {
+      throw new NotFoundException(
+        `Tài khoản ${createAccountDto.email} đã tồn tại`,
+      );
+    }
     const create = await this.accountRepository.create(createAccountDto);
     return this.accountRepository.save(create);
+  }
+  async delete(id: number) {
+    const account = await this.accountRepository.findOne({ where: { id } });
+    if (!account) {
+      throw new NotFoundException(`Tài khoản với ID ${id} không tồn tại`);
+    }
+    return this.accountRepository.remove(account);
   }
   findAll() {
     return this.accountRepository.find();

@@ -1,8 +1,12 @@
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsMobilePhone,
   IsNotEmpty,
   IsOptional,
+  Matches,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export class CreateCompanyDto {
@@ -26,6 +30,8 @@ export class CreateCompanyDto {
   introduction?: string;
 
   @IsNotEmpty()
+  @MinLength(10)
+  @MaxLength(13)
   taxCode: string;
 
   @IsNotEmpty()

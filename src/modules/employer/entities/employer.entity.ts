@@ -27,7 +27,7 @@ export class Employer {
   introduction: string;
   @Column({ name: 'logo', type: 'text', nullable: true })
   logo: string;
-  @Column({ name: 'ma_so_thue', length: 255, nullable: true })
+  @Column({ name: 'ma_so_thue', length: 13, nullable: false, unique: true })
   taxCode: string;
 
   @Column({ name: 'website', nullable: true })

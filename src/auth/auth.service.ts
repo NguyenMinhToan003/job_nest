@@ -161,8 +161,11 @@ export class AuthService {
       dto.logo = null;
     }
 
-    const employer = await this.employerService.create(account.id, dto);
-    // await this.transactionService.triggerRegisterEmployer(employer.id);
-    return employer;
+    try {
+      const employer = await this.employerService.create(account.id, dto);
+      return employer;
+    } catch (error: any) {
+      await this.accountService.delete(account.id);
+    }
   }
 }

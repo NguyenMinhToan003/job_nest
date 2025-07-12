@@ -64,7 +64,7 @@ export class ResumeVersionController {
       return resumeVer;
     } catch (err: any) {
       await this.resumeService.deleteWhenError(candidateId, +resume.id);
-      console.error('Error creating resume version:', err); 
+      console.error('Error creating resume version:', err);
       throw new BadRequestException(
         'Đã sảy ra lỗi khi khởi tạo hồ sơ công việc',
       );
