@@ -10,8 +10,10 @@ import {
   JoinColumn,
   ManyToMany,
   JoinTable,
+  Unique,
 } from 'typeorm';
 @Entity({ name: 'ung_tuyen' })
+@Unique(['job', 'resumeVersion'])
 export class ApplyJob {
   @PrimaryGeneratedColumn()
   id: number;
@@ -24,6 +26,7 @@ export class ApplyJob {
   applyTime: Date;
 
   @Column({
+    name: 'trang_thai',
     type: 'enum',
     enum: APPLY_JOB_STATUS,
     enumName: 'trang_thai_ung_tuyen',
@@ -55,7 +58,7 @@ export class ApplyJob {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'ung_tuyen_gan_the',
+    name: 'gan_the_ung_tuyen',
     joinColumn: { name: 'ma_ung_tuyen', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'ma_the', referencedColumnName: 'id' },
   })

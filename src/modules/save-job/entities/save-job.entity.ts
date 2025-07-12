@@ -6,7 +6,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 export class SaveJob {
   @PrimaryColumn({ name: 'ma_cong_viec' })
   jobId: string;
-  @PrimaryColumn({ name: 'ma_tai_khoan' })
+  @PrimaryColumn({ name: 'ma_ung_vien' })
   id: number;
   @Column({ name: 'ngay_luu' })
   savedDate: Date;
@@ -15,6 +15,6 @@ export class SaveJob {
   @JoinColumn({ name: 'ma_cong_viec', referencedColumnName: 'id' })
   job: Job;
   @ManyToOne(() => Candidate, (candidate) => candidate.saveJobs)
-  @JoinColumn({ name: 'ma_tai_khoan', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'ma_ung_vien', referencedColumnName: 'id' })
   candidate: Candidate;
 }

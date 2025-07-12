@@ -5,7 +5,12 @@ import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 export class City {
   @PrimaryColumn({ name: 'ma_thanh_pho' })
   id: string;
-  @Column({ name: 'ten_thanh_pho', length: 255 })
+  @Column({
+    name: 'ten_thanh_pho',
+    length: 255,
+    unique: true,
+    nullable: false,
+  })
   name: string;
 
   @OneToMany(() => District, (district) => district.city)

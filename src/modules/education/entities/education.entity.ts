@@ -13,9 +13,6 @@ export class Education {
   @Column({ name: 'trang_thai', type: 'tinyint', default: 1 })
   status: number;
 
-  @Column({ name: 'trong_so', type: 'int', nullable: false })
-  weight: number;
-
   @OneToMany(() => Job, (job) => job.education)
   jobs: Job[];
 

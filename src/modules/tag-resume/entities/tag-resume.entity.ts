@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'gan_the_ho_so' })
+@Entity({ name: 'the_ho_so' })
 export class TagResume {
   @PrimaryGeneratedColumn({ name: 'ma_the' })
   id: number;

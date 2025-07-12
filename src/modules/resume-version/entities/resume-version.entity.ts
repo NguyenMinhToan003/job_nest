@@ -32,7 +32,7 @@ export class ResumeVersion {
   @Column({ name: 'so_dien_thoai', length: 11 })
   phone: string;
 
-  @Column({ name: 'email', nullable: true })
+  @Column({ name: 'email', nullable: false })
   email: string;
 
   @Column({
@@ -46,10 +46,10 @@ export class ResumeVersion {
   @Column({ name: 'dia_diem' })
   location: string;
 
-  @Column({ name: 'ngay_sinh', type: 'date', nullable: true })
+  @Column({ name: 'ngay_sinh', type: 'date', nullable: false })
   dateOfBirth: Date;
 
-  @Column({ name: 'muc_luong_mong_muon', type: 'int', nullable: true })
+  @Column({ name: 'muc_luong_mong_muon', type: 'int', nullable: false })
   expectedSalary: number;
 
   @Column({ name: 'public_id_pdf', nullable: false })
@@ -62,13 +62,13 @@ export class ResumeVersion {
     () => LanguageResume,
     (languageResume) => languageResume.resumeVersion,
     {
-      nullable: true,
+      nullable: false,
     },
   )
   languageResumes: LanguageResume[];
 
   @ManyToMany(() => Major, (major) => major.resumeVersions, {
-    nullable: true,
+    nullable: false,
   })
   @JoinTable({
     name: 'phien_ban_ho_so_nganh',
@@ -78,9 +78,9 @@ export class ResumeVersion {
   majors: Major[];
 
   @ManyToOne(() => TypeJob, (typeJob) => typeJob.resumeVersions, {
-    nullable: true,
+    nullable: false,
   })
-  @JoinColumn({ name: 'ma_loai_cong_viec' })
+  @JoinColumn({ name: 'ma_hinh_thuc_lam_viec' })
   typeJob: TypeJob;
 
   @ManyToMany(() => Skill, (skill) => skill.resumeVersions)
@@ -92,19 +92,19 @@ export class ResumeVersion {
   skills: Skill[];
 
   @ManyToOne(() => Education, (education) => education.resumeVersions, {
-    nullable: true,
+    nullable: false,
   })
   @JoinColumn({ name: 'ma_trinh_do' })
   education: Education;
 
   @ManyToOne(() => Level, (level) => level.resumeVersions, {
-    nullable: true,
+    nullable: false,
   })
   @JoinColumn({ name: 'ma_cap_bac' })
   level: Level;
 
   @ManyToOne(() => District, (district) => district.resumeVersions, {
-    nullable: true,
+    nullable: false,
   })
   @JoinColumn({ name: 'ma_quan_huyen' })
   district: District;

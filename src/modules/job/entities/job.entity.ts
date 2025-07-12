@@ -108,7 +108,7 @@ export class Job {
   })
   expiredAt: Date;
   @ManyToOne(() => Employer, (employer) => employer.jobs, { nullable: false })
-  @JoinColumn({ name: 'ma_cong_ty' })
+  @JoinColumn({ name: 'ma_nha_tuyen_dung' })
   employer: Employer;
   @ManyToMany(() => Location, (location) => location.jobs, {
     onDelete: 'CASCADE',
@@ -128,7 +128,7 @@ export class Job {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'loai_hinh_lam_viec_cong_viec',
+    name: 'hinh_thuc_lam_viec_cong_viec',
     joinColumn: {
       name: 'ma_cong_viec',
       referencedColumnName: 'id',
@@ -207,7 +207,7 @@ export class Job {
   skills: Skill[];
 
   @ManyToOne(() => Education, (education) => education.jobs)
-  @JoinColumn({ name: 'ma_trinh_do' })
+  @JoinColumn({ name: 'ma_bang_cap' })
   education: Education;
 
   @OneToMany(() => LanguageJob, (languageJob) => languageJob.job, {

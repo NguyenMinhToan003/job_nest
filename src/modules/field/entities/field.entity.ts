@@ -1,11 +1,5 @@
 import { Major } from 'src/modules/major/entities/major.entity';
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'linh_vuc' })
 export class Field {
@@ -13,8 +7,6 @@ export class Field {
   id: number;
   @Column({ name: 'ten_linh_vuc' })
   name: string;
-  @DeleteDateColumn({ name: 'ngay_an' })
-  hidenAt: Date;
 
   @OneToMany(() => Major, (major) => major.field)
   majors: Major[];

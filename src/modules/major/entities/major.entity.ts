@@ -4,7 +4,6 @@ import { ResumeVersion } from 'src/modules/resume-version/entities/resume-versio
 import { Skill } from 'src/modules/skill/entities/skill.entity';
 import {
   Column,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToMany,
@@ -19,9 +18,6 @@ export class Major {
   id: number;
   @Column({ name: 'ten_chuyen_nganh', length: 255 })
   name: string;
-
-  @DeleteDateColumn({ name: 'ngay_an' })
-  hidenAt: Date;
 
   @ManyToOne(() => Field, (field) => field.majors)
   @JoinColumn({ name: 'ma_linh_vuc' })
