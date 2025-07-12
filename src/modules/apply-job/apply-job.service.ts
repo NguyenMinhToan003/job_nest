@@ -178,7 +178,7 @@ export class ApplyJobService {
       status: APPLY_JOB_STATUS.PROCESSING,
       applyTime: new Date(),
       viewStatus: 0,
-      note: body.candidateNote,
+      candidateNote: body.candidateNote,
     });
   }
 

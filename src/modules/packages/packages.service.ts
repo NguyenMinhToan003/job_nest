@@ -181,6 +181,15 @@ export class PackagesService {
     });
   }
   async createPackage(dto: CreatePackageDto) {
+    const checkPackageExits = await this.packageRepository.findOne({
+      where: {
+        dayValue: dto.dayValue,
+        type: dto.type,
+      },
+    });
+    if (checkPackageExits) {
+      throw new BadRequestException('Gói dịch vụ đã tồn tại');
+    }
     const uploadedImage = await this.uploadService.uploadFile([dto.image]);
     const newPackage = this.packageRepository.create({
       id: dto.name.toUpperCase().replace(/\s/g, '_'),

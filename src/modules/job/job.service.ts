@@ -228,12 +228,14 @@ export class JobService {
   }
 
   async findOne(id: number) {
-    return await this.jobRepository.findOne({
+    const job = await this.jobRepository.findOne({
       where: { id },
       relations: {
         experience: true,
         benefits: true,
-        employer: true,
+        employer: {
+          account: true,
+        },
         locations: {
           district: {
             city: true,
@@ -259,6 +261,8 @@ export class JobService {
         },
       },
     });
+    delete job.employer.account.password;
+    return job;
   }
   async update(id: number, employerId: number, dto: UpdateJobDto) {
     if (dto.minSalary > dto.maxSalary) {
@@ -512,9 +516,6 @@ export class JobService {
         skills: true,
         levels: true,
         typeJobs: true,
-      },
-      order: {
-        createdAt: 'DESC',
       },
     });
     const jobForBanner = [];

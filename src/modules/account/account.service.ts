@@ -63,10 +63,9 @@ export class AccountService {
   async changeStatus(id: number, status: ACCOUNT_STATUS) {
     const account = await this.accountRepository.findOne({
       where: { id },
-      relations: { employer: true },
     });
-    if (!account || !account.employer) {
-      throw new NotFoundException('Employer not found');
+    if (!account) {
+      throw new NotFoundException(`Account with ID ${id} not found`);
     }
     account.status = status;
     return this.accountRepository.save(account);
