@@ -1,6 +1,8 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -73,4 +75,21 @@ export class AddTagResumeDto {
 export class SendMailToCandidateDto {
   subject: string;
   content: string;
+}
+export class GetApplyByTagResumeDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  jobId: number;
+
+  @IsArray()
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt({ each: true })
+  tagIds: number[];
+
+  @IsOptional()
+  @Type(() => IsEnum([APPLY_JOB_STATUS]))
+  @IsEnum(APPLY_JOB_STATUS)
+  status?: APPLY_JOB_STATUS;
 }

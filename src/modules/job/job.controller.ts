@@ -188,10 +188,16 @@ export class JobController {
 
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)
-  @Get('recommend-jobs-by-followed-employers')
-  async getRecommendJobsByFollowedEmployers(@Req() req) {
+  @Get('recommended/followed-employers')
+  async getRecommendJobsByFollowedEmployers(
+    @Req() req,
+    @Query('page') page: number,
+  ) {
     const candidateId = req.user.id;
-    return this.jobService.getRecommendJobsByFollowedEmployers(+candidateId);
+    return this.jobService.getRecommendJobsByFollowedEmployers(
+      +candidateId,
+      page,
+    );
   }
 
   @Public()

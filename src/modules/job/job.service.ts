@@ -563,15 +563,6 @@ export class JobService {
         },
         typeJobs: true,
       },
-      select: {
-        id: true,
-        name: true,
-        employer: true,
-        locations: true,
-        minSalary: true,
-        maxSalary: true,
-        expiredAt: true,
-      },
     });
     const nearbyJobs = [];
     for (const job of allJobs) {
@@ -758,8 +749,11 @@ export class JobService {
     });
     return bestViewedJobs;
   }
-  async getRecommendJobsByFollowedEmployers(candidateId: number) {
-    const followedEmployers = await this.jobRepository.find({
+  async getRecommendJobsByFollowedEmployers(
+    candidateId: number,
+    page?: number,
+  ) {
+    const [followedEmployers, total] = await this.jobRepository.findAndCount({
       where: {
         isActive: JOB_STATUS.ACTIVE,
         isShow: 1,
@@ -769,7 +763,12 @@ export class JobService {
         },
       },
       relations: {
+        experience: true,
+        benefits: true,
         employer: true,
+        employerSubscription: {
+          package: true,
+        },
         locations: {
           district: {
             city: true,
@@ -778,11 +777,59 @@ export class JobService {
         skills: true,
         levels: true,
         typeJobs: true,
+        education: true,
+        languageJobs: {
+          language: true,
+        },
+        majors: true,
       },
       order: {
         createdAt: 'DESC',
       },
+      skip: page ? (page - 1) * 9 : undefined,
+      take: 9,
     });
-    return followedEmployers;
+    const jobForAccount = [];
+    for (const job of followedEmployers) {
+      let isApplied = undefined;
+      let isSaved = undefined;
+      let isActiveSubscription = false;
+      const employerSubscriptions =
+        await this.employerSubscriptionService.getSubscriptionPackageJobByJobId(
+          job.id,
+        );
+      if (employerSubscriptions) {
+        isActiveSubscription = true;
+      }
+      if (candidateId !== undefined) {
+        isApplied = await this.jobRepository.findOne({
+          where: {
+            id: job.id,
+            applyJobs: {
+              resumeVersion: { resume: { candidate: { id: candidateId } } },
+            },
+          },
+        });
+        isSaved = await this.jobRepository.findOne({
+          where: {
+            id: job.id,
+            saveJobs: { candidate: { id: candidateId } },
+          },
+        });
+      }
+
+      jobForAccount.push({
+        ...job,
+        isApplied: isApplied ? true : false,
+        isSaved: isSaved ? true : false,
+        isActiveSubscription: isActiveSubscription,
+      });
+    }
+    const totalPage = Math.ceil(total / 9);
+    return {
+      items: jobForAccount,
+      total,
+      totalPage,
+    };
   }
 }

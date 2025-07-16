@@ -36,14 +36,6 @@ export class FollowController {
     return this.followService.candidateGetAllFollows(candidateId, page, limit);
   }
 
-  @Get('recommended')
-  @UseGuards(RolesGuard)
-  @Roles(ROLE_LIST.CANDIDATE)
-  getRecommendedFollows(@Req() req) {
-    const candidateId = req.user.id;
-    return this.followService.getRecommendedFollows(candidateId);
-  }
-
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.CANDIDATE)
   @Delete('unfollow-employer/:employer')

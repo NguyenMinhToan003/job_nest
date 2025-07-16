@@ -75,7 +75,7 @@ export class ViewJobService {
               city: true,
             },
           },
-          skills: true,
+          majors: true,
         },
       },
       order: {
@@ -86,18 +86,18 @@ export class ViewJobService {
     if (items.length === 0) {
       return [];
     }
-    const listSkills = [];
+    const listMajor = [];
     items.forEach((item) => {
-      item.job.skills.forEach((skill) => {
-        if (!listSkills.includes(skill.id)) {
-          listSkills.push(skill.id);
+      item.job.majors.forEach((major) => {
+        if (!listMajor.includes(major.id)) {
+          listMajor.push(major.id);
         }
       });
     });
     const listJobsInSaveJob = items.map((item) => item.job.id);
     const recomendedJobs = await this.jobService.filter(
       {
-        skills: listSkills,
+        majors: listMajor,
       } as any,
       userId,
     );

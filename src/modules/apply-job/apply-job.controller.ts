@@ -15,6 +15,7 @@ import {
   AddTagResumeDto,
   CreateApplyJobDto,
   GetApplyByStatusDto,
+  GetApplyByTagResumeDto,
   GetApplyJobByJobIdDto,
   SendMailToCandidateDto,
   UpdateApplyJobStatusDto,
@@ -162,5 +163,13 @@ export class ApplyJobController {
   getApplyJobDashboard(@Req() req) {
     const employerId = req.user.id;
     return this.applyJobService.getApplyJobDashboard(+employerId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.EMPLOYER)
+  @Get('apply-job-by-tags')
+  async getApplyJobByTags(@Req() req, @Query() dto: GetApplyByTagResumeDto) {
+    const employerId = req.user.id;
+    return this.applyJobService.getApplyJobByTags(+employerId, dto);
   }
 }

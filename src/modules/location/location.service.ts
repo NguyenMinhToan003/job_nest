@@ -35,6 +35,7 @@ export class LocationService {
       return data;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error: any) {
+      console.log(error);
       throw new BadRequestException('Error fetching data from Goong API');
     }
   }

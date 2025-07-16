@@ -88,8 +88,7 @@ export class SaveJobService {
               city: true,
             },
           },
-          skills: true,
-          benefits: true,
+          majors: true,
         },
       },
       order: {
@@ -100,18 +99,18 @@ export class SaveJobService {
     if (items.length === 0) {
       return [];
     }
-    const listSkills = [];
+    const listMajor = [];
     items.forEach((item) => {
-      item.job.skills.forEach((skill) => {
-        if (!listSkills.includes(skill.id)) {
-          listSkills.push(skill.id);
+      item.job.majors.forEach((major) => {
+        if (!listMajor.includes(major.id)) {
+          listMajor.push(major.id);
         }
       });
     });
     const listJobsInSaveJob = items.map((item) => item.job.id);
     const recomendedJobs = await this.jobService.filter(
       {
-        skills: listSkills,
+        majors: listMajor,
       } as any,
       userId,
     );
@@ -119,5 +118,14 @@ export class SaveJobService {
       (job) => !listJobsInSaveJob.includes(job.id),
     );
     return filteredJobs;
+  }
+  async delete(userId: number, jobId: number) {
+    const saveJob = await this.saveJobRepository.findOne({
+      where: { id: userId, job: { id: jobId } },
+    });
+    if (!saveJob) {
+      throw new BadRequestException('Công việc không được lưu');
+    }
+    return this.saveJobRepository.remove(saveJob);
   }
 }

@@ -84,7 +84,7 @@ export class FollowService {
     });
     const listSkills = getResumeVersions.skills.map((skill) => skill.id);
     const listIdsFollowed = listFollow.map((follow) => follow.employer.id);
-    const listJob = await this.followRepository
+    const query = this.followRepository
       .createQueryBuilder('follow')
       .leftJoinAndSelect('follow.employer', 'employer')
       .leftJoinAndSelect('employer.jobs', 'job')
@@ -97,10 +97,14 @@ export class FollowService {
       .leftJoinAndSelect('job.typeJobs', 'typeJob')
       .where('follow.candidate.id = :candidateId', { candidateId })
       .andWhere('employer.id IN (:...ids)', { ids: listIdsFollowed })
-      .andWhere('skill.id IN (:...skills)', { skills: listSkills })
-      .andWhere('job.isActive = true')
-      .getMany();
+      .andWhere('job.isActive = true');
 
+    if (listSkills.length > 0) {
+      query.andWhere('skill.id IN (:...skills)', { skills: listSkills });
+    }
+
+    const listJob = await query.getMany();
+    console.log('listJob', listJob);
     const employer = listJob.map((item) => item.employer);
     return employer;
   }

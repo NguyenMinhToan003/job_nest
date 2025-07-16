@@ -52,6 +52,7 @@ export class AuthService {
     });
     res.status(200).json({ role: account.role });
   }
+
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);

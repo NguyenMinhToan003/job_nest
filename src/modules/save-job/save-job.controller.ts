@@ -6,6 +6,7 @@ import {
   Req,
   Param,
   Get,
+  Delete,
 } from '@nestjs/common';
 import { SaveJobService } from './save-job.service';
 import { CreateSaveJobDto } from './dto/create-save-job.dto';
@@ -43,5 +44,12 @@ export class SaveJobController {
   getRecomended(@Req() req) {
     const candidateId = req.user.id;
     return this.saveJobService.getRecomended(candidateId);
+  }
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Delete(':jobId')
+  delete(@Req() req, @Param('jobId') jobId: number) {
+    const candidateId = req.user.id;
+    return this.saveJobService.delete(candidateId, jobId);
   }
 }

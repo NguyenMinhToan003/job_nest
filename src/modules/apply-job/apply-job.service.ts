@@ -9,6 +9,7 @@ import {
   AddTagResumeDto,
   CreateApplyJobDto,
   GetApplyByStatusDto,
+  GetApplyByTagResumeDto,
   GetApplyJobByJobIdDto,
   SendMailToCandidateDto,
   UpdateApplyJobStatusDto,
@@ -19,7 +20,7 @@ import { MajorService } from '../major/major.service';
 import { Job } from '../job/entities/job.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { NotiAccountService } from '../noti-account/noti-account.service';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { TagResume } from '../tag-resume/entities/tag-resume.entity';
 
 @Injectable()
@@ -646,5 +647,54 @@ export class ApplyJobService {
       interviewApply,
       qualifiedApply,
     };
+  }
+  async getApplyJobByTags(employerId: number, dto: GetApplyByTagResumeDto) {
+    const applyJobs = await this.applyJobRepository.find({
+      where: {
+        tagResumes: {
+          id: dto.tagIds ? In(dto.tagIds) : Not(In([])),
+        },
+        job: {
+          employer: { id: employerId },
+          id: dto.jobId ? +dto.jobId : undefined,
+        },
+        status: dto.status || undefined,
+      },
+      relations: {
+        tagResumes: true,
+        resumeVersion: {
+          level: true,
+          district: {
+            city: true,
+          },
+          languageResumes: true,
+          education: true,
+          majors: true,
+          skills: true,
+          resume: {
+            candidate: true,
+          },
+        },
+        job: {
+          skills: true,
+          levels: true,
+          education: true,
+          majors: true,
+          locations: { district: { city: true } },
+          languageJobs: { language: true },
+          matchingWeights: true,
+        },
+      },
+    });
+    const listWithScores = applyJobs.map((item) => {
+      const { matchingScore } = this.calculateMatchingScore(
+        item,
+        item.job,
+        true,
+      );
+      return { ...item, matchingScore };
+    });
+
+    return listWithScores.sort((a, b) => b.matchingScore - a.matchingScore);
   }
 }
