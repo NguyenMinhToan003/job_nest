@@ -45,7 +45,9 @@ export class ResumeVersionService {
       expectedSalary: dto.expectedSalary,
       district: { id: dto.district },
       education: { id: dto.education },
+      experience: { id: dto.experience },
       email: dto.email,
+      about: dto.about,
       resume: { id: +resumeId },
       username: dto.username,
       majors: dto.majors ? dto.majors.map((id) => ({ id: +id })) : [],
@@ -80,6 +82,15 @@ export class ResumeVersionService {
       },
       relations: {
         level: true,
+        languageResumes: {
+          language: true,
+        },
+        typeJob: true,
+        education: true,
+        skills: true,
+        resume: true,
+        majors: true,
+        experience: true,
         district: {
           city: true,
         },
@@ -106,6 +117,15 @@ export class ResumeVersionService {
       },
       relations: {
         level: true,
+        languageResumes: {
+          language: true,
+        },
+        typeJob: true,
+        education: true,
+        skills: true,
+        resume: true,
+        majors: true,
+        experience: true,
         district: {
           city: true,
         },
@@ -134,6 +154,7 @@ export class ResumeVersionService {
         skills: true,
         resume: true,
         majors: true,
+        experience: true,
       },
     });
     if (!version) {
@@ -155,8 +176,8 @@ export class ResumeVersionService {
     if (!resume) {
       throw new BadRequestException('Bạn không có quyền sửa đổi Hồ sơ này');
     }
-    this.resumeService.update(candidateId, resumeId, dto.name);
     const lastResumeVersion = await this.viewResume(candidateId, resumeId);
+    this.resumeService.update(candidateId, resumeId, dto.name);
     let uploadImage = [];
     if (files?.avatar?.length > 0)
       uploadImage = await this.uploadService.uploadFile(files.avatar);
@@ -182,11 +203,13 @@ export class ResumeVersionService {
       district: { id: dto.district ?? lastResumeVersion.district.id },
       email: dto.email ?? lastResumeVersion.email,
       resume: { id: +resumeId },
+      experience: { id: dto.experience ?? lastResumeVersion.experience.id },
       username: dto.username ?? lastResumeVersion.username,
       level: { id: dto.level ?? lastResumeVersion.level.id },
       skills: dto.skills ? dto.skills.map((id) => ({ id: +id })) : [],
       publicIdPdf: dto.publicIdPdf ?? lastResumeVersion.publicIdPdf,
       urlPdf: dto.urlPdf ?? lastResumeVersion.urlPdf,
+      about: dto.about ?? lastResumeVersion.about,
     });
     if (dto?.languageResumes?.length > 0) {
       for (const languageResume of dto.languageResumes) {
@@ -222,6 +245,7 @@ export class ResumeVersionService {
         education: true,
         skills: true,
         resume: true,
+        experience: true,
         majors: true,
       },
       order: {
@@ -246,6 +270,7 @@ export class ResumeVersionService {
         education: true,
         majors: true,
         level: true,
+        experience: true,
         typeJob: true,
         district: {
           city: true,
@@ -293,6 +318,30 @@ export class ResumeVersionService {
       totalPages,
       limit: query.limit,
       page: query.page,
+    };
+  }
+  async deleteVersionDraft() {
+    const resumes = await this.resumeService.getAllResume();
+    for (const resume of resumes) {
+      const versions = await this.resumeVersionRepository.find({
+        where: { resume: resume },
+        order: {
+          createdAt: 'DESC',
+        },
+        relations: {
+          applyJobs: true,
+        },
+        skip: 1, // Skip the latest version
+        take: 100000,
+      });
+      for (const version of versions) {
+        if (version.applyJobs.length > 0) continue;
+        await this.resumeVersionRepository.remove(version);
+      }
+    }
+    return {
+      message: 'Xóa tất cả phiên bản Hồ sơ nháp thành công',
+      status: HttpStatus.OK,
     };
   }
 }

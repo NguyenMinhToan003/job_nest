@@ -7,12 +7,14 @@ import { SaveJobModule } from 'src/modules/save-job/save-job.module';
 import { NotoJobCandidateService } from './noti-job-candidate.service';
 import { refreshJobService } from './refresh-job.service';
 import { ViewJobModule } from 'src/modules/view-job/view-job.module';
+import { ResumeVersionModule } from 'src/modules/resume-version/resume-version.module';
 
 @Module({
   imports: [
     SaveJobModule,
     ViewJobModule,
     JobModule,
+    ResumeVersionModule,
     CandidateModule,
     MailerModule,
   ],

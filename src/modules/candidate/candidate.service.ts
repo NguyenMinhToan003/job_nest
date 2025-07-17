@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Candidate } from './entities/candidate.entity';
@@ -18,7 +18,14 @@ export class CandidateService {
   ) {}
 
   async create(accountId, dto: CreateUserDto) {
-    console.log('create candidate', accountId, dto);
+    const existingCandidate = await this.candidateRepo.findOne({
+      where: {
+        phone: dto.phone,
+      },
+    });
+    if (existingCandidate) {
+      throw new BadRequestException('Số điện thoại đã được sử dụng');
+    }
     return this.candidateRepo.save({
       id: accountId,
       name: dto.name,

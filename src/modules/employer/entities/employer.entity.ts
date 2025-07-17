@@ -33,7 +33,7 @@ export class Employer {
   @Column({ name: 'website', nullable: true })
   website: string;
 
-  @Column({ name: 'so_dien_thoai', length: 11, nullable: true })
+  @Column({ name: 'so_dien_thoai', length: 11, unique: true })
   phone: string;
 
   @OneToOne(() => Account, (account) => account.employer)

@@ -52,6 +52,9 @@ export class AuthController {
     @Body() dto: CreateUserDto,
     @UploadedFile() avatarFile: Express.Multer.File,
   ) {
+    if (!avatarFile) {
+      throw new BadRequestException('Hãy tải lên ảnh đại diện');
+    }
     return this.authService.registerCandidate(dto, avatarFile);
   }
   @Public()

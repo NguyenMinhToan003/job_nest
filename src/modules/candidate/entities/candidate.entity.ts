@@ -22,7 +22,7 @@ export class Candidate {
   @Column({ name: 'hinh_anh', nullable: true })
   avatar: string;
 
-  @Column({ name: 'so_dien_thoai', length: 11, nullable: true })
+  @Column({ name: 'so_dien_thoai', length: 11, nullable: true, unique: true })
   phone: string;
 
   @Column({

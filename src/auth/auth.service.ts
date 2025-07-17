@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -143,8 +143,13 @@ export class AuthService {
     } else {
       dto.avatar = null;
     }
-    const candidate = this.candidateService.create(account.id, dto);
-    return candidate;
+    try {
+      const candidate = await this.candidateService.create(account.id, dto);
+      return candidate;
+    } catch (error: any) {
+      await this.accountService.delete(account.id);
+      throw new BadRequestException(error.message);
+    }
   }
   async registerEmployer(dto: CreateCompanyDto, logoFile: Express.Multer.File) {
     const hashPassword = await this.hashPassword(dto.password);

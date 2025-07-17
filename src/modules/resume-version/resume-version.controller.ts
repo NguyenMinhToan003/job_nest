@@ -21,7 +21,6 @@ import {
 } from './dto/create-resume-version.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResumeService } from '../resume/resume.service';
-import { file } from 'googleapis/build/src/apis/file';
 
 @Controller('resume-version')
 export class ResumeVersionController {

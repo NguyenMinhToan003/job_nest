@@ -1,6 +1,7 @@
 import { ApplyJob } from 'src/modules/apply-job/entities/apply-job.entity';
 import { District } from 'src/modules/district/entities/district.entity';
 import { Education } from 'src/modules/education/entities/education.entity';
+import { Experience } from 'src/modules/experience/entities/experience.entity';
 import { LanguageResume } from 'src/modules/language-resume/entities/language-resume.entity';
 import { Level } from 'src/modules/level/entities/level.entity';
 import { Major } from 'src/modules/major/entities/major.entity';
@@ -35,6 +36,9 @@ export class ResumeVersion {
   @Column({ name: 'email', nullable: false })
   email: string;
 
+  @Column({ name: 'gioi_thieu', type: 'text', nullable: true })
+  about: string;
+
   @Column({
     name: 'gioi_tinh',
     type: 'enum',
@@ -57,6 +61,13 @@ export class ResumeVersion {
 
   @Column({ name: 'url_pdf', nullable: false })
   urlPdf: string;
+
+  @Column({
+    name: 'ngay_tao',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
 
   @OneToMany(
     () => LanguageResume,
@@ -120,4 +131,7 @@ export class ResumeVersion {
   })
   @JoinColumn({ name: 'ma_ho_so' })
   resume: Resume;
+  @ManyToOne(() => Experience, (experience) => experience.resumeVersions)
+  @JoinColumn({ name: 'ma_kinh_nghiem' })
+  experience: Experience;
 }

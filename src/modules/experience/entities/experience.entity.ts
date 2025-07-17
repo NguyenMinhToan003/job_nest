@@ -1,4 +1,5 @@
 import { Job } from 'src/modules/job/entities/job.entity';
+import { ResumeVersion } from 'src/modules/resume-version/entities/resume-version.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'kinh_nghiem' })
@@ -14,4 +15,6 @@ export class Experience {
 
   @OneToMany(() => Job, (job) => job.experience)
   jobs: Job[];
+  @OneToMany(() => ResumeVersion, (resumeVersion) => resumeVersion.experience)
+  resumeVersions: ResumeVersion[];
 }

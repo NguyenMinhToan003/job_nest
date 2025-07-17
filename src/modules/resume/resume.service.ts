@@ -17,16 +17,31 @@ export class ResumeService {
     const existingResumes = await this.resumeRepository.find({
       where: { candidate: { id: candidateId } },
     });
+    const checkCount = await this.resumeRepository.count({
+      where: { candidate: { id: candidateId } },
+    });
+    if (checkCount >= 5) {
+      throw new BadRequestException('Bạn đã đạt giới hạn tối đa 5 hồ sơ.');
+    }
     return this.resumeRepository.save({
       candidate: { id: candidateId },
       name: name ? name : 'Hồ sơ ' + candidateId,
       isDefault: existingResumes.length === 0,
     });
   }
-  async getAll(candidateId: number) {
+  async Resume(candidateId: number) {
     return this.resumeRepository.find({
       relations: {
-        resumeVersions: true,
+        resumeVersions: {
+          district: {
+            city: true,
+          },
+          typeJob: true,
+          level: true,
+          education: true,
+          majors: true,
+          experience: true,
+        },
       },
       where: {
         candidate: { id: +candidateId },
@@ -111,5 +126,29 @@ export class ResumeService {
       return item;
     });
     await this.resumeRepository.save(listResumes);
+  }
+  async getAll(candidateId: number) {
+    const resumes = await this.resumeRepository.find({
+      where: { candidate: { id: +candidateId } },
+      relations: {
+        resumeVersions: {
+          district: {
+            city: true,
+          },
+          typeJob: true,
+          level: true,
+          education: true,
+          majors: true,
+          experience: true,
+        },
+      },
+    });
+    if (resumes.length === 0) {
+      throw new BadRequestException('Bạn chưa có hồ sơ nào');
+    }
+    return resumes;
+  }
+  async getAllResume() {
+    return this.resumeRepository.find({});
   }
 }
