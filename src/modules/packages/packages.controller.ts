@@ -16,7 +16,11 @@ import { PackagesService } from './packages.service';
 import { Public, Roles } from 'src/decorators/customize';
 import { RolesGuard } from 'src/auth/passport/role.guard';
 import { ROLE_LIST } from 'src/types/enum';
-import { CreatePackageDto, FilterPacageDto } from './dto/create-package.dto';
+import {
+  AdminFilterPackage,
+  CreatePackageDto,
+  FilterPacageDto,
+} from './dto/create-package.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('packages')
@@ -40,8 +44,8 @@ export class PackagesController {
   @UseGuards(RolesGuard)
   @Roles(ROLE_LIST.ADMIN)
   @Get('all')
-  findAllPackages() {
-    return this.packagesService.findAllPackages();
+  findAllPackages(@Query() query: AdminFilterPackage) {
+    return this.packagesService.findAllPackages(query);
   }
 
   @UseGuards(RolesGuard)

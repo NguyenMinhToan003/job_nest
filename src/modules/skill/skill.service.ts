@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Skill } from './entities/skill.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
 import { MajorService } from '../major/major.service';
@@ -506,8 +506,21 @@ export class SkillService {
     return this.skillRepository.remove(skill);
   }
 
-  async paginate(page: number, limit: number) {
+  async paginate(
+    page: number,
+    limit: number,
+    query: { search?: string; majorId?: number },
+  ) {
+    const where: any = {};
+    if (query.search) {
+      where.name = Like(`%${query.search}%`);
+    }
+    if (query.majorId) {
+      where.major = { id: query.majorId };
+    }
+    console.log('where', where);
     const [items, total] = await this.skillRepository.findAndCount({
+      where,
       skip: (page - 1) * limit,
       take: limit,
       relations: {

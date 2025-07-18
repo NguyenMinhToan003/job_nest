@@ -37,3 +37,13 @@ export class FilterPacageDto {
   @IsOptional()
   mini?: boolean;
 }
+
+export class AdminFilterPackage {
+  @IsOptional()
+  search?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(PackageType, { each: true })
+  type?: PackageType[];
+}

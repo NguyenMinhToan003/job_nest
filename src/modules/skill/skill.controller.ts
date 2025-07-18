@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { SkillService } from './skill.service';
@@ -55,7 +56,11 @@ export class SkillController {
 
   @Public()
   @Get('paginate/:page/:limit')
-  async paginate(@Param('page') page: number, @Param('limit') limit: number) {
-    return this.skillService.paginate(+page, +limit);
+  async paginate(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Query() query: { search?: string; majorId?: number },
+  ) {
+    return this.skillService.paginate(page, limit, query);
   }
 }

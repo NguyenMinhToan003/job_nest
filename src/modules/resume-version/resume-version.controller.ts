@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -124,5 +125,12 @@ export class ResumeVersionController {
   @Post('search')
   async search(@Body() query: QueryDto) {
     return this.resumeVersionService.search(query);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.ADMIN)
+  @Delete('cron-job/delete-draft')
+  async deleteDraft() {
+    return this.resumeVersionService.deleteVersionDraft();
   }
 }

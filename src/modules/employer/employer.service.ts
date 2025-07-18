@@ -5,7 +5,7 @@ import {
   FilterEmployerDto,
 } from './dto/create-employer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, MoreThanOrEqual, Repository } from 'typeorm';
+import { IsNull, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import { UpdateCompanyDto } from './dto/update-employer.dto';
 import { Employer } from './entities/employer.entity';
 import { LocationService } from '../location/location.service';
@@ -166,7 +166,7 @@ export class EmployerService {
   async getAllEmployers(query: AdminFilterCompanyDto) {
     const where: any = {};
     if (query.search) {
-      where.name = query.search;
+      where.name = Like(`%${query.search}%`);
     }
     const [items, total] = await this.employerRepo.findAndCount({
       where,
@@ -177,6 +177,7 @@ export class EmployerService {
         employeeScale: true,
         businessType: true,
         country: true,
+        jobs: true,
       },
     });
     const totalPage = Math.ceil(total / (query.limit || 10));

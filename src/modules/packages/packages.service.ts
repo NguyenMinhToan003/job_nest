@@ -1,13 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Package } from './entities/package.entity';
-import { In, MoreThanOrEqual, Repository } from 'typeorm';
+import { In, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import {
   EMPLOYER_SUBSCRIPTION_STATUS,
   PackageType,
   PAYMENT_STATUS,
 } from 'src/types/enum';
-import { CreatePackageDto, FilterPacageDto } from './dto/create-package.dto';
+import {
+  AdminFilterPackage,
+  CreatePackageDto,
+  FilterPacageDto,
+} from './dto/create-package.dto';
 import { UploadService } from 'src/upload/upload.service';
 import * as dayjs from 'dayjs';
 
@@ -167,8 +171,16 @@ export class PackagesService {
     }
     return convertPackagesResult;
   }
-  async findAllPackages() {
+  async findAllPackages(query?: AdminFilterPackage) {
+    const where: any = {};
+    if (query?.search) {
+      where.name = Like(`%${query.search}%`);
+    }
+    if (query?.type) {
+      where.type = In(query.type);
+    }
     return this.packageRepository.find({
+      where,
       order: {
         price: 'ASC',
       },

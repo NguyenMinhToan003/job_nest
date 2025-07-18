@@ -18,7 +18,7 @@ export class refreshJobService {
     this.logger.debug('Running refresh job at 16:07 every day');
     return this.jobService.refreshJobInPackage();
   }
-  @Cron('37 11 * * *')
+  @Cron('0 0 * * *')
   async deleteResumeVersion() {
     this.logger.debug('Running refresh job at 11:00 every day');
     return this.resumeVersionService.deleteVersionDraft();
