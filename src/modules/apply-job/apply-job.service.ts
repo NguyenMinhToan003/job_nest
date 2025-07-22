@@ -699,4 +699,49 @@ export class ApplyJobService {
 
     return listWithScores.sort((a, b) => b.matchingScore - a.matchingScore);
   }
+  async checkApply(candidateId: number, jobId: number) {
+    const apply = await this.applyJobRepository.findOne({
+      where: {
+        job: { id: jobId },
+        resumeVersion: {
+          resume: {
+            candidate: { id: candidateId },
+          },
+        },
+      },
+      relations: {
+        job: {
+          employer: true,
+          locations: {
+            district: { city: true },
+          },
+          skills: true,
+          levels: true,
+          typeJobs: true,
+          matchingWeights: true,
+          education: true,
+          languageJobs: {
+            language: true,
+          },
+          majors: true,
+        },
+        resumeVersion: {
+          level: true,
+          district: {
+            city: true,
+          },
+          languageResumes: {
+            language: true,
+          },
+          education: true,
+          majors: true,
+          skills: true,
+          resume: {
+            candidate: true,
+          },
+        },
+      },
+    });
+    return apply ? apply.resumeVersion : null;
+  }
 }

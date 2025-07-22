@@ -187,6 +187,9 @@ export class ResumeVersionService {
       urlPdf: dto?.urlPdf,
     };
     if (files?.cv?.length > 0) {
+      if (files.cv[0].mimetype !== 'application/pdf') {
+        throw new BadRequestException('File tải lên phải là file PDF');
+      }
       const cv = await this.uploadService.uploadFile(files.cv);
       dtoFile.publicIdPdf = cv[0].display_name;
       dtoFile.urlPdf = cv[0].secure_url;

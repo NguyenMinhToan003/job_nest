@@ -18,7 +18,7 @@ export class NotoJobCandidateService {
   ) {}
   private readonly logger = new Logger(NotoJobCandidateService.name);
 
-  @Cron('5 16 * * *')
+  @Cron('0 9 * * *')
   async handleCron() {
     const listCandidate = await this.candaidateService.findAllSendMailCronjob();
     listCandidate.forEach(async (candidate) => {

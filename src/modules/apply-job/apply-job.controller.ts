@@ -172,4 +172,12 @@ export class ApplyJobController {
     const employerId = req.user.id;
     return this.applyJobService.getApplyJobByTags(+employerId, dto);
   }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @Get('view-apply/candidate/:jobId')
+  async checkApply(@Req() req, @Param('jobId') jobId: number) {
+    const candidateId = req.user.id;
+    return this.applyJobService.checkApply(+candidateId, +jobId);
+  }
 }
