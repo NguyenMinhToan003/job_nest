@@ -140,6 +140,10 @@ export class ResumeService {
           education: true,
           majors: true,
           experience: true,
+          languageResumes: {
+            language: true,
+          },
+          skills: true,
         },
       },
     });

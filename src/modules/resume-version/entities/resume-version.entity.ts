@@ -30,12 +30,6 @@ export class ResumeVersion {
   @Column({ name: 'ho_ten', length: 255 })
   username: string;
 
-  @Column({ name: 'so_dien_thoai', length: 11 })
-  phone: string;
-
-  @Column({ name: 'email', nullable: false })
-  email: string;
-
   @Column({ name: 'gioi_thieu', type: 'text', nullable: true })
   about: string;
 
@@ -43,7 +37,7 @@ export class ResumeVersion {
     name: 'gioi_tinh',
     type: 'enum',
     enum: ['NAM', 'NU'],
-    nullable: true,
+    nullable: false,
   })
   gender: string;
 

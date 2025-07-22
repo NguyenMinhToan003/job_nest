@@ -176,6 +176,7 @@ export class AuthService {
       return employer;
     } catch (error: any) {
       await this.accountService.delete(account.id);
+      throw new BadRequestException(error.message);
     }
   }
 }

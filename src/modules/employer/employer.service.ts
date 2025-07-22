@@ -26,12 +26,20 @@ export class EmployerService {
   ) {}
 
   async create(accountId: number, dto: CreateCompanyDto): Promise<Employer> {
-    const existingEmployer = await this.employerRepo.findOne({
+    const existingEmployerByTaxCode = await this.employerRepo.findOne({
       where: { taxCode: dto.taxCode },
     });
-    if (existingEmployer) {
+    if (existingEmployerByTaxCode) {
       throw new BadRequestException(
         `Mã số thuế ${dto.taxCode} đã được sử dụng bởi một công ty khác`,
+      );
+    }
+    const existingEmployerByPhone = await this.employerRepo.findOne({
+      where: { phone: dto.phone },
+    });
+    if (existingEmployerByPhone) {
+      throw new BadRequestException(
+        `Số điện thoại ${dto.phone} đã được sử dụng bởi một công ty khác`,
       );
     }
     const create = await this.employerRepo.save({

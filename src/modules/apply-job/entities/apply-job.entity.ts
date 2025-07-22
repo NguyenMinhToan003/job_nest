@@ -34,6 +34,12 @@ export class ApplyJob {
   })
   status: APPLY_JOB_STATUS;
 
+  @Column({ name: 'email_ung_vien', nullable: false })
+  email: string;
+
+  @Column({ name: 'sdt_ung_vien', nullable: false })
+  phone: string;
+
   @Column({ nullable: true, type: 'text' })
   candidateNote: string;
 

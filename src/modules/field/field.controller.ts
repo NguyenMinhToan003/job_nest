@@ -50,4 +50,10 @@ export class FieldController {
   async deleteField(@Param('id') id: number) {
     return this.fieldService.deleteField(id);
   }
+
+  @Public()
+  @Get('/majors/all')
+  async getAllMajors() {
+    return this.fieldService.getFieldAndMajors();
+  }
 }

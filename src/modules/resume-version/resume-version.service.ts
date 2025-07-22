@@ -41,12 +41,10 @@ export class ResumeVersionService {
       gender: dto.gender,
       location: dto.location,
       typeJob: { id: dto.typeJobId },
-      phone: dto.phone,
       expectedSalary: dto.expectedSalary,
       district: { id: dto.district },
       education: { id: dto.education },
       experience: { id: dto.experience },
-      email: dto.email,
       about: dto.about,
       resume: { id: +resumeId },
       username: dto.username,
@@ -165,51 +163,57 @@ export class ResumeVersionService {
 
   async update(
     candidateId: number,
-    dto: CreateResumeVersionDto,
     files: {
       avatar?: Express.Multer.File[] | null;
       cv?: Express.Multer.File[] | null;
     },
     resumeId: number,
+    dto?: CreateResumeVersionDto,
   ) {
     const resume = await this.resumeService.validateMe(candidateId, resumeId);
     if (!resume) {
       throw new BadRequestException('Bạn không có quyền sửa đổi Hồ sơ này');
     }
     const lastResumeVersion = await this.viewResume(candidateId, resumeId);
-    this.resumeService.update(candidateId, resumeId, dto.name);
+    if (dto?.name) {
+      this.resumeService.update(candidateId, resumeId, dto?.name);
+    }
     let uploadImage = [];
     if (files?.avatar?.length > 0)
       uploadImage = await this.uploadService.uploadFile(files.avatar);
+
+    const dtoFile = {
+      publicIdPdf: dto?.publicIdPdf,
+      urlPdf: dto?.urlPdf,
+    };
     if (files?.cv?.length > 0) {
       const cv = await this.uploadService.uploadFile(files.cv);
-      dto.publicIdPdf = cv[0].display_name;
-      dto.urlPdf = cv[0].secure_url;
+      dtoFile.publicIdPdf = cv[0].display_name;
+      dtoFile.urlPdf = cv[0].secure_url;
     } else {
       dto.publicIdPdf = lastResumeVersion.publicIdPdf;
       dto.urlPdf = lastResumeVersion.urlPdf;
     }
     const resumeVersion = await this.resumeVersionRepository.save({
       avatar: uploadImage[0]?.secure_url ?? lastResumeVersion.avatar,
-      dateOfBirth: dto.dateOfBirth ?? lastResumeVersion.dateOfBirth,
-      gender: dto.gender ?? lastResumeVersion.gender,
-      majors: dto.majors
-        ? dto.majors.map((id) => ({ id: +id }))
+      dateOfBirth: dto?.dateOfBirth ?? lastResumeVersion.dateOfBirth,
+      gender: dto?.gender ?? lastResumeVersion.gender,
+      majors: dto?.majors
+        ? dto?.majors?.map((id) => ({ id: +id }))
         : lastResumeVersion.majors,
-      education: { id: dto.education ?? lastResumeVersion.education.id },
-      location: dto.location ?? lastResumeVersion.location,
-      phone: dto.phone ?? lastResumeVersion.phone,
-      typeJob: { id: dto.typeJobId ?? lastResumeVersion.typeJob.id },
-      district: { id: dto.district ?? lastResumeVersion.district.id },
-      email: dto.email ?? lastResumeVersion.email,
+      education: { id: dto?.education ?? lastResumeVersion?.education?.id },
+      location: dto?.location ?? lastResumeVersion?.location,
+      typeJob: { id: dto?.typeJobId ?? lastResumeVersion?.typeJob?.id },
+      district: { id: dto?.district ?? lastResumeVersion?.district?.id },
       resume: { id: +resumeId },
-      experience: { id: dto.experience ?? lastResumeVersion.experience.id },
-      username: dto.username ?? lastResumeVersion.username,
-      level: { id: dto.level ?? lastResumeVersion.level.id },
-      skills: dto.skills ? dto.skills.map((id) => ({ id: +id })) : [],
-      publicIdPdf: dto.publicIdPdf ?? lastResumeVersion.publicIdPdf,
-      urlPdf: dto.urlPdf ?? lastResumeVersion.urlPdf,
-      about: dto.about ?? lastResumeVersion.about,
+      experience: { id: dto?.experience ?? lastResumeVersion?.experience?.id },
+      username: dto?.username ?? lastResumeVersion?.username,
+      level: { id: dto?.level ?? lastResumeVersion?.level?.id },
+      skills: dto?.skills ? dto.skills.map((id) => ({ id: +id })) : [],
+      publicIdPdf: dtoFile?.publicIdPdf ?? lastResumeVersion.publicIdPdf,
+      urlPdf: dtoFile?.urlPdf ?? lastResumeVersion.urlPdf,
+      about: dto?.about ?? lastResumeVersion.about,
+      expectedSalary: dto?.expectedSalary ?? lastResumeVersion.expectedSalary,
     });
     if (dto?.languageResumes?.length > 0) {
       for (const languageResume of dto.languageResumes) {
@@ -342,6 +346,39 @@ export class ResumeVersionService {
     return {
       message: 'Xóa tất cả phiên bản Hồ sơ nháp thành công',
       status: HttpStatus.OK,
+    };
+  }
+
+  async uploadNewCV(
+    candidateId: number,
+    resumeId: number,
+    file: Express.Multer.File,
+  ) {
+    const resume = await this.resumeVersionRepository.findOne({
+      where: {
+        resume: { id: +resumeId, candidate: { id: +candidateId } },
+      },
+      relations: {
+        resume: true,
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+    if (!resume) {
+      throw new BadRequestException('Bạn không có quyền sửa đổi Hồ sơ này');
+    }
+    const updatedResumeVersion = await this.update(
+      candidateId,
+      {
+        cv: [file],
+      },
+      resumeId,
+    );
+    return {
+      message: 'Tải lên CV mới thành công',
+      status: HttpStatus.OK,
+      resumeVersion: updatedResumeVersion,
     };
   }
 }

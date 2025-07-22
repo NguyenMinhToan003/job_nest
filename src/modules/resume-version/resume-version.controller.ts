@@ -91,7 +91,7 @@ export class ResumeVersionController {
     },
   ) {
     const candidateId = req.user.id;
-    return this.resumeVersionService.update(candidateId, dto, files, +resumeId);
+    return this.resumeVersionService.update(candidateId, files, +resumeId, dto);
   }
 
   @UseGuards(RolesGuard)
@@ -132,5 +132,35 @@ export class ResumeVersionController {
   @Delete('cron-job/delete-draft')
   async deleteDraft() {
     return this.resumeVersionService.deleteVersionDraft();
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(ROLE_LIST.CANDIDATE)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'cv',
+        maxCount: 1,
+      },
+    ]),
+  )
+  @Patch('upload-new-cv/:resumeId')
+  async uploadNewCV(
+    @Req() req,
+    @Param('resumeId') resumeId: number,
+    @UploadedFiles()
+    files: {
+      cv?: Express.Multer.File[] | null;
+    },
+  ) {
+    if (!files.cv || files.cv.length === 0) {
+      throw new BadRequestException('Vui lòng tải lên CV mới');
+    }
+    const candidateId = req.user.id;
+    return this.resumeVersionService.uploadNewCV(
+      candidateId,
+      resumeId,
+      files.cv[0],
+    );
   }
 }

@@ -12,10 +12,6 @@ export class CreateResumeVersionDto {
   username: string;
 
   @IsNotEmpty()
-  @IsMobilePhone('vi-VN')
-  phone: string;
-
-  @IsNotEmpty()
   @IsEnum(['NAM', 'NU'])
   gender: string;
 
@@ -47,10 +43,6 @@ export class CreateResumeVersionDto {
 
   @IsNotEmpty()
   district: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
 
   @IsNotEmpty()
   name: string;

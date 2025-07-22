@@ -100,4 +100,11 @@ export class FieldService {
     }
     return this.fieldRepository.remove(field);
   }
+  async getFieldAndMajors() {
+    return this.fieldRepository.find({
+      relations: {
+        majors: true,
+      },
+    });
+  }
 }

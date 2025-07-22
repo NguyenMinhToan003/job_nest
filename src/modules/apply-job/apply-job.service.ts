@@ -180,6 +180,8 @@ export class ApplyJobService {
       applyTime: new Date(),
       viewStatus: 0,
       candidateNote: body.candidateNote,
+      phone: body.phone,
+      email: body.email,
     });
   }
 
@@ -571,7 +573,7 @@ export class ApplyJobService {
     }
 
     const sendMail = await this.mailerService.sendMail({
-      to: applyJob.resumeVersion.email,
+      to: applyJob.email,
       subject: dto.subject || 'Thông báo từ nhà tuyển dụng',
       template: 'send-mail-to-candidate',
       context: {
@@ -590,7 +592,7 @@ export class ApplyJobService {
         <strong>Nhà tuyển dụng:</strong> ${applyJob.job.employer.name}
         <br>
         <strong>Thời gian gửi:</strong> ${new Date().toLocaleString()}
-        <strong>gmail nhan</strong> ${applyJob.resumeVersion.email}
+        <strong>gmail nhan</strong> ${applyJob.email}
       `,
       link: 'tong-quat-ho-so/thong-bao',
       title: dto.subject || 'Thông báo từ nhà tuyển dụng',

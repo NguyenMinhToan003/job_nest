@@ -1,8 +1,10 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsEmail,
   IsEnum,
   IsInt,
+  IsMobilePhone,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -15,11 +17,12 @@ export class CreateApplyJobDto {
   candidateNote: string;
 
   @IsNotEmpty()
-  username: string;
+  @IsMobilePhone('vi-VN')
+  phone: string;
 
   @IsNotEmpty()
-  @IsPhoneNumber('VN')
-  phone: string;
+  @IsEmail()
+  email: string;
 
   @IsNotEmpty()
   resumeId: number;

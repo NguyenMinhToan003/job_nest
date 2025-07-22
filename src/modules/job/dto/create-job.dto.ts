@@ -238,6 +238,10 @@ export class MapDto {
   @IsOptional()
   @Min(0)
   radius?: number; // in meters, default is 5000m
+
+  @IsOptional()
+  @IsArray()
+  majorIds?: number[];
 }
 
 export class ExtendJobDto {

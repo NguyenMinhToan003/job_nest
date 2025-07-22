@@ -543,6 +543,7 @@ export class JobService {
         isActive: In([JOB_STATUS.ACTIVE]),
         isShow: 1,
         expiredAt: MoreThanOrEqual(new Date()),
+        majors: map.majorIds ? { id: In(map.majorIds) } : undefined,
       },
       relations: {
         experience: true,
