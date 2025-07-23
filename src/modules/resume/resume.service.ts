@@ -61,14 +61,14 @@ export class ResumeService {
       },
     });
   }
-  async update(candidateId: number, resumeId: number, name: string) {
+  async update(candidateId: number, resumeId: number, name?: string) {
     const resume = await this.validateMe(candidateId, resumeId);
     if (!resume) {
       throw new Error('Hồ sơ không tồn tại hoặc bạn không có quyền truy cập');
     }
     return this.resumeRepository.save({
       ...resume,
-      name,
+      name: name ? name : resume.name,
     });
   }
 
@@ -153,6 +153,6 @@ export class ResumeService {
     return resumes;
   }
   async getAllResume() {
-    return this.resumeRepository.find({});
+    return this.resumeRepository.find();
   }
 }

@@ -33,6 +33,14 @@ export class ResumeVersionService {
       const upload = await this.uploadService.uploadFile(files.avatar);
       uploadImage = upload[0].secure_url;
     }
+    if (
+      files.cv[0].mimetype !== 'application/pdf' ||
+      files.cv[0].size > 5 * 1024 * 1024
+    ) {
+      throw new BadRequestException(
+        'File tải lên phải là file PDF và không quá 5MB',
+      );
+    }
     const cv = await this.uploadService.uploadFile(files.cv);
 
     const resumeVersion = await this.resumeVersionRepository.save({
@@ -170,6 +178,16 @@ export class ResumeVersionService {
     resumeId: number,
     dto?: CreateResumeVersionDto,
   ) {
+    if (files.cv) {
+      if (
+        files.cv[0].mimetype !== 'application/pdf' ||
+        files.cv[0].size > 5 * 1024 * 1024
+      ) {
+        throw new BadRequestException(
+          'File tải lên phải là file PDF và không quá 5MB',
+        );
+      }
+    }
     const resume = await this.resumeService.validateMe(candidateId, resumeId);
     if (!resume) {
       throw new BadRequestException('Bạn không có quyền sửa đổi Hồ sơ này');

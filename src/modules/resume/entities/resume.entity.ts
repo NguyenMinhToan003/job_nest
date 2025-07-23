@@ -28,12 +28,4 @@ export class Resume {
 
   @OneToMany(() => ResumeVersion, (resumeVersion) => resumeVersion.resume)
   resumeVersions: ResumeVersion[];
-
-  @Column({
-    name: 'cap_nhat_lan_cuoi',
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
 }
