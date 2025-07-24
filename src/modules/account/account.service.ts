@@ -71,7 +71,7 @@ export class AccountService {
   }
   async getAccountByGoogleId(googleId: string) {
     return this.accountRepository.findOne({
-      where: { googleId },
+      // where: { googleId },
       relations: { candidate: true, employer: true },
     });
   }

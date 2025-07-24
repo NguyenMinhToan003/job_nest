@@ -54,7 +54,6 @@ export class CandidateService {
       },
     });
     delete candidate.account.password;
-    delete candidate.account.googleId;
     return candidate;
   }
   async updateMe(

@@ -15,9 +15,6 @@ export class Account {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @Column({ name: 'ma_google', nullable: true })
-  googleId: string;
-
   @Column({ name: 'email', length: 255, unique: true })
   email: string;
   @Column({ name: 'mat_khau', length: 255, nullable: true })

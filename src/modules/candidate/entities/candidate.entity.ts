@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { ViewJob } from 'src/modules/view-job/entities/view-job.entity';
 
-@Entity({ name: 'nguoi_ung_tuyen' })
+@Entity({ name: 'ung_vien' })
 export class Candidate {
   @PrimaryColumn({ name: 'ma_tai_khoan' })
   id: number;
