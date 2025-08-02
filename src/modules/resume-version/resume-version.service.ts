@@ -42,7 +42,9 @@ export class ResumeVersionService {
       );
     }
     const cv = await this.uploadService.uploadFile(files.cv);
-
+    if (dto?.expectedSalary < 0) {
+      throw new BadRequestException('Mức lương kỳ vọng không hợp lệ');
+    }
     const resumeVersion = await this.resumeVersionRepository.save({
       avatar: uploadImage,
       dateOfBirth: dto.dateOfBirth,
@@ -187,6 +189,9 @@ export class ResumeVersionService {
           'File tải lên phải là file PDF và không quá 5MB',
         );
       }
+    }
+    if (dto?.expectedSalary < 0) {
+      throw new BadRequestException('Mức lương kỳ vọng không hợp lệ');
     }
     const resume = await this.resumeService.validateMe(candidateId, resumeId);
     if (!resume) {
