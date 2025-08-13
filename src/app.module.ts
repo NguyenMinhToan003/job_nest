@@ -47,6 +47,7 @@ import { EmployerScalesModule } from './modules/employer-scales/employer-scales.
 import { BusinessTypeModule } from './modules/business-type/business-type.module';
 import { PaymentModule } from './payment/payment.module';
 import { TagResumeModule } from './modules/tag-resume/tag-resume.module';
+console.log(process.env.MYSQL_PASSWORD);
 @Module({
   imports: [
     ScheduleModule.forRoot(),
