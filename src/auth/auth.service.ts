@@ -51,7 +51,7 @@ export class AuthService {
     // gan token vao cookie
     res.cookie(this.configService.get<string>('JWT_COOKIE_NAME'), accessToken, {
       httpOnly: true,
-      secure: process.env.SECURE_COOKIE === 'true',
+      secure: process.env.SECURE_COOKIE === 'true' ? true : false,
       maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
     });
     res.status(200).json({ role: account.role });
