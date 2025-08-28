@@ -53,6 +53,7 @@ export class AuthService {
       httpOnly: true,
       secure: true,
       maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
+      sameSite: 'none',
     });
     res.status(200).json({ role: account.role });
   }
