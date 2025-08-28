@@ -54,7 +54,7 @@ console.log(process.env.MYSQL_PASSWORD);
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: async () => ({
-        type: 'mysql',
+        type: process.env.DB_TYPE as any,
         host: process.env.MYSQL_HOST,
         port: +process.env.MYSQL_PORT,
         username: process.env.MYSQL_USERNAME,
