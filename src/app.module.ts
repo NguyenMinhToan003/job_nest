@@ -47,11 +47,18 @@ import { EmployerScalesModule } from './modules/employer-scales/employer-scales.
 import { BusinessTypeModule } from './modules/business-type/business-type.module';
 import { PaymentModule } from './payment/payment.module';
 import { TagResumeModule } from './modules/tag-resume/tag-resume.module';
-console.log(process.env.MYSQL_PASSWORD);
+import { BullModule } from '@nestjs/bullmq';
+import * as fs from 'fs';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: async () => ({
         type: process.env.DB_TYPE as any,
@@ -64,6 +71,9 @@ console.log(process.env.MYSQL_PASSWORD);
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
         autoLoadEntities: true,
+        ssl: {
+          ca: fs.readFileSync(process.cwd() + '/src/certs/ca.pem').toString(),
+        },
       }),
     }),
     MailerModule.forRootAsync({

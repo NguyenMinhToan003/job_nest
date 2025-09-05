@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -51,11 +52,14 @@ export class AuthService {
     // gan token vao cookie
     res.cookie(this.configService.get<string>('JWT_COOKIE_NAME'), accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.COOKIE_SECURE === 'true',
       maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
       sameSite: 'none',
     });
-    res.status(200).json({ role: account.role });
+    res.status(HttpStatus.OK).json({
+      role: account.role,
+      accessToken: accessToken,
+    });
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -85,7 +89,7 @@ export class AuthService {
         accessTokenLocal,
         {
           httpOnly: true,
-          secure: false,
+          secure: process.env.COOKIE_SECURE === 'true',
           sameSite: 'strict',
           maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
         },
@@ -116,7 +120,7 @@ export class AuthService {
         accessToken,
         {
           httpOnly: true,
-          secure: false,
+          secure: process.env.COOKIE_SECURE === 'true',
           sameSite: 'strict',
           maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
         },
