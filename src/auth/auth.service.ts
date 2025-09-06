@@ -89,8 +89,8 @@ export class AuthService {
         accessTokenLocal,
         {
           httpOnly: true,
-          secure: process.env.COOKIE_SECURE === 'true',
-          sameSite: 'strict',
+          secure: process.env.PRODUCTION === 'true',
+          sameSite: process.env.PRODUCTION === 'true' ? 'none' : 'lax',
           maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
         },
       );
