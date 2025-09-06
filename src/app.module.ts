@@ -64,9 +64,6 @@ import { TagResumeModule } from './modules/tag-resume/tag-resume.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
         autoLoadEntities: true,
-        // ssl: {
-        //   ca: fs.readFileSync(process.cwd() + '/src/certs/ca.pem').toString(),
-        // },
       }),
     }),
     MailerModule.forRootAsync({
