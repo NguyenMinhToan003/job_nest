@@ -54,7 +54,7 @@ export class AuthService {
       httpOnly: true,
       secure: process.env.COOKIE_SECURE === 'true',
       maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
-      sameSite: 'none',
+      sameSite: 'strict',
     });
     res.status(HttpStatus.OK).json({
       role: account.role,
