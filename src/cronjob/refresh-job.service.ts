@@ -23,4 +23,8 @@ export class refreshJobService {
     this.logger.debug('Running refresh job at 11:00 every day');
     return this.resumeVersionService.deleteVersionDraft();
   }
+  @Cron('*/5 * * * *')
+  async logServerStatus() {
+    this.logger.debug('Checking server status every 5 minutes');
+  }
 }
