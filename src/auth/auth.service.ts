@@ -52,9 +52,9 @@ export class AuthService {
     // gan token vao cookie
     res.cookie(this.configService.get<string>('JWT_COOKIE_NAME'), accessToken, {
       httpOnly: true,
-      secure: process.env.COOKIE_SECURE === 'true',
+      secure: process.env.PRODUCTION === 'true' ? true : false,
+      sameSite: process.env.PRODUCTION === 'true' ? 'none' : 'lax',
       maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
-      sameSite: 'strict',
     });
     res.status(HttpStatus.OK).json({
       role: account.role,
@@ -89,7 +89,7 @@ export class AuthService {
         accessTokenLocal,
         {
           httpOnly: true,
-          secure: process.env.PRODUCTION === 'true',
+          secure: process.env.PRODUCTION === 'true' ? true : false,
           sameSite: process.env.PRODUCTION === 'true' ? 'none' : 'lax',
           maxAge: this.configService.get<number>('JWT_EXPIRATION_TIME') * 1000,
         },
