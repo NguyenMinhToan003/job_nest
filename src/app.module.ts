@@ -64,6 +64,9 @@ import { TagResumeModule } from './modules/tag-resume/tag-resume.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
         autoLoadEntities: true,
+        extra: {
+          connectionLimit: 2,
+        },
       }),
     }),
     MailerModule.forRootAsync({
